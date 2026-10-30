@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Santo Rosario Católico</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .text-content-selectable {
+      user-select: text;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .glass-effect {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300">
+
+  <!-- Encabezado Móvil Nativo -->
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 glass-effect px-4 py-2.5 flex items-center justify-between shadow-xs">
+    <div class="flex items-center space-x-2.5">
+      <div class="w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
+        <i class="fa-solid fa-cross"></i>
+      </div>
+      <div>
+        <h1 class="text-sm font-bold font-cinzel text-slate-900 dark:text-amber-300 tracking-wide">Santo Rosario</h1>
+        <p id="today-badge" class="text-xs text-slate-500 dark:text-slate-400 font-medium capitalize"></p>
+      </div>
+    </div>
+
+    <!-- Controles superiores -->
+    <div class="flex items-center space-x-1.5">
+      <button id="btn-theme" onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Modo Claro/Oscuro">
+        <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
+      </button>
+      <button onclick="openConfigModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Cambiar día manualmente">
+        <i class="fa-solid fa-calendar-days text-sm"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Pestañas de Modo Principal: Video / Rezo Guiado -->
+  <nav class="bg-white dark:bg-slate-900 px-3 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-center gap-2 text-xs">
+    <button onclick="setViewMode('video')" id="tab-view-video" class="flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs">
+      <i class="fa-brands fa-youtube text-sm"></i>
+      <span>Versiones en Vídeo</span>
+    </button>
+    <button onclick="setViewMode('guided')" id="tab-view-guided" class="flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+      <i class="fa-solid fa-hands-praying text-amber-500 text-sm"></i>
+      <span>Rezo Interactivo</span>
+    </button>
+  </nav>
+
+  <!-- Contenedor Principal Adaptable a Móvil -->
+  <main class="flex-1 overflow-y-auto no-scrollbar p-3 sm:p-4 max-w-lg mx-auto w-full space-y-4 pb-28">
+
+    <!-- Tarjeta informativa del día y misterios correspondientes -->
+    <section class="rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/20 shadow-xs relative overflow-hidden">
+      <div class="flex items-center justify-between mb-1.5">
+        <span id="active-day-label" class="text-xs uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
+          Hoy
+        </span>
+        <button onclick="resetToToday()" id="btn-return-today" class="hidden text-xs text-amber-600 dark:text-amber-400 font-semibold underline underline-offset-2">
+          Volver a Hoy
+        </button>
+      </div>
+      <h2 id="mystery-title" class="text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-tight"></h2>
+      <p id="mystery-days-hint" class="text-xs text-slate-600 dark:text-slate-400 mt-1"></p>
+    </section>
+
+    <!-- ================= VISTA 1: VERSIONES EN VÍDEO (CORTA / LARGA) ================= -->
+    <section id="section-video" class="space-y-4">
+      
+      <!-- Selector de Versión Corta vs Larga -->
+      <div class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold">
+        <button onclick="switchRosaryLength('corta')" id="btn-len-corta" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-xs">
+          <i class="fa-solid fa-bolt text-amber-500"></i>
+          <span>Rosario Corto</span>
+        </button>
+        <button onclick="switchRosaryLength('larga')" id="btn-len-larga" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400">
+          <i class="fa-solid fa-book-open text-blue-500"></i>
+          <span>Rosario Largo</span>
+        </button>
+      </div>
+
+      <!-- Reproductor Integrado de YouTube -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-7 h-7 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs">
+              <i class="fa-brands fa-youtube"></i>
+            </span>
+            <span id="video-version-tag" class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300"></span>
+          </div>
+          <span id="video-timing-estimate" class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full"></span>
+        </div>
+
+        <!-- Frame de Vídeo Responsivo -->
+        <div class="w-full aspect-video rounded-xl overflow-hidden bg-black shadow-inner relative">
+          <iframe id="youtube-player" class="w-full h-full border-0" 
+                  src="" 
+                  title="Rosario del Día"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  allowfullscreen>
+          </iframe>
+        </div>
+
+        <!-- Acceso directo a YouTube y botones de apoyo -->
+        <div class="flex items-center justify-between pt-1 text-xs">
+          <a id="btn-external-youtube" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 text-red-600 dark:text-red-400 font-semibold hover:underline">
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            <span>Abrir en YouTube</span>
+          </a>
+          <button onclick="copyCurrentLink()" class="inline-flex items-center space-x-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+            <i class="fa-regular fa-copy"></i>
+            <span id="copy-status">Copiar enlace</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor rápido por si quieres pegar el enlace largo de Lunes y Sábado -->
+      <div id="custom-link-box" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-2xl p-3.5 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-link"></i>
+            <span>Enlace de Lunes y Sábado (Versión Larga)</span>
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-600 dark:text-slate-300">
+          En tu mensaje anterior no llegó a pegarse el enlace largo de lunes y sábado. Puedes pegarlo aquí cuando quieras y quedará guardado en tu móvil:
+        </p>
+        <div class="flex gap-2">
+          <input id="input-custom-gozoso" type="text" placeholder="Pega aquí el enlace de YouTube..." class="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-amber-500">
+          <button onclick="saveCustomGozosoLong()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold active:scale-95">
+            Guardar
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de los 5 misterios del día -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
+          <i class="fa-solid fa-list-check text-amber-500"></i>
+          <span>Misterios correspondientes</span>
+        </h3>
+        <ol id="mysteries-brief-list" class="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+          <!-- Inyectado por JS -->
+        </ol>
+      </div>
+
+    </section>
+
+    <!-- ================= VISTA 2: REZO GUIADO INTERACTIVO ================= -->
+    <section id="section-guided" class="hidden space-y-4">
+      
+      <!-- Barra de progreso -->
+      <div class="space-y-1">
+        <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-medium px-1">
+          <span id="step-label">Paso 1</span>
+          <span id="step-percentage">0%</span>
+        </div>
+        <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+          <div id="progress-bar-fill" class="bg-gradient-to-r from-amber-500 to-amber-600 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <!-- Decenario con cuentas -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm text-center">
+        <div class="flex items-center justify-between mb-2">
+          <span id="decade-indicator" class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Decena actual</span>
+          <span id="bead-indicator" class="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full font-bold text-slate-600 dark:text-slate-300"></span>
+        </div>
+        <div id="beads-row" class="flex items-center justify-center gap-1.5 py-1">
+          <!-- Cuentas renderizadas dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Tarjeta de Oración / Meditación Activa -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+          <span id="step-type-pill" class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400"></span>
+          <span id="step-detail-pill" class="text-xs text-slate-500 dark:text-slate-400 font-medium"></span>
+        </div>
+        <h3 id="step-title" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-tight"></h3>
+        
+        <div id="step-scripture-box" class="hidden bg-amber-500/10 border-l-4 border-amber-500 p-3 rounded-r-xl space-y-1">
+          <p id="step-quote" class="text-xs font-bold text-amber-700 dark:text-amber-400"></p>
+          <p id="step-quote-text" class="text-xs sm:text-sm italic text-slate-700 dark:text-slate-200 text-content-selectable"></p>
+        </div>
+
+        <div id="step-text" class="text-slate-700 dark:text-slate-200 space-y-2 text-xs sm:text-sm leading-relaxed text-content-selectable">
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Barra Inferior Fija para Móviles -->
+  <footer class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 glass-effect px-4 py-2.5 z-30 shadow-lg">
+    <div class="max-w-lg mx-auto flex items-center justify-between gap-2.5">
+      
+      <!-- Controles para Vista de Video -->
+      <div id="footer-controls-video" class="w-full flex items-center justify-between gap-2">
+        <button onclick="switchRosaryLength('corta')" id="footer-btn-corta" class="flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i class="fa-solid fa-bolt"></i>
+          <span>Rosario Corto</span>
+        </button>
+        <button onclick="switchRosaryLength('larga')" id="footer-btn-larga" class="flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i class="fa-solid fa-book-open text-blue-500"></i>
+          <span>Rosario Largo</span>
+        </button>
+      </div>
+
+      <!-- Controles para Vista Guiada -->
+      <div id="footer-controls-guided" class="hidden w-full flex items-center justify-between gap-2">
+        <button id="btn-guided-prev" onclick="stepPrevious()" class="w-12 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center active:scale-95 disabled:opacity-40">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button id="btn-guided-next" onclick="stepNext()" class="flex-1 h-11 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center justify-center gap-2 active:scale-95 shadow-md shadow-amber-600/20">
+          <span id="guided-btn-text">Rezar y Continuar</span>
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </button>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- MODAL: Selector Manual de Día / Misterios -->
+  <div id="modal-config" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white">Días y Misterios</h3>
+        <button onclick="closeConfigModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Selector por días -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Elegir otro día de la semana:</label>
+        <div class="grid grid-cols-4 gap-1.5 text-xs">
+          <button onclick="selectDay(1)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="1">Lunes</button>
+          <button onclick="selectDay(2)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="2">Martes</button>
+          <button onclick="selectDay(3)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="3">Miércoles</button>
+          <button onclick="selectDay(4)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="4">Jueves</button>
+          <button onclick="selectDay(5)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="5">Viernes</button>
+          <button onclick="selectDay(6)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="6">Sábado</button>
+          <button onclick="selectDay(0)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="0">Domingo</button>
+          <button onclick="resetToToday()" class="py-2.5 px-1 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold border border-amber-500/30 text-center">Hoy</button>
+        </div>
+      </div>
+
+      <!-- Resumen litúrgico -->
+      <div class="space-y-1.5 text-xs">
+        <div class="p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
+          <p class="font-bold text-slate-800 dark:text-slate-200">Misterios Gozosos</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Lunes y Sábados</p>
+        </div>
+        <div class="p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
+          <p class="font-bold text-slate-800 dark:text-slate-200">Misterios Dolorosos</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Martes y Viernes</p>
+        </div>
+        <div class="p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
+          <p class="font-bold text-slate-800 dark:text-slate-200">Misterios Gloriosos</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Miércoles y Domingos</p>
+        </div>
+        <div class="p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
+          <p class="font-bold text-slate-800 dark:text-slate-200">Misterios Luminosos</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Jueves</p>
+        </div>
+      </div>
+
+      <button onclick="closeConfigModal()" class="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-xs uppercase tracking-wider">
+        Aceptar
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast de notificación de copiado -->
+  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 rounded-full text-xs font-semibold shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50">
+    Enlace copiado al portapapeles
+  </div>
+
+  <script>
+    /* ========================================================================
+       CONFIGURACIÓN DE ENLACES DE YOUTUBE SEGÚN TUS INDICACIONES
+       ======================================================================== */
+    const savedGozosoLong = localStorage.getItem('rosario_gozoso_long_id') || '5L5WfZIrUhQ';
+
+    const ROSARY_VIDEOS = {
+      // Lunes (1) y Sábado (6) - Misterios Gozosos
+      gozosos: {
+        short: {
+          id: '5L5WfZIrUhQ',
+          url: 'https://youtu.be/5L5WfZIrUhQ',
+          title: 'Rosario Corto - Misterios Gozosos',
+          duration: 'Versión Corta'
+        },
+        long: {
+          id: savedGozosoLong,
+          url: 'https://youtu.be/' + savedGozosoLong,
+          title: 'Rosario Largo - Misterios Gozosos',
+          duration: 'Versión Larga'
+        }
+      },
+      // Martes (2) y Viernes (5) - Misterios Dolorosos
+      dolorosos: {
+        short: {
+          id: 'I4oqxPybPgU',
+          url: 'https://youtu.be/I4oqxPybPgU',
+          title: 'Rosario Corto - Misterios Dolorosos',
+          duration: 'Versión Corta'
+        },
+        long: {
+          id: '29-64zNMyQ8',
+          url: 'https://youtu.be/29-64zNMyQ8',
+          title: 'Rosario Largo - Misterios Dolorosos',
+          duration: 'Versión Larga'
+        }
+      },
+      // Miércoles (3) y Domingo (0) - Misterios Gloriosos
+      gloriosos: {
+        short: {
+          id: 'Ojvu3uBzsXM',
+          url: 'https://youtu.be/Ojvu3uBzsXM',
+          title: 'Rosario Corto - Misterios Gloriosos',
+          duration: 'Versión Corta'
+        },
+        long: {
+          id: 'JbcPOJ3fdG4',
+          url: 'https://youtu.be/JbcPOJ3fdG4',
+          title: 'Rosario Largo - Misterios Gloriosos',
+          duration: 'Versión Larga'
+        }
+      },
+      // Jueves (4) - Misterios Luminosos
+      luminosos: {
+        short: {
+          id: 'wZIFINvqbJw',
+          url: 'https://youtu.be/wZIFINvqbJw',
+          title: 'Rosario Corto - Misterios Luminosos',
+          duration: 'Versión Corta'
+        },
+        long: {
+          id: 'NbNhZZV9d2A',
+          url: 'https://youtu.be/NbNhZZV9d2A',
+          title: 'Rosario Largo - Misterios Luminosos',
+          duration: 'Versión Larga'
+        }
+      }
+    };
+
+    /* ========================================================================
+       MISTERIOS DE CADA DÍA DE LA SEMANA
+       ======================================================================== */
+    const MYSTERY_INFO = {
+      gozosos: {
+        key: 'gozosos',
+        name: 'Misterios Gozosos',
+        daysDesc: 'Lunes y Sábados',
+        items: [
+          { num: '1º Misterio', title: 'La Encarnación del Hijo de Dios', ref: 'Lc 1, 26-38', desc: 'Contemplamos el anuncio del arcángel Gabriel a la Virgen María y su sí generoso a la voluntad de Dios.' },
+          { num: '2º Misterio', title: 'La Visitación de Nuestra Señora a su prima Santa Isabel', ref: 'Lc 1, 39-45', desc: 'María acude con prontitud a servir a Isabel llevando en su seno al Salvador del mundo.' },
+          { num: '3º Misterio', title: 'El Nacimiento del Hijo de Dios en el portal de Belén', ref: 'Lc 2, 1-7', desc: 'Jesús nace en la humildad del pesebre para traernos la paz y la salvación.' },
+          { num: '4º Misterio', title: 'La Presentación de Jesús en el Templo', ref: 'Lc 2, 22-35', desc: 'María y José presentan al Niño en el Templo cumpliendo la ley del Señor.' },
+          { num: '5º Misterio', title: 'El Niño Jesús perdido y hallado en el Templo', ref: 'Lc 2, 41-50', desc: 'Tras tres días de búsqueda, encuentran a Jesús en el Templo ocupándose de las cosas de su Padre.' }
+        ]
+      },
+      dolorosos: {
+        key: 'dolorosos',
+        name: 'Misterios Dolorosos',
+        daysDesc: 'Martes y Viernes',
+        items: [
+          { num: '1º Misterio', title: 'La Oración de Jesús en el Huerto', ref: 'Mt 26, 36-39', desc: 'Jesús ora en Getsemaní aceptando por amor la voluntad del Padre.' },
+          { num: '2º Misterio', title: 'La Flagelación del Señor', ref: 'Jn 19, 1', desc: 'Cristo padece los azotes en silencio ofreciendo su dolor por nuestra redención.' },
+          { num: '3º Misterio', title: 'La Coronación de espinas', ref: 'Mt 27, 29', desc: 'Jesús soporta las burlas y la corona de espinas como verdadero Rey de amor y humildad.' },
+          { num: '4º Misterio', title: 'Jesús con la Cruz a cuestas camino del Calvario', ref: 'Jn 19, 17', desc: 'El Señor carga con el madero de la Cruz por nuestras faltas hasta el monte Calvario.' },
+          { num: '5º Misterio', title: 'La Crucifixión y Muerte de Nuestro Señor', ref: 'Lc 23, 44-46', desc: 'Jesús entrega su vida en la Cruz y nos deja a María como Madre nuestra.' }
+        ]
+      },
+      gloriosos: {
+        key: 'gloriosos',
+        name: 'Misterios Gloriosos',
+        daysDesc: 'Miércoles y Domingos',
+        items: [
+          { num: '1º Misterio', title: 'La Resurrección del Hijo de Dios', ref: 'Mc 16, 6', desc: 'Jesucristo vence a la muerte y resucita glorioso al tercer día.' },
+          { num: '2º Misterio', title: 'La Ascensión del Señor a los Cielos', ref: 'Hch 1, 9-11', desc: 'Jesús sube al Cielo en presencia de sus discípulos para prepararnos un lugar.' },
+          { num: '3º Misterio', title: 'La Venida del Espíritu Santo', ref: 'Hch 2, 1-4', desc: 'El Espíritu Santo desciende sobre los Apóstoles reunidos en oración junto a María.' },
+          { num: '4º Misterio', title: 'La Asunción de Nuestra Señora a los Cielos', ref: 'Ap 12, 1', desc: 'Terminado el curso de su vida en la tierra, la Virgen María es llevada en cuerpo y alma al Cielo.' },
+          { num: '5º Misterio', title: 'La Coronación de la Santísima Virgen', ref: 'Ap 12, 1', desc: 'María es coronada como Reina y Señora de todo lo creado para interceder por nosotros.' }
+        ]
+      },
+      luminosos: {
+        key: 'luminosos',
+        name: 'Misterios Luminosos',
+        daysDesc: 'Jueves',
+        items: [
+          { num: '1º Misterio', title: 'El Bautismo de Jesús en el Jordán', ref: 'Mt 3, 16-17', desc: 'Jesús es bautizado por Juan y la voz del Padre lo proclama su Hijo muy amado.' },
+          { num: '2º Misterio', title: 'La Autorrevelación en las bodas de Caná', ref: 'Jn 2, 1-11', desc: 'Por intercesión de la Virgen María, Jesús realiza su primer signo convirtiendo el agua en vino.' },
+          { num: '3º Misterio', title: 'El Anuncio del Reino de Dios', ref: 'Mc 1, 15', desc: 'Jesús llama a la conversión y perdona los pecados de quienes se acercan con fe.' },
+          { num: '4º Misterio', title: 'La Transfiguración del Señor', ref: 'Lc 9, 28-35', desc: 'En el monte Tabor, Jesús manifiesta su gloria divina ante Pedro, Santiago y Juan.' },
+          { num: '5º Misterio', title: 'La Institución de la Eucaristía', ref: 'Lc 22, 19-20', desc: 'En la Última Cena, Cristo se queda con nosotros bajo las especies del pan y del vino.' }
+        ]
+      }
+    };
+
+    const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+    // Estado de la aplicación
+    let realDayIndex = new Date().getDay(); // 0=Dom, 1=Lun, ..., 6=Sáb
+    let currentDayIndex = realDayIndex;
+    let currentLength = 'corta'; // 'corta' | 'larga'
+    let currentViewMode = 'video'; // 'video' | 'guided'
+    let guidedSteps = [];
+    let currentStepIndex = 0;
+
+    // Mapa Día -> Clave de Misterios
+    function getMysteryKeyByDay(dayIdx) {
+      switch (dayIdx) {
+        case 1:
+        case 6:
+          return 'gozosos';
+        case 2:
+        case 5:
+          return 'dolorosos';
+        case 3:
+        case 0:
+          return 'gloriosos';
+        case 4:
+          return 'luminosos';
+        default:
+          return 'gozosos';
+      }
+    }
+
+    // Extraer ID de cualquier enlace de YouTube
+    function extractYouTubeID(url) {
+      if (!url) return null;
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.trim().match(regExp);
+      if (match && match[2].length === 11) {
+        return match[2];
+      }
+      if (url.trim().length === 11) {
+        return url.trim();
+      }
+      return null;
+    }
+
+    // Guardar enlace personalizado para Lunes y Sábado versión larga
+    function saveCustomGozosoLong() {
+      const input = document.getElementById('input-custom-gozoso');
+      const id = extractYouTubeID(input.value);
+      if (!id) {
+        showToast('Por favor, pega un enlace válido de YouTube');
+        return;
+      }
+      localStorage.setItem('rosario_gozoso_long_id', id);
+      ROSARY_VIDEOS.gozosos.long.id = id;
+      ROSARY_VIDEOS.gozosos.long.url = 'https://youtu.be/' + id;
+      input.value = '';
+      updateVideoPlayer();
+      showToast('Enlace de Lunes y Sábado guardado');
+    }
+
+    // Construir pasos para el modo interactivo
+    function buildGuidedSteps(mysteryKey) {
+      const mInfo = MYSTERY_INFO[mysteryKey];
+      const steps = [];
+
+      steps.push({
+        type: 'Inicio del Rosario',
+        detail: 'Introductorio',
+        title: 'Señal de la Cruz y Preparación',
+        ref: 'Inicio',
+        quoteText: 'Iniciamos poniéndonos en la presencia del Señor con la Señal de la Santa Cruz y pidiendo perdón humildemente por nuestras faltas.',
+        text: '<p>Haz la señal de la Cruz y realiza un breve acto de contrición en silencio antes de comenzar los misterios del día.</p>',
+        decade: 0,
+        bead: 0
+      });
+
+      mInfo.items.forEach((item, idx) => {
+        const decNum = idx + 1;
+        steps.push({
+          type: mInfo.name,
+          detail: item.num,
+          title: item.title,
+          ref: 'Cita bíblica: ' + item.ref,
+          quoteText: item.desc,
+          text: '<p><strong>1.</strong> Rezar un <strong>Padre Nuestro</strong>.</p><p><strong>2.</strong> Rezar diez <strong>Avemarías</strong> meditando este misterio.</p><p><strong>3.</strong> Finalizar la decena con un <strong>Gloria</strong> y la jaculatoria a María.</p>',
+          decade: decNum,
+          bead: 0
+        });
+
+        for (let b = 1; b <= 10; b++) {
+          steps.push({
+            type: item.num,
+            detail: 'Avemaría ' + b + ' de 10',
+            title: item.title,
+            ref: item.ref,
+            quoteText: item.desc,
+            text: '<p class="font-medium text-amber-600 dark:text-amber-400">Cuenta ' + b + ' de la decena (' + item.num + ').</p><p>Avanza con el botón inferior conforme vayas rezando cada cuenta del misterio.</p>',
+            decade: decNum,
+            bead: b
+          });
+        }
+      });
+
+      steps.push({
+        type: 'Conclusión',
+        detail: 'Oraciones Finales',
+        title: 'Salve y Letanías Lauretanas',
+        ref: 'Final del Rosario',
+        quoteText: 'Agradecemos a la Santísima Virgen María su maternal intercesión en este día.',
+        text: '<p>Para concluir el Santo Rosario, se reza por las intenciones del Santo Padre, la Salve y las Letanías de la Virgen.</p>',
+        decade: 6,
+        bead: 10
+      });
+
+      return steps;
+    }
+
+    // Actualizar toda la interfaz según el día seleccionado
+    function renderApp() {
+      const mysteryKey = getMysteryKeyByDay(currentDayIndex);
+      const mInfo = MYSTERY_INFO[mysteryKey];
+      const dayName = DAY_NAMES[currentDayIndex];
+      const isToday = (currentDayIndex === realDayIndex);
+
+      // Encabezado
+      document.getElementById('today-badge').textContent = isToday
+        ? 'Hoy es ' + dayName + ' • ' + mInfo.name
+        : 'Viendo: ' + dayName + ' • ' + mInfo.name;
+
+      // Tarjeta principal del día
+      document.getElementById('active-day-label').textContent = isToday
+        ? 'Hoy • ' + dayName
+        : 'Día seleccionado • ' + dayName;
+
+      const btnReturn = document.getElementById('btn-return-today');
+      if (isToday) {
+        btnReturn.classList.add('hidden');
+      } else {
+        btnReturn.classList.remove('hidden');
+      }
+
+      document.getElementById('mystery-title').textContent = mInfo.name;
+      document.getElementById('mystery-days-hint').textContent = 'Se rezan los ' + mInfo.daysDesc;
+
+      // Mostrar aviso de enlace personalizable si estamos en Lunes/Sábado y versión larga
+      const customBox = document.getElementById('custom-link-box');
+      if (mysteryKey === 'gozosos' && currentLength === 'larga') {
+        customBox.classList.remove('hidden');
+      } else {
+        customBox.classList.add('hidden');
+      }
+
+      // Renderizar lista de los 5 misterios del día
+      const listEl = document.getElementById('mysteries-brief-list');
+      listEl.innerHTML = mInfo.items.map((item, i) => `
+        <li class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+          <span class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${i + 1}</span>
+          <div>
+            <p class="font-semibold text-slate-800 dark:text-slate-100 leading-snug">${item.title}</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${item.desc} <span class="text-amber-600 dark:text-amber-400 font-medium">(${item.ref})</span></p>
+          </div>
+        </li>
+      `).join('');
+
+      // Actualizar botones del modal de día
+      document.querySelectorAll('.day-selector-btn').forEach(btn => {
+        const d = parseInt(btn.getAttribute('data-day'), 10);
+        if (d === currentDayIndex) {
+          btn.className = 'day-selector-btn py-2.5 px-1 rounded-xl border border-amber-500 bg-amber-500 text-white font-bold text-center shadow-xs';
+        } else {
+          btn.className = 'day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center text-slate-700 dark:text-slate-300';
+        }
+      });
+
+      // Actualizar vídeo de YouTube
+      updateVideoPlayer();
+
+      // Reiniciar y preparar pasos guiados para este día
+      guidedSteps = buildGuidedSteps(mysteryKey);
+      currentStepIndex = 0;
+      renderGuidedStep();
+    }
+
+    // Actualizar el reproductor y enlaces según versión corta o larga
+    function updateVideoPlayer() {
+      const mysteryKey = getMysteryKeyByDay(currentDayIndex);
+      const videoData = currentLength === 'corta'
+        ? ROSARY_VIDEOS[mysteryKey].short
+        : ROSARY_VIDEOS[mysteryKey].long;
+
+      document.getElementById('video-version-tag').textContent = videoData.title;
+      document.getElementById('video-timing-estimate').textContent = videoData.duration;
+
+      const iframe = document.getElementById('youtube-player');
+      const embedUrl = 'https://www.youtube.com/embed/' + videoData.id + '?rel=0';
+      if (iframe.getAttribute('src') !== embedUrl) {
+        iframe.setAttribute('src', embedUrl);
+      }
+
+      const extBtn = document.getElementById('btn-external-youtube');
+      extBtn.setAttribute('href', videoData.url);
+
+      // Estilos de botones Corto / Largo superiores e inferiores
+      const btnCorta = document.getElementById('btn-len-corta');
+      const btnLarga = document.getElementById('btn-len-larga');
+      const footCorta = document.getElementById('footer-btn-corta');
+      const footLarga = document.getElementById('footer-btn-larga');
+
+      if (currentLength === 'corta') {
+        btnCorta.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-xs font-bold';
+        btnLarga.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
+
+        footCorta.className = 'flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm';
+        footLarga.className = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+      } else {
+        btnLarga.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs font-bold';
+        btnCorta.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
+
+        footLarga.className = 'flex-1 h-11 rounded-xl border border-blue-500 bg-blue-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm';
+        footCorta.className = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+      }
+
+      // Mostrar cuadro de enlace largo para Lunes/Sábado si corresponde
+      const customBox = document.getElementById('custom-link-box');
+      if (mysteryKey === 'gozosos' && currentLength === 'larga') {
+        customBox.classList.remove('hidden');
+      } else {
+        customBox.classList.add('hidden');
+      }
+    }
+
+    // Cambiar entre Rosario Corto y Rosario Largo
+    function switchRosaryLength(len) {
+      currentLength = len;
+      updateVideoPlayer();
+    }
+
+    // Cambiar entre pestaña de Vídeo y Rezo Interactivo
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      const secVideo = document.getElementById('section-video');
+      const secGuided = document.getElementById('section-guided');
+      const tabVideo = document.getElementById('tab-view-video');
+      const tabGuided = document.getElementById('tab-view-guided');
+      const footVideo = document.getElementById('footer-controls-video');
+      const footGuided = document.getElementById('footer-controls-guided');
+
+      if (mode === 'video') {
+        secVideo.classList.remove('hidden');
+        secGuided.classList.add('hidden');
+        footVideo.classList.remove('hidden');
+        footGuided.classList.add('hidden');
+
+        tabVideo.className = 'flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
+        tabGuided.className = 'flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+      } else {
+        secVideo.classList.add('hidden');
+        secGuided.classList.remove('hidden');
+        footVideo.classList.add('hidden');
+        footGuided.classList.remove('hidden');
+
+        tabGuided.className = 'flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
+        tabVideo.className = 'flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        renderGuidedStep();
+      }
+    }
+
+    // Renderizar el paso actual del decenario interactivo
+    function renderGuidedStep() {
+      if (!guidedSteps.length) return;
+      const step = guidedSteps[currentStepIndex];
+      const total = guidedSteps.length;
+      const pct = Math.round(((currentStepIndex + 1) / total) * 100);
+
+      document.getElementById('step-label').textContent = 'Paso ' + (currentStepIndex + 1) + ' de ' + total;
+      document.getElementById('step-percentage').textContent = pct + '%';
+      document.getElementById('progress-bar-fill').style.width = pct + '%';
+
+      document.getElementById('step-type-pill').textContent = step.type;
+      document.getElementById('step-detail-pill').textContent = step.detail;
+      document.getElementById('step-title').textContent = step.title;
+      document.getElementById('step-text').innerHTML = step.text;
+
+      const scripBox = document.getElementById('step-scripture-box');
+      if (step.quoteText) {
+        scripBox.classList.remove('hidden');
+        document.getElementById('step-quote').textContent = step.ref;
+        document.getElementById('step-quote-text').textContent = step.quoteText;
+      } else {
+        scripBox.classList.add('hidden');
+      }
+
+      // Decenario visual (10 cuentas)
+      const decInd = document.getElementById('decade-indicator');
+      const beadInd = document.getElementById('bead-indicator');
+      if (step.decade === 0) {
+        decInd.textContent = 'Oraciones Iniciales';
+        beadInd.textContent = 'Preparación';
+      } else if (step.decade === 6) {
+        decInd.textContent = 'Rosario Completado';
+        beadInd.textContent = 'Final';
+      } else {
+        decInd.textContent = step.decade + 'º Misterio';
+        beadInd.textContent = step.bead === 0 ? 'Anuncio / Padre Nuestro' : 'Cuenta ' + step.bead + ' / 10';
+      }
+
+      const beadsRow = document.getElementById('beads-row');
+      let beadsHtml = '';
+      for (let i = 1; i <= 10; i++) {
+        const active = i <= step.bead;
+        beadsHtml += `<span class="w-5 h-5 rounded-full transition-all duration-200 flex items-center justify-center text-[10px] font-bold ${
+          active
+            ? 'bg-amber-500 text-white scale-110 shadow-xs'
+            : 'bg-slate-200 dark:bg-slate-800 text-slate-400'
+        }">${i}</span>`;
+      }
+      beadsRow.innerHTML = beadsHtml;
+
+      document.getElementById('btn-guided-prev').disabled = (currentStepIndex === 0);
+      document.getElementById('guided-btn-text').textContent =
+        currentStepIndex === total - 1 ? 'Reiniciar Rosario' : 'Siguiente Cuenta';
+    }
+
+    function stepNext() {
+      if (currentStepIndex < guidedSteps.length - 1) {
+        currentStepIndex++;
+      } else {
+        currentStepIndex = 0;
+      }
+      renderGuidedStep();
+    }
+
+    function stepPrevious() {
+      if (currentStepIndex > 0) {
+        currentStepIndex--;
+        renderGuidedStep();
+      }
+    }
+
+    // Selección de día o vuelta al día actual del calendario
+    function selectDay(dayIdx) {
+      currentDayIndex = dayIdx;
+      renderApp();
+      closeConfigModal();
+    }
+
+    function resetToToday() {
+      realDayIndex = new Date().getDay();
+      currentDayIndex = realDayIndex;
+      renderApp();
+      closeConfigModal();
+    }
+
+    // Modal de calendario
+    function openConfigModal() {
+      document.getElementById('modal-config').classList.remove('hidden');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('modal-config').classList.add('hidden');
+    }
+
+    // Copiar enlace actual al portapapeles
+    function copyCurrentLink() {
+      const mysteryKey = getMysteryKeyByDay(currentDayIndex);
+      const videoData = currentLength === 'corta'
+        ? ROSARY_VIDEOS[mysteryKey].short
+        : ROSARY_VIDEOS[mysteryKey].long;
+
+      const tempInput = document.createElement('textarea');
+      tempInput.value = videoData.url;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+
+      showToast('Enlace copiado: ' + videoData.url);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0');
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+      }, 2400);
+    }
+
+    // Modo Claro / Oscuro
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      if (htmlEl.classList.contains('dark')) {
+        htmlEl.classList.remove('dark');
+        icon.className = 'fa-solid fa-moon text-sm';
+        localStorage.setItem('rosario_theme', 'light');
+      } else {
+        htmlEl.classList.add('dark');
+        icon.className = 'fa-solid fa-sun text-sm text-amber-400';
+        localStorage.setItem('rosario_theme', 'dark');
+      }
+    }
+
+    // Inicializar al abrir la app en el móvil
+    window.onload = function () {
+      const savedTheme = localStorage.getItem('rosario_theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-icon').className = 'fa-solid fa-sun text-sm text-amber-400';
+      }
+      renderApp();
+    };
+  </script>
+</body>
+</html>
