@@ -72,15 +72,19 @@
     </div>
   </header>
 
-  <!-- Pestañas de Modo Principal: Video / Rezo Guiado -->
-  <nav class="bg-white dark:bg-slate-900 px-3 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-center gap-2 text-xs">
-    <button onclick="setViewMode('video')" id="tab-view-video" class="flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs">
+  <!-- Pestañas de Modo Principal: Video / Homilías / Rezo Guiado -->
+  <nav class="bg-white dark:bg-slate-900 px-3 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-center gap-1.5 text-xs">
+    <button onclick="setViewMode('video')" id="tab-view-video" class="flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs">
       <i class="fa-brands fa-youtube text-sm"></i>
-      <span>Versiones en Vídeo</span>
+      <span>Rosario</span>
     </button>
-    <button onclick="setViewMode('guided')" id="tab-view-guided" class="flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+    <button onclick="openHomilias()" id="tab-view-homilia" class="flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+      <i class="fa-solid fa-church text-red-500 text-sm"></i>
+      <span>Homilías</span>
+    </button>
+    <button onclick="setViewMode('guided')" id="tab-view-guided" class="flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
       <i class="fa-solid fa-hands-praying text-amber-500 text-sm"></i>
-      <span>Rezo Interactivo</span>
+      <span>Interactivo</span>
     </button>
   </nav>
 
@@ -104,15 +108,19 @@
     <!-- ================= VISTA 1: VERSIONES EN VÍDEO (CORTA / LARGA) ================= -->
     <section id="section-video" class="space-y-4">
       
-      <!-- Selector de Versión Corta vs Larga -->
-      <div class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold">
+      <!-- Selector de Versión Corta vs Larga vs Homilías -->
+      <div class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold gap-1">
         <button onclick="switchRosaryLength('corta')" id="btn-len-corta" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-xs">
           <i class="fa-solid fa-bolt text-amber-500"></i>
-          <span>Rosario Corto</span>
+          <span>Corto</span>
         </button>
         <button onclick="switchRosaryLength('larga')" id="btn-len-larga" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400">
           <i class="fa-solid fa-book-open text-blue-500"></i>
-          <span>Rosario Largo</span>
+          <span>Largo</span>
+        </button>
+        <button onclick="switchRosaryLength('homilia')" id="btn-len-homilia" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400">
+          <i class="fa-solid fa-church text-red-500"></i>
+          <span>Homilías</span>
         </button>
       </div>
 
@@ -234,14 +242,18 @@
     <div class="max-w-lg mx-auto flex items-center justify-between gap-2.5">
       
       <!-- Controles para Vista de Video -->
-      <div id="footer-controls-video" class="w-full flex items-center justify-between gap-2">
+      <div id="footer-controls-video" class="w-full flex items-center justify-between gap-1.5">
         <button onclick="switchRosaryLength('corta')" id="footer-btn-corta" class="flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
           <i class="fa-solid fa-bolt"></i>
-          <span>Rosario Corto</span>
+          <span>Corto</span>
         </button>
         <button onclick="switchRosaryLength('larga')" id="footer-btn-larga" class="flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
           <i class="fa-solid fa-book-open text-blue-500"></i>
-          <span>Rosario Largo</span>
+          <span>Largo</span>
+        </button>
+        <button onclick="openHomilias()" id="footer-btn-homilia" class="flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i class="fa-solid fa-church text-red-500"></i>
+          <span>Homilías</span>
         </button>
       </div>
 
@@ -440,13 +452,63 @@
 
     const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
+    // Canal de YouTube para Homilías (ID: UCnL3Q3uW39R7kXIzEHALzBg -> Lista de subidas: UUnL3Q3uW39R7kXIzEHALzBg)
+    const HOMILIA_CHANNEL_ID = 'UCnL3Q3uW39R7kXIzEHALzBg';
+    const HOMILIA_UPLOADS_PLAYLIST = 'UUnL3Q3uW39R7kXIzEHALzBg';
+    let latestHomiliaVideo = {
+      id: null,
+      title: 'Última Homilía del Canal',
+      url: 'https://www.youtube.com/channel/' + HOMILIA_CHANNEL_ID + '/videos'
+    };
+
     // Estado de la aplicación
     let realDayIndex = new Date().getDay(); // 0=Dom, 1=Lun, ..., 6=Sáb
     let currentDayIndex = realDayIndex;
-    let currentLength = 'corta'; // 'corta' | 'larga'
+    let currentLength = 'corta'; // 'corta' | 'larga' | 'homilia'
     let currentViewMode = 'video'; // 'video' | 'guided'
     let guidedSteps = [];
     let currentStepIndex = 0;
+
+    // Obtener automáticamente el último vídeo publicado en el canal de Homilías
+    async function fetchLatestHomiliaVideo() {
+      try {
+        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${HOMILIA_CHANNEL_ID}`;
+        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data && data.items && data.items.length > 0) {
+          const latest = data.items[0];
+          // Extraer ID del guid "yt:video:VIDEO_ID" o del link
+          let vidId = null;
+          if (latest.guid && latest.guid.includes(':')) {
+            vidId = latest.guid.split(':').pop();
+          } else {
+            vidId = extractYouTubeID(latest.link);
+          }
+          if (vidId) {
+            latestHomiliaVideo = {
+              id: vidId,
+              title: latest.title || 'Última Homilía',
+              url: 'https://youtu.be/' + vidId
+            };
+            if (currentLength === 'homilia') {
+              updateVideoPlayer();
+            }
+          }
+        }
+      } catch (err) {
+        // Si falla la consulta RSS por conexión, el reproductor usará automáticamente la playlist UUnL3Q3uW39R7kXIzEHALzBg que siempre carga el último vídeo del canal
+      }
+    }
+
+    // Abrir directamente la sección de Homilías e inyectar el último vídeo
+    function openHomilias() {
+      if (currentViewMode !== 'video') {
+        setViewMode('video');
+      }
+      switchRosaryLength('homilia');
+      fetchLatestHomiliaVideo();
+    }
 
     // Mapa Día -> Clave de Misterios
     function getMysteryKeyByDay(dayIdx) {
@@ -620,43 +682,79 @@
       renderGuidedStep();
     }
 
-    // Actualizar el reproductor y enlaces según versión corta o larga
+    // Actualizar el reproductor y enlaces según versión corta, larga u homilía
     function updateVideoPlayer() {
       const mysteryKey = getMysteryKeyByDay(currentDayIndex);
-      const videoData = currentLength === 'corta'
-        ? ROSARY_VIDEOS[mysteryKey].short
-        : ROSARY_VIDEOS[mysteryKey].long;
-
-      document.getElementById('video-version-tag').textContent = videoData.title;
-      document.getElementById('video-timing-estimate').textContent = videoData.duration;
-
       const iframe = document.getElementById('youtube-player');
-      const embedUrl = 'https://www.youtube.com/embed/' + videoData.id + '?rel=0';
-      if (iframe.getAttribute('src') !== embedUrl) {
-        iframe.setAttribute('src', embedUrl);
+      const extBtn = document.getElementById('btn-external-youtube');
+
+      if (currentLength === 'homilia') {
+        document.getElementById('video-version-tag').textContent = latestHomiliaVideo.title;
+        document.getElementById('video-timing-estimate').textContent = 'Última Homilía';
+
+        // Si ya tenemos el ID exacto del último vídeo lo inyectamos directo; si no, inyectamos la lista de subidas (UU...) que siempre abre el último vídeo subido al canal
+        const embedUrl = latestHomiliaVideo.id
+          ? 'https://www.youtube.com/embed/' + latestHomiliaVideo.id + '?rel=0'
+          : 'https://www.youtube.com/embed/videoseries?list=' + HOMILIA_UPLOADS_PLAYLIST + '&rel=0';
+
+        if (iframe.getAttribute('src') !== embedUrl) {
+          iframe.setAttribute('src', embedUrl);
+        }
+        extBtn.setAttribute('href', latestHomiliaVideo.url);
+      } else {
+        const videoData = currentLength === 'corta'
+          ? ROSARY_VIDEOS[mysteryKey].short
+          : ROSARY_VIDEOS[mysteryKey].long;
+
+        document.getElementById('video-version-tag').textContent = videoData.title;
+        document.getElementById('video-timing-estimate').textContent = videoData.duration;
+
+        const embedUrl = 'https://www.youtube.com/embed/' + videoData.id + '?rel=0';
+        if (iframe.getAttribute('src') !== embedUrl) {
+          iframe.setAttribute('src', embedUrl);
+        }
+        extBtn.setAttribute('href', videoData.url);
       }
 
-      const extBtn = document.getElementById('btn-external-youtube');
-      extBtn.setAttribute('href', videoData.url);
-
-      // Estilos de botones Corto / Largo superiores e inferiores
+      // Estilos de botones Corto / Largo / Homilías superiores e inferiores
       const btnCorta = document.getElementById('btn-len-corta');
       const btnLarga = document.getElementById('btn-len-larga');
+      const btnHomilia = document.getElementById('btn-len-homilia');
       const footCorta = document.getElementById('footer-btn-corta');
       const footLarga = document.getElementById('footer-btn-larga');
+      const footHomilia = document.getElementById('footer-btn-homilia');
+      const tabVideo = document.getElementById('tab-view-video');
+      const tabHomilia = document.getElementById('tab-view-homilia');
+
+      const inactiveTop = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
+      const inactiveFoot = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+
+      btnCorta.className = inactiveTop;
+      btnLarga.className = inactiveTop;
+      btnHomilia.className = inactiveTop;
+      footCorta.className = inactiveFoot;
+      footLarga.className = inactiveFoot;
+      footHomilia.className = inactiveFoot;
 
       if (currentLength === 'corta') {
         btnCorta.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-xs font-bold';
-        btnLarga.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
-
         footCorta.className = 'flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm';
-        footLarga.className = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
-      } else {
+      } else if (currentLength === 'larga') {
         btnLarga.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs font-bold';
-        btnCorta.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
-
         footLarga.className = 'flex-1 h-11 rounded-xl border border-blue-500 bg-blue-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm';
-        footCorta.className = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+      } else if (currentLength === 'homilia') {
+        btnHomilia.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 shadow-xs font-bold';
+        footHomilia.className = 'flex-1 h-11 rounded-xl border border-red-500 bg-red-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm';
+      }
+
+      if (currentViewMode === 'video') {
+        if (currentLength === 'homilia') {
+          tabHomilia.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-red-600 text-white shadow-xs';
+          tabVideo.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        } else {
+          tabVideo.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
+          tabHomilia.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        }
       }
 
       // Mostrar cuadro de enlace largo para Lunes/Sábado si corresponde
@@ -668,7 +766,7 @@
       }
     }
 
-    // Cambiar entre Rosario Corto y Rosario Largo
+    // Cambiar entre Rosario Corto, Rosario Largo y Homilías
     function switchRosaryLength(len) {
       currentLength = len;
       updateVideoPlayer();
@@ -680,26 +778,33 @@
       const secVideo = document.getElementById('section-video');
       const secGuided = document.getElementById('section-guided');
       const tabVideo = document.getElementById('tab-view-video');
+      const tabHomilia = document.getElementById('tab-view-homilia');
       const tabGuided = document.getElementById('tab-view-guided');
       const footVideo = document.getElementById('footer-controls-video');
       const footGuided = document.getElementById('footer-controls-guided');
 
       if (mode === 'video') {
+        if (currentLength === 'homilia') {
+          currentLength = 'corta';
+        }
         secVideo.classList.remove('hidden');
         secGuided.classList.add('hidden');
         footVideo.classList.remove('hidden');
         footGuided.classList.add('hidden');
 
-        tabVideo.className = 'flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
-        tabGuided.className = 'flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        tabVideo.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
+        tabHomilia.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        tabGuided.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        updateVideoPlayer();
       } else {
         secVideo.classList.add('hidden');
         secGuided.classList.remove('hidden');
         footVideo.classList.add('hidden');
         footGuided.classList.remove('hidden');
 
-        tabGuided.className = 'flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
-        tabVideo.className = 'flex-1 max-w-[200px] py-1.5 px-3 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        tabGuided.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
+        tabVideo.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        tabHomilia.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
         renderGuidedStep();
       }
     }
@@ -802,18 +907,18 @@
     // Copiar enlace actual al portapapeles
     function copyCurrentLink() {
       const mysteryKey = getMysteryKeyByDay(currentDayIndex);
-      const videoData = currentLength === 'corta'
-        ? ROSARY_VIDEOS[mysteryKey].short
-        : ROSARY_VIDEOS[mysteryKey].long;
+      const urlToCopy = currentLength === 'homilia'
+        ? latestHomiliaVideo.url
+        : (currentLength === 'corta' ? ROSARY_VIDEOS[mysteryKey].short.url : ROSARY_VIDEOS[mysteryKey].long.url);
 
       const tempInput = document.createElement('textarea');
-      tempInput.value = videoData.url;
+      tempInput.value = urlToCopy;
       document.body.appendChild(tempInput);
       tempInput.select();
       document.execCommand('copy');
       document.body.removeChild(tempInput);
 
-      showToast('Enlace copiado: ' + videoData.url);
+      showToast('Enlace copiado: ' + urlToCopy);
     }
 
     function showToast(msg) {
@@ -848,6 +953,7 @@
         document.getElementById('theme-icon').className = 'fa-solid fa-sun text-sm text-amber-400';
       }
       renderApp();
+      fetchLatestHomiliaVideo();
     };
   </script>
 </body>
