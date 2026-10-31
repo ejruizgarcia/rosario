@@ -50,7 +50,7 @@
 <body class="h-full bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300">
 
   <!-- Encabezado Móvil Nativo -->
-  <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 glass-effect px-4 py-2.5 flex items-center justify-between shadow-xs">
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 glass-effect px-4 py-2.5 flex items-center justify-between shadow-sm">
     <div class="flex items-center space-x-2.5">
       <div class="w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
         <i class="fa-solid fa-cross"></i>
@@ -72,19 +72,19 @@
     </div>
   </header>
 
-  <!-- Pestañas de Modo Principal: Video / Homilías / Rezo Guiado -->
+  <!-- Pestañas de Modo Principal: Rosario / Interactivo / Homilías -->
   <nav class="bg-white dark:bg-slate-900 px-3 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-center gap-1.5 text-xs">
-    <button onclick="setViewMode('video')" id="tab-view-video" class="flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs">
+    <button onclick="setViewMode('video')" id="tab-view-video" class="flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-sm">
       <i class="fa-brands fa-youtube text-sm"></i>
       <span>Rosario</span>
-    </button>
-    <button onclick="openHomilias()" id="tab-view-homilia" class="flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-      <i class="fa-solid fa-church text-red-500 text-sm"></i>
-      <span>Homilías</span>
     </button>
     <button onclick="setViewMode('guided')" id="tab-view-guided" class="flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
       <i class="fa-solid fa-hands-praying text-amber-500 text-sm"></i>
       <span>Interactivo</span>
+    </button>
+    <button onclick="openHomilias()" id="tab-view-homilia" class="flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+      <i class="fa-solid fa-church text-red-500 text-sm"></i>
+      <span>Homilías</span>
     </button>
   </nav>
 
@@ -92,7 +92,7 @@
   <main class="flex-1 overflow-y-auto no-scrollbar p-3 sm:p-4 max-w-lg mx-auto w-full space-y-4 pb-28">
 
     <!-- Tarjeta informativa del día y misterios correspondientes -->
-    <section class="rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/20 shadow-xs relative overflow-hidden">
+    <section class="rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/20 shadow-sm relative overflow-hidden">
       <div class="flex items-center justify-between mb-1.5">
         <span id="active-day-label" class="text-xs uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
           Hoy
@@ -110,7 +110,7 @@
       
       <!-- Selector de Versión Corta vs Larga vs Homilías -->
       <div class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold gap-1">
-        <button onclick="switchRosaryLength('corta')" id="btn-len-corta" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-xs">
+        <button onclick="switchRosaryLength('corta')" id="btn-len-corta" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm">
           <i class="fa-solid fa-bolt text-amber-500"></i>
           <span>Corto</span>
         </button>
@@ -159,7 +159,7 @@
         </div>
       </div>
 
-      <!-- Editor rápido por si quieres pegar el enlace largo de Lunes y Sábado -->
+      <!-- Editor rápido para enlace largo de Lunes y Sábado -->
       <div id="custom-link-box" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-2xl p-3.5 space-y-2">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
@@ -168,7 +168,7 @@
           </span>
         </div>
         <p class="text-[11px] text-slate-600 dark:text-slate-300">
-          En tu mensaje anterior no llegó a pegarse el enlace largo de lunes y sábado. Puedes pegarlo aquí cuando quieras y quedará guardado en tu móvil:
+          Puedes personalizar el enlace del vídeo largo para los Misterios Gozosos cuando quieras:
         </p>
         <div class="flex gap-2">
           <input id="input-custom-gozoso" type="text" placeholder="Pega aquí el enlace de YouTube..." class="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-amber-500">
@@ -179,12 +179,12 @@
       </div>
 
       <!-- Lista de los 5 misterios del día -->
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+      <div id="mysteries-card-container" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
           <i class="fa-solid fa-list-check text-amber-500"></i>
           <span>Misterios correspondientes</span>
         </h3>
-        <ol id="mysteries-brief-list" class="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+        <ol id="mysteries-brief-list" class="space-y-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
           <!-- Inyectado por JS -->
         </ol>
       </div>
@@ -211,7 +211,7 @@
           <span id="decade-indicator" class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Decena actual</span>
           <span id="bead-indicator" class="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full font-bold text-slate-600 dark:text-slate-300"></span>
         </div>
-        <div id="beads-row" class="flex items-center justify-center gap-1.5 py-1">
+        <div id="beads-row" class="flex items-center justify-center gap-1.5 py-1 flex-wrap">
           <!-- Cuentas renderizadas dinámicamente -->
         </div>
       </div>
@@ -272,7 +272,7 @@
   </footer>
 
   <!-- MODAL: Selector Manual de Día / Misterios -->
-  <div id="modal-config" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="modal-config" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
         <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white">Días y Misterios</h3>
@@ -285,13 +285,13 @@
       <div>
         <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Elegir otro día de la semana:</label>
         <div class="grid grid-cols-4 gap-1.5 text-xs">
-          <button onclick="selectDay(1)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="1">Lunes</button>
-          <button onclick="selectDay(2)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="2">Martes</button>
-          <button onclick="selectDay(3)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="3">Miércoles</button>
-          <button onclick="selectDay(4)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="4">Jueves</button>
-          <button onclick="selectDay(5)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="5">Viernes</button>
-          <button onclick="selectDay(6)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="6">Sábado</button>
-          <button onclick="selectDay(0)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center" data-day="0">Domingo</button>
+          <button onclick="selectDay(1)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center transition-colors" data-day="1">Lunes</button>
+          <button onclick="selectDay(2)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center transition-colors" data-day="2">Martes</button>
+          <button onclick="selectDay(3)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center transition-colors" data-day="3">Miércoles</button>
+          <button onclick="selectDay(4)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center transition-colors" data-day="4">Jueves</button>
+          <button onclick="selectDay(5)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center transition-colors" data-day="5">Viernes</button>
+          <button onclick="selectDay(6)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center transition-colors" data-day="6">Sábado</button>
+          <button onclick="selectDay(0)" class="day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center transition-colors" data-day="0">Domingo</button>
           <button onclick="resetToToday()" class="py-2.5 px-1 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold border border-amber-500/30 text-center">Hoy</button>
         </div>
       </div>
@@ -322,19 +322,18 @@
     </div>
   </div>
 
-  <!-- Toast de notificación de copiado -->
+  <!-- Toast de notificación -->
   <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 rounded-full text-xs font-semibold shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50">
     Enlace copiado al portapapeles
   </div>
 
   <script>
     /* ========================================================================
-       CONFIGURACIÓN DE ENLACES DE YOUTUBE SEGÚN TUS INDICACIONES
+       CONFIGURACIÓN DE ENLACES DE YOUTUBE Y ESTADO EN MEMORIA
        ======================================================================== */
-    const savedGozosoLong = localStorage.getItem('rosario_gozoso_long_id') || '5L5WfZIrUhQ';
+    let customGozosoLongId = '5L5WfZIrUhQ';
 
     const ROSARY_VIDEOS = {
-      // Lunes (1) y Sábado (6) - Misterios Gozosos
       gozosos: {
         short: {
           id: '5L5WfZIrUhQ',
@@ -343,13 +342,12 @@
           duration: 'Versión Corta'
         },
         long: {
-          id: savedGozosoLong,
-          url: 'https://youtu.be/' + savedGozosoLong,
+          id: customGozosoLongId,
+          url: 'https://youtu.be/' + customGozosoLongId,
           title: 'Rosario Largo - Misterios Gozosos',
           duration: 'Versión Larga'
         }
       },
-      // Martes (2) y Viernes (5) - Misterios Dolorosos
       dolorosos: {
         short: {
           id: 'I4oqxPybPgU',
@@ -364,7 +362,6 @@
           duration: 'Versión Larga'
         }
       },
-      // Miércoles (3) y Domingo (0) - Misterios Gloriosos
       gloriosos: {
         short: {
           id: 'Ojvu3uBzsXM',
@@ -379,7 +376,6 @@
           duration: 'Versión Larga'
         }
       },
-      // Jueves (4) - Misterios Luminosos
       luminosos: {
         short: {
           id: 'wZIFINvqbJw',
@@ -452,7 +448,6 @@
 
     const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-    // Canal de YouTube para Homilías (ID: UCnL3Q3uW39R7kXIzEHALzBg -> Lista de subidas: UUnL3Q3uW39R7kXIzEHALzBg)
     const HOMILIA_CHANNEL_ID = 'UCnL3Q3uW39R7kXIzEHALzBg';
     const HOMILIA_UPLOADS_PLAYLIST = 'UUnL3Q3uW39R7kXIzEHALzBg';
     let latestHomiliaVideo = {
@@ -462,7 +457,7 @@
     };
 
     // Estado de la aplicación
-    let realDayIndex = new Date().getDay(); // 0=Dom, 1=Lun, ..., 6=Sáb
+    let realDayIndex = new Date().getDay();
     let currentDayIndex = realDayIndex;
     let currentLength = 'corta'; // 'corta' | 'larga' | 'homilia'
     let currentViewMode = 'video'; // 'video' | 'guided'
@@ -478,7 +473,6 @@
         const data = await response.json();
         if (data && data.items && data.items.length > 0) {
           const latest = data.items[0];
-          // Extraer ID del guid "yt:video:VIDEO_ID" o del link
           let vidId = null;
           if (latest.guid && latest.guid.includes(':')) {
             vidId = latest.guid.split(':').pop();
@@ -497,11 +491,10 @@
           }
         }
       } catch (err) {
-        // Si falla la consulta RSS por conexión, el reproductor usará automáticamente la playlist UUnL3Q3uW39R7kXIzEHALzBg que siempre carga el último vídeo del canal
+        // Fallback automático a la lista de reproducción de subidas del canal
       }
     }
 
-    // Abrir directamente la sección de Homilías e inyectar el último vídeo
     function openHomilias() {
       if (currentViewMode !== 'video') {
         setViewMode('video');
@@ -510,7 +503,6 @@
       fetchLatestHomiliaVideo();
     }
 
-    // Mapa Día -> Clave de Misterios
     function getMysteryKeyByDay(dayIdx) {
       switch (dayIdx) {
         case 1:
@@ -529,7 +521,6 @@
       }
     }
 
-    // Extraer ID de cualquier enlace de YouTube
     function extractYouTubeID(url) {
       if (!url) return null;
       const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -543,7 +534,6 @@
       return null;
     }
 
-    // Guardar enlace personalizado para Lunes y Sábado versión larga
     function saveCustomGozosoLong() {
       const input = document.getElementById('input-custom-gozoso');
       const id = extractYouTubeID(input.value);
@@ -551,12 +541,12 @@
         showToast('Por favor, pega un enlace válido de YouTube');
         return;
       }
-      localStorage.setItem('rosario_gozoso_long_id', id);
+      customGozosoLongId = id;
       ROSARY_VIDEOS.gozosos.long.id = id;
       ROSARY_VIDEOS.gozosos.long.url = 'https://youtu.be/' + id;
       input.value = '';
       updateVideoPlayer();
-      showToast('Enlace de Lunes y Sábado guardado');
+      showToast('Enlace de Lunes y Sábado actualizado');
     }
 
     // Construir pasos para el modo interactivo
@@ -564,305 +554,348 @@
       const mInfo = MYSTERY_INFO[mysteryKey];
       const steps = [];
 
+      // Paso inicial: Señal de la Cruz e Invocación
       steps.push({
         type: 'Inicio del Rosario',
-        detail: 'Introductorio',
-        title: 'Señal de la Cruz y Preparación',
-        ref: 'Inicio',
-        quoteText: 'Iniciamos poniéndonos en la presencia del Señor con la Señal de la Santa Cruz y pidiendo perdón humildemente por nuestras faltas.',
-        text: '<p>Haz la señal de la Cruz y realiza un breve acto de contrición en silencio antes de comenzar los misterios del día.</p>',
+        detail: 'Oraciones Iniciales',
+        title: 'Señal de la Santa Cruz e Invocación',
+        ref: 'Preparación espiritual',
+        quoteText: 'Nos ponemos en presencia del Señor haciendo la señal de la Cruz y pidiendo su gracia.',
+        text: `
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <p class="font-bold text-amber-600 dark:text-amber-400 mb-1">1. Señal de la Cruz:</p>
+              <p>Se inicia con la señal de la Santa Cruz y la invocación habitual en el nombre del Padre, del Hijo y del Espíritu Santo.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2">
+              <p class="font-bold text-amber-600 dark:text-amber-400">2. Acto de Contrición e Invocación:</p>
+              <p>Pedimos humildemente perdón a Dios por nuestras faltas y suplicamos su auxilio antes de meditar los misterios, concluyendo con el Gloria.</p>
+            </div>
+          </div>
+        `,
         decade: 0,
         bead: 0
       });
 
+      // Las 5 decenas
       mInfo.items.forEach((item, idx) => {
         const decNum = idx + 1;
+
+        // Anuncio del Misterio + Padre Nuestro
         steps.push({
           type: mInfo.name,
-          detail: item.num,
+          detail: item.num + ' • Padre Nuestro',
           title: item.title,
           ref: 'Cita bíblica: ' + item.ref,
           quoteText: item.desc,
-          text: '<p><strong>1.</strong> Rezar un <strong>Padre Nuestro</strong>.</p><p><strong>2.</strong> Rezar diez <strong>Avemarías</strong> meditando este misterio.</p><p><strong>3.</strong> Finalizar la decena con un <strong>Gloria</strong> y la jaculatoria a María.</p>',
+          text: `
+            <div class="space-y-2.5">
+              <p class="font-bold text-amber-600 dark:text-amber-400">Meditamos el ${item.num}:</p>
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                <p>En esta cuenta grande proclamamos el misterio correspondiente y rezamos con devoción un <strong>Padre Nuestro</strong> meditando en el pasaje evangélico.</p>
+              </div>
+            </div>
+          `,
           decade: decNum,
           bead: 0
         });
 
+        // 10 Avemarías de la decena
         for (let b = 1; b <= 10; b++) {
           steps.push({
-            type: item.num,
-            detail: 'Avemaría ' + b + ' de 10',
+            type: mInfo.name + ' • ' + item.num,
+            detail: `Avemaría ${b} de 10`,
             title: item.title,
-            ref: item.ref,
+            ref: 'Cita bíblica: ' + item.ref,
             quoteText: item.desc,
-            text: '<p class="font-medium text-amber-600 dark:text-amber-400">Cuenta ' + b + ' de la decena (' + item.num + ').</p><p>Avanza con el botón inferior conforme vayas rezando cada cuenta del misterio.</p>',
+            text: `
+              <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-amber-600 dark:text-amber-400">${b}ª Avemaría de la decena</span>
+                  <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold">${b}/10</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                  <p>Rezamos la <strong>${b}ª Avemaría</strong> manteniendo el corazón fijo en la contemplación de este misterio: <em>${item.title}</em>.</p>
+                </div>
+              </div>
+            `,
             decade: decNum,
             bead: b
           });
         }
+
+        // Gloria y Jaculatoria al cerrar la decena
+        steps.push({
+          type: mInfo.name + ' • Cierre de Decena',
+          detail: item.num + ' • Gloria y Jaculatoria',
+          title: 'Gloria y Oración de Fátima',
+          ref: 'Final del ' + item.num,
+          quoteText: item.desc,
+          text: `
+            <div class="space-y-2.5">
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                <p class="font-bold text-amber-600 dark:text-amber-400 mb-1">Al concluir las diez Avemarías:</p>
+                <p>Rezamos el <strong>Gloria</strong> a la Santísima Trinidad y añadimos las jaculatorias marianas habituales (como la oración de Fátima pedida por la Virgen).</p>
+              </div>
+            </div>
+          `,
+          decade: decNum,
+          bead: 10
+        });
       });
 
+      // Paso Final: Salve y Letanías
       steps.push({
-        type: 'Conclusión',
+        type: 'Conclusión del Rosario',
         detail: 'Oraciones Finales',
-        title: 'Salve y Letanías Lauretanas',
-        ref: 'Final del Rosario',
-        quoteText: 'Agradecemos a la Santísima Virgen María su maternal intercesión en este día.',
-        text: '<p>Para concluir el Santo Rosario, se reza por las intenciones del Santo Padre, la Salve y las Letanías de la Virgen.</p>',
-        decade: 6,
+        title: 'Intenciones del Papa, Letanías y Salve',
+        ref: 'Clausura del Santo Rosario',
+        quoteText: 'Ofrecemos este Santo Rosario por la paz del mundo, por la Iglesia y por nuestras intenciones particulares.',
+        text: `
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <p class="font-bold text-amber-600 dark:text-amber-400 mb-1">Oraciones por el Santo Padre:</p>
+              <p>Se acostumbra rezar un Padre Nuestro, tres Avemarías y un Gloria por las intenciones y necesidades del Romano Pontífice.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <p class="font-bold text-amber-600 dark:text-amber-400 mb-1">La Salve y Letanías Lauretanas:</p>
+              <p>Concluimos aclamando a Nuestra Señora con el rezo de <strong>La Salve</strong> y las invocaciones de las Letanías de la Virgen, cerrando con la señal de la Santa Cruz.</p>
+            </div>
+          </div>
+        `,
+        decade: 5,
         bead: 10
       });
 
       return steps;
     }
 
-    // Actualizar toda la interfaz según el día seleccionado
-    function renderApp() {
-      const mysteryKey = getMysteryKeyByDay(currentDayIndex);
-      const mInfo = MYSTERY_INFO[mysteryKey];
+    /* ========================================================================
+       FUNCIONES DE INTERFAZ Y RENDERIZADO
+       ======================================================================== */
+    function renderCurrentDay() {
+      const mKey = getMysteryKeyByDay(currentDayIndex);
+      const mInfo = MYSTERY_INFO[mKey];
       const dayName = DAY_NAMES[currentDayIndex];
-      const isToday = (currentDayIndex === realDayIndex);
 
-      // Encabezado
-      document.getElementById('today-badge').textContent = isToday
-        ? 'Hoy es ' + dayName + ' • ' + mInfo.name
-        : 'Viendo: ' + dayName + ' • ' + mInfo.name;
+      // Encabezado superior
+      const todayBadge = document.getElementById('today-badge');
+      todayBadge.textContent = `${dayName} • ${mInfo.name}`;
 
-      // Tarjeta principal del día
-      document.getElementById('active-day-label').textContent = isToday
-        ? 'Hoy • ' + dayName
-        : 'Día seleccionado • ' + dayName;
-
-      const btnReturn = document.getElementById('btn-return-today');
-      if (isToday) {
-        btnReturn.classList.add('hidden');
+      // Etiqueta Hoy vs Día elegido
+      const activeDayLabel = document.getElementById('active-day-label');
+      const btnReturnToday = document.getElementById('btn-return-today');
+      if (currentDayIndex === realDayIndex) {
+        activeDayLabel.textContent = `Hoy • ${dayName}`;
+        btnReturnToday.classList.add('hidden');
       } else {
-        btnReturn.classList.remove('hidden');
+        activeDayLabel.textContent = `Viendo: ${dayName}`;
+        btnReturnToday.classList.remove('hidden');
       }
 
+      // Título de Misterios
       document.getElementById('mystery-title').textContent = mInfo.name;
-      document.getElementById('mystery-days-hint').textContent = 'Se rezan los ' + mInfo.daysDesc;
+      document.getElementById('mystery-days-hint').textContent = `Se rezan los ${mInfo.daysDesc}`;
 
-      // Mostrar aviso de enlace personalizable si estamos en Lunes/Sábado y versión larga
-      const customBox = document.getElementById('custom-link-box');
-      if (mysteryKey === 'gozosos' && currentLength === 'larga') {
-        customBox.classList.remove('hidden');
-      } else {
-        customBox.classList.add('hidden');
-      }
-
-      // Renderizar lista de los 5 misterios del día
+      // Lista de los 5 misterios
       const listEl = document.getElementById('mysteries-brief-list');
-      listEl.innerHTML = mInfo.items.map((item, i) => `
-        <li class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-          <span class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${i + 1}</span>
-          <div>
-            <p class="font-semibold text-slate-800 dark:text-slate-100 leading-snug">${item.title}</p>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${item.desc} <span class="text-amber-600 dark:text-amber-400 font-medium">(${item.ref})</span></p>
+      listEl.innerHTML = mInfo.items.map((item, index) => `
+        <li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+          <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+            ${index + 1}
+          </span>
+          <div class="space-y-0.5">
+            <div class="font-bold text-slate-800 dark:text-slate-100 leading-snug">${item.title} <span class="text-[11px] font-normal text-amber-600 dark:text-amber-400">(${item.ref})</span></div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">${item.desc}</p>
           </div>
         </li>
       `).join('');
 
-      // Actualizar botones del modal de día
+      // Resaltar día en el modal
       document.querySelectorAll('.day-selector-btn').forEach(btn => {
         const d = parseInt(btn.getAttribute('data-day'), 10);
         if (d === currentDayIndex) {
-          btn.className = 'day-selector-btn py-2.5 px-1 rounded-xl border border-amber-500 bg-amber-500 text-white font-bold text-center shadow-xs';
+          btn.className = 'day-selector-btn py-2.5 px-1 rounded-xl border border-amber-500 bg-amber-500 text-white font-bold text-center shadow-sm';
         } else {
-          btn.className = 'day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center text-slate-700 dark:text-slate-300';
+          btn.className = 'day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
         }
       });
 
-      // Actualizar vídeo de YouTube
-      updateVideoPlayer();
-
-      // Reiniciar y preparar pasos guiados para este día
-      guidedSteps = buildGuidedSteps(mysteryKey);
+      // Reconstruir pasos interactivos
+      guidedSteps = buildGuidedSteps(mKey);
       currentStepIndex = 0;
       renderGuidedStep();
+      updateVideoPlayer();
     }
 
-    // Actualizar el reproductor y enlaces según versión corta, larga u homilía
     function updateVideoPlayer() {
-      const mysteryKey = getMysteryKeyByDay(currentDayIndex);
+      const mKey = getMysteryKeyByDay(currentDayIndex);
+      const videoSection = ROSARY_VIDEOS[mKey];
       const iframe = document.getElementById('youtube-player');
-      const extBtn = document.getElementById('btn-external-youtube');
+      const versionTag = document.getElementById('video-version-tag');
+      const timingEstimate = document.getElementById('video-timing-estimate');
+      const externalBtn = document.getElementById('btn-external-youtube');
+      const customBox = document.getElementById('custom-link-box');
 
       if (currentLength === 'homilia') {
-        document.getElementById('video-version-tag').textContent = latestHomiliaVideo.title;
-        document.getElementById('video-timing-estimate').textContent = 'Última Homilía';
-
-        // Si ya tenemos el ID exacto del último vídeo lo inyectamos directo; si no, inyectamos la lista de subidas (UU...) que siempre abre el último vídeo subido al canal
-        const embedUrl = latestHomiliaVideo.id
-          ? 'https://www.youtube.com/embed/' + latestHomiliaVideo.id + '?rel=0'
-          : 'https://www.youtube.com/embed/videoseries?list=' + HOMILIA_UPLOADS_PLAYLIST + '&rel=0';
-
-        if (iframe.getAttribute('src') !== embedUrl) {
-          iframe.setAttribute('src', embedUrl);
+        customBox.classList.add('hidden');
+        versionTag.textContent = latestHomiliaVideo.title || 'Homilía Diaria';
+        timingEstimate.textContent = 'Canal de Homilías';
+        if (latestHomiliaVideo.id) {
+          iframe.src = `https://www.youtube.com/embed/${latestHomiliaVideo.id}?rel=0`;
+          externalBtn.href = latestHomiliaVideo.url;
+        } else {
+          iframe.src = `https://www.youtube.com/embed/videoseries?list=${HOMILIA_UPLOADS_PLAYLIST}&rel=0`;
+          externalBtn.href = latestHomiliaVideo.url;
         }
-        extBtn.setAttribute('href', latestHomiliaVideo.url);
       } else {
-        const videoData = currentLength === 'corta'
-          ? ROSARY_VIDEOS[mysteryKey].short
-          : ROSARY_VIDEOS[mysteryKey].long;
+        const selected = currentLength === 'corta' ? videoSection.short : videoSection.long;
+        versionTag.textContent = selected.title;
+        timingEstimate.textContent = currentLength === 'corta' ? '~15-20 min' : '~25-35 min';
+        iframe.src = `https://www.youtube.com/embed/${selected.id}?rel=0`;
+        externalBtn.href = selected.url;
 
-        document.getElementById('video-version-tag').textContent = videoData.title;
-        document.getElementById('video-timing-estimate').textContent = videoData.duration;
-
-        const embedUrl = 'https://www.youtube.com/embed/' + videoData.id + '?rel=0';
-        if (iframe.getAttribute('src') !== embedUrl) {
-          iframe.setAttribute('src', embedUrl);
+        if (mKey === 'gozosos' && currentLength === 'larga') {
+          customBox.classList.remove('hidden');
+        } else {
+          customBox.classList.add('hidden');
         }
-        extBtn.setAttribute('href', videoData.url);
       }
 
-      // Estilos de botones Corto / Largo / Homilías superiores e inferiores
-      const btnCorta = document.getElementById('btn-len-corta');
-      const btnLarga = document.getElementById('btn-len-larga');
-      const btnHomilia = document.getElementById('btn-len-homilia');
+      updateLengthButtonsUI();
+    }
+
+    function updateLengthButtonsUI() {
+      const topCorta = document.getElementById('btn-len-corta');
+      const topLarga = document.getElementById('btn-len-larga');
+      const topHomilia = document.getElementById('btn-len-homilia');
+
       const footCorta = document.getElementById('footer-btn-corta');
       const footLarga = document.getElementById('footer-btn-larga');
       const footHomilia = document.getElementById('footer-btn-homilia');
+
       const tabVideo = document.getElementById('tab-view-video');
+      const tabGuided = document.getElementById('tab-view-guided');
       const tabHomilia = document.getElementById('tab-view-homilia');
 
-      const inactiveTop = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
-      const inactiveFoot = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+      const activeTopClass = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm font-bold';
+      const inactiveTopClass = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
 
-      btnCorta.className = inactiveTop;
-      btnLarga.className = inactiveTop;
-      btnHomilia.className = inactiveTop;
-      footCorta.className = inactiveFoot;
-      footLarga.className = inactiveFoot;
-      footHomilia.className = inactiveFoot;
+      topCorta.className = currentLength === 'corta' ? activeTopClass : inactiveTopClass;
+      topLarga.className = currentLength === 'larga' ? activeTopClass : inactiveTopClass;
+      topHomilia.className = currentLength === 'homilia' ? activeTopClass : inactiveTopClass;
 
-      if (currentLength === 'corta') {
-        btnCorta.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-xs font-bold';
-        footCorta.className = 'flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm';
-      } else if (currentLength === 'larga') {
-        btnLarga.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs font-bold';
-        footLarga.className = 'flex-1 h-11 rounded-xl border border-blue-500 bg-blue-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm';
+      const activeFootClass = 'flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+      const inactiveFootClass = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+
+      footCorta.className = currentLength === 'corta' ? activeFootClass : inactiveFootClass;
+      footLarga.className = currentLength === 'larga' ? activeFootClass : inactiveFootClass;
+      footHomilia.className = currentLength === 'homilia' ? activeFootClass : inactiveFootClass;
+
+      // Actualizar pestañas superiores
+      const activeNavClass = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-sm';
+      const inactiveNavClass = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+
+      if (currentViewMode === 'guided') {
+        tabVideo.className = inactiveNavClass;
+        tabGuided.className = activeNavClass;
+        tabHomilia.className = inactiveNavClass;
       } else if (currentLength === 'homilia') {
-        btnHomilia.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 shadow-xs font-bold';
-        footHomilia.className = 'flex-1 h-11 rounded-xl border border-red-500 bg-red-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm';
-      }
-
-      if (currentViewMode === 'video') {
-        if (currentLength === 'homilia') {
-          tabHomilia.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-red-600 text-white shadow-xs';
-          tabVideo.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
-        } else {
-          tabVideo.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
-          tabHomilia.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
-        }
-      }
-
-      // Mostrar cuadro de enlace largo para Lunes/Sábado si corresponde
-      const customBox = document.getElementById('custom-link-box');
-      if (mysteryKey === 'gozosos' && currentLength === 'larga') {
-        customBox.classList.remove('hidden');
+        tabVideo.className = inactiveNavClass;
+        tabGuided.className = inactiveNavClass;
+        tabHomilia.className = activeNavClass;
       } else {
-        customBox.classList.add('hidden');
+        tabVideo.className = activeNavClass;
+        tabGuided.className = inactiveNavClass;
+        tabHomilia.className = inactiveNavClass;
       }
     }
 
-    // Cambiar entre Rosario Corto, Rosario Largo y Homilías
     function switchRosaryLength(len) {
       currentLength = len;
       updateVideoPlayer();
     }
 
-    // Cambiar entre pestaña de Vídeo y Rezo Interactivo
     function setViewMode(mode) {
       currentViewMode = mode;
       const secVideo = document.getElementById('section-video');
       const secGuided = document.getElementById('section-guided');
-      const tabVideo = document.getElementById('tab-view-video');
-      const tabHomilia = document.getElementById('tab-view-homilia');
-      const tabGuided = document.getElementById('tab-view-guided');
       const footVideo = document.getElementById('footer-controls-video');
       const footGuided = document.getElementById('footer-controls-guided');
 
       if (mode === 'video') {
-        if (currentLength === 'homilia') {
-          currentLength = 'corta';
-        }
+        if (currentLength === 'homilia') currentLength = 'corta';
         secVideo.classList.remove('hidden');
         secGuided.classList.add('hidden');
         footVideo.classList.remove('hidden');
         footGuided.classList.add('hidden');
-
-        tabVideo.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
-        tabHomilia.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
-        tabGuided.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
         updateVideoPlayer();
       } else {
         secVideo.classList.add('hidden');
         secGuided.classList.remove('hidden');
         footVideo.classList.add('hidden');
         footGuided.classList.remove('hidden');
-
-        tabGuided.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-xs';
-        tabVideo.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
-        tabHomilia.className = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
         renderGuidedStep();
+        updateLengthButtonsUI();
       }
     }
 
-    // Renderizar el paso actual del decenario interactivo
+    /* ========================================================================
+       LOGICA DEL DECENARIO Y REZO GUIADO
+       ======================================================================== */
     function renderGuidedStep() {
       if (!guidedSteps.length) return;
       const step = guidedSteps[currentStepIndex];
       const total = guidedSteps.length;
       const pct = Math.round(((currentStepIndex + 1) / total) * 100);
 
-      document.getElementById('step-label').textContent = 'Paso ' + (currentStepIndex + 1) + ' de ' + total;
-      document.getElementById('step-percentage').textContent = pct + '%';
-      document.getElementById('progress-bar-fill').style.width = pct + '%';
+      document.getElementById('step-label').textContent = `Paso ${currentStepIndex + 1} de ${total}`;
+      document.getElementById('step-percentage').textContent = `${pct}%`;
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
 
+      document.getElementById('decade-indicator').textContent = step.decade > 0 ? `${step.decade}ª Decena` : 'Oraciones Generales';
+      document.getElementById('bead-indicator').textContent = step.bead > 0 ? `Cuenta ${step.bead}/10` : 'Cuenta Mayor';
+
+      // Renderizar las 10 cuentas de la decena
+      const beadsRow = document.getElementById('beads-row');
+      let beadsHTML = '';
+      for (let i = 1; i <= 10; i++) {
+        let beadStyle = 'w-6 h-6 rounded-full border text-[10px] font-bold flex items-center justify-center transition-all ';
+        if (step.bead > i) {
+          beadStyle += 'bg-amber-500 border-amber-500 text-white';
+        } else if (step.bead === i) {
+          beadStyle += 'bg-amber-600 border-amber-400 text-white scale-125 ring-4 ring-amber-500/20';
+        } else {
+          beadStyle += 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-400';
+        }
+        beadsHTML += `<div class="${beadStyle}">${i}</div>`;
+      }
+      beadsRow.innerHTML = beadsHTML;
+
+      // Contenido de la tarjeta
       document.getElementById('step-type-pill').textContent = step.type;
       document.getElementById('step-detail-pill').textContent = step.detail;
       document.getElementById('step-title').textContent = step.title;
-      document.getElementById('step-text').innerHTML = step.text;
 
-      const scripBox = document.getElementById('step-scripture-box');
+      const scriptureBox = document.getElementById('step-scripture-box');
       if (step.quoteText) {
-        scripBox.classList.remove('hidden');
+        scriptureBox.classList.remove('hidden');
         document.getElementById('step-quote').textContent = step.ref;
         document.getElementById('step-quote-text').textContent = step.quoteText;
       } else {
-        scripBox.classList.add('hidden');
+        scriptureBox.classList.add('hidden');
       }
 
-      // Decenario visual (10 cuentas)
-      const decInd = document.getElementById('decade-indicator');
-      const beadInd = document.getElementById('bead-indicator');
-      if (step.decade === 0) {
-        decInd.textContent = 'Oraciones Iniciales';
-        beadInd.textContent = 'Preparación';
-      } else if (step.decade === 6) {
-        decInd.textContent = 'Rosario Completado';
-        beadInd.textContent = 'Final';
+      document.getElementById('step-text').innerHTML = step.text;
+
+      // Estado de botones inferior
+      document.getElementById('btn-guided-prev').disabled = currentStepIndex === 0;
+      const nextBtnText = document.getElementById('guided-btn-text');
+      if (currentStepIndex === total - 1) {
+        nextBtnText.textContent = 'Reiniciar Rosario';
       } else {
-        decInd.textContent = step.decade + 'º Misterio';
-        beadInd.textContent = step.bead === 0 ? 'Anuncio / Padre Nuestro' : 'Cuenta ' + step.bead + ' / 10';
+        nextBtnText.textContent = 'Rezar y Continuar';
       }
-
-      const beadsRow = document.getElementById('beads-row');
-      let beadsHtml = '';
-      for (let i = 1; i <= 10; i++) {
-        const active = i <= step.bead;
-        beadsHtml += `<span class="w-5 h-5 rounded-full transition-all duration-200 flex items-center justify-center text-[10px] font-bold ${
-          active
-            ? 'bg-amber-500 text-white scale-110 shadow-xs'
-            : 'bg-slate-200 dark:bg-slate-800 text-slate-400'
-        }">${i}</span>`;
-      }
-      beadsRow.innerHTML = beadsHtml;
-
-      document.getElementById('btn-guided-prev').disabled = (currentStepIndex === 0);
-      document.getElementById('guided-btn-text').textContent =
-        currentStepIndex === total - 1 ? 'Reiniciar Rosario' : 'Siguiente Cuenta';
     }
 
     function stepNext() {
@@ -870,6 +903,7 @@
         currentStepIndex++;
       } else {
         currentStepIndex = 0;
+        showToast('Has completado el Santo Rosario');
       }
       renderGuidedStep();
     }
@@ -881,21 +915,20 @@
       }
     }
 
-    // Selección de día o vuelta al día actual del calendario
-    function selectDay(dayIdx) {
-      currentDayIndex = dayIdx;
-      renderApp();
-      closeConfigModal();
+    /* ========================================================================
+       UTILIDADES: TEMA, MODAL, PORTAPAPELES
+       ======================================================================== */
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      html.classList.toggle('dark');
+      if (html.classList.contains('dark')) {
+        icon.className = 'fa-solid fa-sun text-amber-400 text-sm';
+      } else {
+        icon.className = 'fa-solid fa-moon text-sm';
+      }
     }
 
-    function resetToToday() {
-      realDayIndex = new Date().getDay();
-      currentDayIndex = realDayIndex;
-      renderApp();
-      closeConfigModal();
-    }
-
-    // Modal de calendario
     function openConfigModal() {
       document.getElementById('modal-config').classList.remove('hidden');
     }
@@ -904,21 +937,27 @@
       document.getElementById('modal-config').classList.add('hidden');
     }
 
-    // Copiar enlace actual al portapapeles
-    function copyCurrentLink() {
-      const mysteryKey = getMysteryKeyByDay(currentDayIndex);
-      const urlToCopy = currentLength === 'homilia'
-        ? latestHomiliaVideo.url
-        : (currentLength === 'corta' ? ROSARY_VIDEOS[mysteryKey].short.url : ROSARY_VIDEOS[mysteryKey].long.url);
+    function selectDay(dayIdx) {
+      currentDayIndex = dayIdx;
+      renderCurrentDay();
+      closeConfigModal();
+    }
 
+    function resetToToday() {
+      currentDayIndex = realDayIndex;
+      renderCurrentDay();
+      closeConfigModal();
+    }
+
+    function copyCurrentLink() {
+      const externalUrl = document.getElementById('btn-external-youtube').href;
       const tempInput = document.createElement('textarea');
-      tempInput.value = urlToCopy;
+      tempInput.value = externalUrl;
       document.body.appendChild(tempInput);
       tempInput.select();
       document.execCommand('copy');
       document.body.removeChild(tempInput);
-
-      showToast('Enlace copiado: ' + urlToCopy);
+      showToast('Enlace copiado al portapapeles');
     }
 
     function showToast(msg) {
@@ -930,29 +969,9 @@
       }, 2400);
     }
 
-    // Modo Claro / Oscuro
-    function toggleTheme() {
-      const htmlEl = document.documentElement;
-      const icon = document.getElementById('theme-icon');
-      if (htmlEl.classList.contains('dark')) {
-        htmlEl.classList.remove('dark');
-        icon.className = 'fa-solid fa-moon text-sm';
-        localStorage.setItem('rosario_theme', 'light');
-      } else {
-        htmlEl.classList.add('dark');
-        icon.className = 'fa-solid fa-sun text-sm text-amber-400';
-        localStorage.setItem('rosario_theme', 'dark');
-      }
-    }
-
-    // Inicializar al abrir la app en el móvil
+    // Inicializar al cargar la ventana
     window.onload = function () {
-      const savedTheme = localStorage.getItem('rosario_theme');
-      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        document.getElementById('theme-icon').className = 'fa-solid fa-sun text-sm text-amber-400';
-      }
-      renderApp();
+      renderCurrentDay();
       fetchLatestHomiliaVideo();
     };
   </script>
