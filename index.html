@@ -842,4 +842,238 @@
           iframe.src = 'https://www.youtube.com/embed/' + latestHomiliaVideo.id + '?rel=0';
           externalBtn.href = latestHomiliaVideo.url;
         } else {
-          iframe.src = 'https://www.youtube
+          iframe.src = 'https://www.youtube.com/embed/videoseries?list=' + HOMILIA_UPLOADS_PLAYLIST + '&rel=0';
+          externalBtn.href = latestHomiliaVideo.url;
+        }
+        renderPreviousHomiliasList();
+      } else {
+        if (mysteriesCard) mysteriesCard.classList.remove('hidden');
+        if (homiliasHistoryCard) homiliasHistoryCard.classList.add('hidden');
+        const selected = currentLength === 'corta' ? videoSection.short : videoSection.long;
+        versionTag.textContent = selected.title;
+        timingEstimate.textContent = currentLength === 'corta' ? '~15-20 min' : '~25-35 min';
+        iframe.src = 'https://www.youtube.com/embed/' + selected.id + '?rel=0';
+        externalBtn.href = selected.url;
+
+        if (mKey === 'gozosos' && currentLength === 'larga') {
+          customBox.classList.remove('hidden');
+        } else {
+          customBox.classList.add('hidden');
+        }
+      }
+
+      updateLengthButtonsUI();
+    }
+
+    function updateLengthButtonsUI() {
+      const topCorta = document.getElementById('btn-len-corta');
+      const topLarga = document.getElementById('btn-len-larga');
+      const topHomilia = document.getElementById('btn-len-homilia');
+
+      const footCorta = document.getElementById('footer-btn-corta');
+      const footLarga = document.getElementById('footer-btn-larga');
+      const footHomilia = document.getElementById('footer-btn-homilia');
+
+      const tabVideo = document.getElementById('tab-view-video');
+      const tabGuided = document.getElementById('tab-view-guided');
+      const tabHomilia = document.getElementById('tab-view-homilia');
+
+      const activeTopClass = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm font-bold';
+      const inactiveTopClass = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
+
+      topCorta.className = currentLength === 'corta' ? activeTopClass : inactiveTopClass;
+      topLarga.className = currentLength === 'larga' ? activeTopClass : inactiveTopClass;
+      topHomilia.className = currentLength === 'homilia' ? activeTopClass : inactiveTopClass;
+
+      const activeFootClass = 'flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+      const inactiveFootClass = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+
+      footCorta.className = currentLength === 'corta' ? activeFootClass : inactiveFootClass;
+      footLarga.className = currentLength === 'larga' ? activeFootClass : inactiveFootClass;
+      footHomilia.className = currentLength === 'homilia' ? activeFootClass : inactiveFootClass;
+
+      // Actualizar pestañas superiores
+      const activeNavClass = 'flex-1 py-1.5 px-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500 text-white shadow-sm';
+      const inactiveNavClass = 'flex-1 py-1.5 px-2.5 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+
+      if (currentViewMode === 'guided') {
+        tabVideo.className = inactiveNavClass;
+        tabGuided.className = activeNavClass;
+        tabHomilia.className = inactiveNavClass;
+      } else if (currentLength === 'homilia') {
+        tabVideo.className = inactiveNavClass;
+        tabGuided.className = inactiveNavClass;
+        tabHomilia.className = activeNavClass;
+      } else {
+        tabVideo.className = activeNavClass;
+        tabGuided.className = inactiveNavClass;
+        tabHomilia.className = inactiveNavClass;
+      }
+    }
+
+    function switchRosaryLength(len) {
+      currentLength = len;
+      updateVideoPlayer();
+    }
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      const secVideo = document.getElementById('section-video');
+      const secGuided = document.getElementById('section-guided');
+      const footVideo = document.getElementById('footer-controls-video');
+      const footGuided = document.getElementById('footer-controls-guided');
+
+      if (mode === 'video') {
+        if (currentLength === 'homilia') currentLength = 'corta';
+        secVideo.classList.remove('hidden');
+        secGuided.classList.add('hidden');
+        footVideo.classList.remove('hidden');
+        footGuided.classList.add('hidden');
+        updateVideoPlayer();
+      } else {
+        secVideo.classList.add('hidden');
+        secGuided.classList.remove('hidden');
+        footVideo.classList.add('hidden');
+        footGuided.classList.remove('hidden');
+        renderGuidedStep();
+        updateLengthButtonsUI();
+      }
+    }
+
+    /* ========================================================================
+       LOGICA DEL DECENARIO Y REZO GUIADO
+       ======================================================================== */
+    function renderGuidedStep() {
+      if (!guidedSteps.length) return;
+      const step = guidedSteps[currentStepIndex];
+      const total = guidedSteps.length;
+      const pct = Math.round(((currentStepIndex + 1) / total) * 100);
+
+      document.getElementById('step-label').textContent = 'Paso ' + (currentStepIndex + 1) + ' de ' + total;
+      document.getElementById('step-percentage').textContent = pct + '%';
+      document.getElementById('progress-bar-fill').style.width = pct + '%';
+
+      document.getElementById('decade-indicator').textContent = step.decade > 0 ? step.decade + 'º Misterio' : 'Oraciones Generales';
+      document.getElementById('bead-indicator').textContent = step.bead > 0 ? 'Cuenta ' + step.bead + '/10' : 'Cuenta Mayor';
+
+      // Renderizar las 10 cuentas de la decena
+      const beadsRow = document.getElementById('beads-row');
+      let beadsHTML = '';
+      for (let i = 1; i <= 10; i++) {
+        let beadStyle = 'w-6 h-6 rounded-full border text-[10px] font-bold flex items-center justify-center transition-all ';
+        if (step.bead > i) {
+          beadStyle += 'bg-amber-500 border-amber-500 text-white';
+        } else if (step.bead === i) {
+          beadStyle += 'bg-amber-600 border-amber-400 text-white scale-125 ring-4 ring-amber-500/20';
+        } else {
+          beadStyle += 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-400';
+        }
+        beadsHTML += '<div class="' + beadStyle + '">' + i + '</div>';
+      }
+      beadsRow.innerHTML = beadsHTML;
+
+      // Contenido de la tarjeta
+      document.getElementById('step-type-pill').textContent = step.type;
+      document.getElementById('step-detail-pill').textContent = step.detail;
+      document.getElementById('step-title').textContent = step.title;
+
+      const scriptureBox = document.getElementById('step-scripture-box');
+      if (step.quoteText) {
+        scriptureBox.classList.remove('hidden');
+        document.getElementById('step-quote').textContent = step.ref;
+        document.getElementById('step-quote-text').textContent = step.quoteText;
+      } else {
+        scriptureBox.classList.add('hidden');
+      }
+
+      document.getElementById('step-text').innerHTML = step.text;
+
+      // Estado de botones inferior
+      document.getElementById('btn-guided-prev').disabled = currentStepIndex === 0;
+      const nextBtnText = document.getElementById('guided-btn-text');
+      if (currentStepIndex === total - 1) {
+        nextBtnText.textContent = 'Reiniciar Rosario';
+      } else {
+        nextBtnText.textContent = 'Rezar y Continuar';
+      }
+    }
+
+    function stepNext() {
+      if (currentStepIndex < guidedSteps.length - 1) {
+        currentStepIndex++;
+      } else {
+        currentStepIndex = 0;
+        showToast('Has completado el Santo Rosario');
+      }
+      renderGuidedStep();
+    }
+
+    function stepPrevious() {
+      if (currentStepIndex > 0) {
+        currentStepIndex--;
+        renderGuidedStep();
+      }
+    }
+
+    /* ========================================================================
+       UTILIDADES: TEMA, MODAL, PORTAPAPELES
+       ======================================================================== */
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      html.classList.toggle('dark');
+      if (html.classList.contains('dark')) {
+        icon.className = 'fa-solid fa-sun text-amber-400 text-sm';
+      } else {
+        icon.className = 'fa-solid fa-moon text-sm';
+      }
+    }
+
+    function openConfigModal() {
+      document.getElementById('modal-config').classList.remove('hidden');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('modal-config').classList.add('hidden');
+    }
+
+    function selectDay(dayIdx) {
+      currentDayIndex = dayIdx;
+      renderCurrentDay();
+      closeConfigModal();
+    }
+
+    function resetToToday() {
+      currentDayIndex = realDayIndex;
+      renderCurrentDay();
+      closeConfigModal();
+    }
+
+    function copyCurrentLink() {
+      const externalUrl = document.getElementById('btn-external-youtube').href;
+      const tempInput = document.createElement('textarea');
+      tempInput.value = externalUrl;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast('Enlace copiado al portapapeles');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0');
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+      }, 2400);
+    }
+
+    // Inicializar al cargar la ventana
+    window.onload = function () {
+      renderCurrentDay();
+      fetchLatestHomiliaVideo();
+    };
+  </script>
+</body>
+</html>
