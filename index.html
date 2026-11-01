@@ -159,25 +159,6 @@
         </div>
       </div>
 
-      <!-- Editor rápido para enlace largo de Lunes y Sábado -->
-      <div id="custom-link-box" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-2xl p-3.5 space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-            <i class="fa-solid fa-link"></i>
-            <span>Enlace de Lunes y Sábado (Versión Larga)</span>
-          </span>
-        </div>
-        <p class="text-[11px] text-slate-600 dark:text-slate-300">
-          Puedes personalizar el enlace del vídeo largo para los Misterios Gozosos cuando quieras:
-        </p>
-        <div class="flex gap-2">
-          <input id="input-custom-gozoso" type="text" placeholder="Pega aquí el enlace de YouTube..." class="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-amber-500">
-          <button onclick="saveCustomGozosoLong()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold active:scale-95">
-            Guardar
-          </button>
-        </div>
-      </div>
-
       <!-- Lista de los 5 misterios del día -->
       <div id="mysteries-card-container" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
@@ -234,12 +215,18 @@
       </div>
 
       <!-- Tarjeta de Oración / Meditación Activa -->
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+      <div id="guided-mystery-card" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 transition-colors">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
           <span id="step-type-pill" class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400"></span>
           <span id="step-detail-pill" class="text-xs text-slate-500 dark:text-slate-400 font-medium"></span>
         </div>
-        <h3 id="step-title" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-tight"></h3>
+        <div class="flex items-start justify-between gap-2">
+          <h3 id="step-title" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-tight"></h3>
+          <button id="btn-step-mystery-info" class="hidden shrink-0 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-2.5 py-1 rounded-full transition-colors items-center gap-1">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Ver detalle</span>
+          </button>
+        </div>
         
         <div id="step-scripture-box" class="hidden bg-amber-500/10 border-l-4 border-amber-500 p-3 rounded-r-xl space-y-1">
           <p id="step-quote" class="text-xs font-bold text-amber-700 dark:text-amber-400"></p>
@@ -339,6 +326,57 @@
     </div>
   </div>
 
+  <!-- MODAL: Detalle de cada Misterio -->
+  <div id="modal-mystery-detail" onclick="if(event.target === this) closeMysteryDetailModal()" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[88vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div>
+          <span id="modal-mystery-badge" class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1"></span>
+          <h3 id="modal-mystery-title" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-snug"></h3>
+        </div>
+        <button onclick="closeMysteryDetailModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 text-xs sm:text-sm text-content-selectable">
+        <!-- Cita Bíblica -->
+        <div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
+          <i class="fa-solid fa-book-bible text-amber-500"></i>
+          <span>Cita Bíblica: <strong id="modal-mystery-ref"></strong></span>
+        </div>
+
+        <!-- Versículo clave -->
+        <div class="bg-slate-50 dark:bg-slate-800/70 border-l-4 border-amber-500 p-3.5 rounded-r-xl space-y-1">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Versículo clave</p>
+          <p id="modal-mystery-verse" class="italic text-slate-800 dark:text-slate-100 leading-relaxed font-medium"></p>
+        </div>
+
+        <!-- Explicación -->
+        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 space-y-1">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+            <span>Explicación</span>
+          </p>
+          <p id="modal-mystery-explanation" class="text-slate-700 dark:text-slate-200 leading-relaxed"></p>
+        </div>
+
+        <!-- Aplicación a la vida -->
+        <div class="p-3.5 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-1">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-heart text-amber-500"></i>
+            <span>Aplicación a la vida</span>
+          </p>
+          <p id="modal-mystery-application" class="text-slate-700 dark:text-slate-200 leading-relaxed"></p>
+        </div>
+      </div>
+
+      <button onclick="closeMysteryDetailModal()" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-colors">
+        Cerrar
+      </button>
+    </div>
+  </div>
+
   <!-- Toast de notificación -->
   <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 rounded-full text-xs font-semibold shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50">
     Enlace copiado al portapapeles
@@ -348,8 +386,6 @@
     /* ========================================================================
        CONFIGURACIÓN DE ENLACES DE YOUTUBE Y ESTADO EN MEMORIA
        ======================================================================== */
-    let customGozosoLongId = '5L5WfZIrUhQ';
-
     const ROSARY_VIDEOS = {
       gozosos: {
         short: {
@@ -359,8 +395,8 @@
           duration: 'Versión Corta'
         },
         long: {
-          id: customGozosoLongId,
-          url: 'https://youtu.be/' + customGozosoLongId,
+          id: 'Cg1mAMkpn20',
+          url: 'https://www.youtube.com/watch?v=Cg1mAMkpn20',
           title: 'Rosario Largo - Misterios Gozosos',
           duration: 'Versión Larga'
         }
@@ -418,11 +454,46 @@
         name: 'Misterios Gozosos',
         daysDesc: 'Lunes y Sábados',
         items: [
-          { num: '1º Misterio', title: 'La Encarnación del Hijo de Dios', ref: 'Lc 1, 26-38', desc: 'Contemplamos el anuncio del arcángel Gabriel a la Virgen María y su sí generoso a la voluntad de Dios.' },
-          { num: '2º Misterio', title: 'La Visitación de Nuestra Señora a su prima Santa Isabel', ref: 'Lc 1, 39-45', desc: 'María acude con prontitud a servir a Isabel llevando en su seno al Salvador del mundo.' },
-          { num: '3º Misterio', title: 'El Nacimiento del Hijo de Dios en el portal de Belén', ref: 'Lc 2, 1-7', desc: 'Jesús nace en la humildad del pesebre para traernos la paz y la salvación.' },
-          { num: '4º Misterio', title: 'La Presentación de Jesús en el Templo', ref: 'Lc 2, 22-35', desc: 'María y José presentan al Niño en el Templo cumpliendo la ley del Señor.' },
-          { num: '5º Misterio', title: 'El Niño Jesús perdido y hallado en el Templo', ref: 'Lc 2, 41-50', desc: 'Tras tres días de búsqueda, encuentran a Jesús en el Templo ocupándose de las cosas de su Padre.' }
+          {
+            num: '1º Misterio',
+            title: 'La Encarnación del Hijo de Dios',
+            ref: 'Lucas 1, 26-38',
+            verse: '"Dijo María: \'He aquí la esclava del Señor; hágase en mí según tu palabra\'." (Lc 1, 38)',
+            desc: 'El arcángel Gabriel anuncia a María que ha sido elegida para ser la Madre del Salvador. Ella, libre de todo pecado, acepta con total humildad y obediencia el plan de Dios.',
+            application: 'Aprender a decir "sí" a Dios en nuestro día a día. Implica estar abiertos a la voluntad divina, aceptando con humildad las circunstancias que nos tocan vivir y confiando en que los planes de Dios siempre son de amor.'
+          },
+          {
+            num: '2º Misterio',
+            title: 'La Visitación de Nuestra Señora a su prima Santa Isabel',
+            ref: 'Lucas 1, 39-45',
+            verse: '"En cuanto tu saludo llegó a mis oídos, la criatura saltó de alegría en mi vientre." (Lc 1, 44)',
+            desc: 'Sin dudarlo, María emprende un viaje para ayudar a su prima Isabel, que estaba embarazada en su vejez. María no se queda ensimismada en su propio milagro, sino que sale al encuentro del prójimo.',
+            application: 'Cultivar la vocación de servicio y la caridad activa. Estar atentos a las necesidades de quienes nos rodean, especialmente en nuestra familia y amigos, ofreciendo nuestro tiempo y ayuda sin esperar nada a cambio.'
+          },
+          {
+            num: '3º Misterio',
+            title: 'El Nacimiento del Hijo de Dios en Belén',
+            ref: 'Lucas 2, 1-7',
+            verse: '"Y dio a luz a su hijo primogénito, lo envolvió en pañales y lo acostó en un pesebre." (Lc 2, 7)',
+            desc: 'Jesús, el Rey del Universo, nace en la pobreza y sencillez de un establo en Belén, rodeado del amor de María y José, mostrando que la verdadera grandeza no está en las riquezas materiales.',
+            application: 'Fomentar el desapego de los bienes materiales y buscar la sencillez. Valorar más "ser" que "tener", encontrando la verdadera alegría en el amor, la familia y la paz interior.'
+          },
+          {
+            num: '4º Misterio',
+            title: 'La Presentación de Jesús en el Templo',
+            ref: 'Lucas 2, 22-34',
+            verse: '"Mis ojos han visto a tu Salvador, a quien has presentado ante todos los pueblos." (Lc 2, 30-31)',
+            desc: 'Cumpliendo la ley de Moisés, María y José presentan al niño Jesús en el Templo, consagrándolo a Dios. Allí se encuentran con Simeón, quien reconoce al Mesías y profetiza el sufrimiento de María.',
+            application: 'La importancia de cumplir con nuestros deberes religiosos y cívicos. Nos invita a consagrar nuestra familia y nuestro trabajo diario a Dios, reconociéndolo como el centro de nuestra vida.'
+          },
+          {
+            num: '5º Misterio',
+            title: 'El Niño Jesús perdido y hallado en el Templo',
+            ref: 'Lucas 2, 41-52',
+            verse: '"¿Por qué me buscabais? ¿No sabíais que yo debía estar en la casa de mi Padre?" (Lc 2, 49)',
+            desc: 'A los 12 años, Jesús se queda en Jerusalén sin que sus padres lo sepan. Tras tres días de angustiosa búsqueda, lo encuentran en el Templo dialogando con los doctores de la ley.',
+            application: 'No perder nunca la presencia de Dios. Si sentimos que por el pecado o el alejamiento hemos "perdido" a Jesús, debemos buscarlo activamente a través de la oración, los sacramentos y la Iglesia.'
+          }
         ]
       },
       dolorosos: {
@@ -430,11 +501,46 @@
         name: 'Misterios Dolorosos',
         daysDesc: 'Martes y Viernes',
         items: [
-          { num: '1º Misterio', title: 'La Oración de Jesús en el Huerto', ref: 'Mt 26, 36-39', desc: 'Jesús ora en Getsemaní aceptando por amor la voluntad del Padre.' },
-          { num: '2º Misterio', title: 'La Flagelación del Señor', ref: 'Jn 19, 1', desc: 'Cristo padece los azotes en silencio ofreciendo su dolor por nuestra redención.' },
-          { num: '3º Misterio', title: 'La Coronación de espinas', ref: 'Mt 27, 29', desc: 'Jesús soporta las burlas y la corona de espinas como verdadero Rey de amor y humildad.' },
-          { num: '4º Misterio', title: 'Jesús con la Cruz a cuestas camino del Calvario', ref: 'Jn 19, 17', desc: 'El Señor carga con el madero de la Cruz por nuestras faltas hasta el monte Calvario.' },
-          { num: '5º Misterio', title: 'La Crucifixión y Muerte de Nuestro Señor', ref: 'Lc 23, 44-46', desc: 'Jesús entrega su vida en la Cruz y nos deja a María como Madre nuestra.' }
+          {
+            num: '1º Misterio',
+            title: 'La Oración de Jesús en el Huerto de Getsemaní',
+            ref: 'Lucas 22, 39-46',
+            verse: '"Padre, si quieres, aparta de mí este cáliz; pero que no se haga mi voluntad, sino la tuya." (Lc 22, 42)',
+            desc: 'Jesús experimenta angustia y tristeza profunda ante los sufrimientos que le esperan y el peso de los pecados del mundo. A pesar del miedo humano, somete su voluntad a la del Padre.',
+            application: 'Frente al sufrimiento, la enfermedad o la ansiedad, recurrir a la oración. Aprender a aceptar la voluntad de Dios en los momentos oscuros, confiando en que Él nos dará la fuerza para soportarlo.'
+          },
+          {
+            num: '2º Misterio',
+            title: 'La Flagelación del Señor',
+            ref: 'Juan 19, 1',
+            verse: '"Entonces Pilato tomó a Jesús y mandó azotarlo." (Jn 19, 1)',
+            desc: 'Jesús soporta en silencio y con inmenso amor una tortura brutal e injusta, entregando su cuerpo al dolor extremo por la redención de la humanidad.',
+            application: 'Practicar la paciencia ante las injusticias y las ofensas. Ofrecer nuestros dolores físicos o morales unidos a los padecimientos de Cristo, dándoles así un sentido redentor.'
+          },
+          {
+            num: '3º Misterio',
+            title: 'La Coronación de Espinas',
+            ref: 'Mateo 27, 27-31',
+            verse: '"Trenzaron una corona de espinas, se la pusieron en la cabeza y le dieron una caña en su mano derecha." (Mt 27, 29)',
+            desc: 'Los soldados se burlan de la realeza de Jesús, humillándolo física y psicológicamente. Cristo, Rey del universo, recibe burlas en lugar de honores.',
+            application: 'Luchar contra la soberbia y el orgullo. Aceptar con humildad las críticas o incomprensiones de los demás, y evitar burlarnos o menospreciar a cualquier persona.'
+          },
+          {
+            num: '4º Misterio',
+            title: 'Jesús con la Cruz a cuestas camino al Calvario',
+            ref: 'Juan 19, 16-17',
+            verse: '"Tomaron, pues, a Jesús, y él mismo, cargando con su cruz, salió hacia el lugar llamado Calvario." (Jn 19, 16-17)',
+            desc: 'Jesús carga con el madero de la cruz, exhausto, recorriendo el camino hacia el Gólgota. Cae varias veces, pero se levanta para cumplir su misión.',
+            application: 'Aceptar nuestras propias cruces diarias (problemas laborales, conflictos familiares, enfermedades) con valentía. Levantarnos siempre después de cada caída o fracaso, ayudados por la gracia divina.'
+          },
+          {
+            num: '5º Misterio',
+            title: 'La Crucifixión y Muerte de Nuestro Señor',
+            ref: 'Lucas 23, 33-46',
+            verse: '"Padre, en tus manos encomiendo mi espíritu." (Lc 23, 46)',
+            desc: 'Jesús es clavado en la cruz y muere tras tres horas de agonía, derramando hasta la última gota de su sangre por amor a cada ser humano para abrirnos las puertas del cielo.',
+            application: 'Crecer en gratitud por el inmenso amor de Dios. Aprender a perdonar a quienes nos hacen daño (como Jesús perdonó a sus verdugos) y estar dispuestos a sacrificarnos por el bien de las personas que amamos.'
+          }
         ]
       },
       gloriosos: {
@@ -442,11 +548,46 @@
         name: 'Misterios Gloriosos',
         daysDesc: 'Miércoles y Domingos',
         items: [
-          { num: '1º Misterio', title: 'La Resurrección del Hijo de Dios', ref: 'Mc 16, 6', desc: 'Jesucristo vence a la muerte y resucita glorioso al tercer día.' },
-          { num: '2º Misterio', title: 'La Ascensión del Señor a los Cielos', ref: 'Hch 1, 9-11', desc: 'Jesús sube al Cielo en presencia de sus discípulos para prepararnos un lugar.' },
-          { num: '3º Misterio', title: 'La Venida del Espíritu Santo', ref: 'Hch 2, 1-4', desc: 'El Espíritu Santo desciende sobre los Apóstoles reunidos en oración junto a María.' },
-          { num: '4º Misterio', title: 'La Asunción de Nuestra Señora a los Cielos', ref: 'Ap 12, 1', desc: 'Terminado el curso de su vida en la tierra, la Virgen María es llevada en cuerpo y alma al Cielo.' },
-          { num: '5º Misterio', title: 'La Coronación de la Santísima Virgen', ref: 'Ap 12, 1', desc: 'María es coronada como Reina y Señora de todo lo creado para interceder por nosotros.' }
+          {
+            num: '1º Misterio',
+            title: 'La Resurrección del Hijo de Dios',
+            ref: 'Marcos 16, 1-7',
+            verse: '"No os asustéis. Buscáis a Jesús Nazareno, el crucificado; ha resucitado, no está aquí." (Mc 16, 6)',
+            desc: 'Al tercer día, Cristo vence a la muerte, resucitando glorioso. Es el pilar de la fe cristiana; la muerte y el pecado han sido derrotados definitivamente.',
+            application: 'Vivir con esperanza y optimismo cristiano. Saber que el mal, el dolor y la muerte no tienen la última palabra. Ante las pérdidas, mantener la fe en la vida eterna.'
+          },
+          {
+            num: '2º Misterio',
+            title: 'La Ascensión del Señor al Cielo',
+            ref: 'Lucas 24, 50-53',
+            verse: '"Y mientras los bendecía, se separó de ellos, subiendo hacia el cielo." (Lc 24, 51)',
+            desc: 'Cuarenta días después de su resurrección, Jesús sube al cielo en presencia de sus apóstoles para sentarse a la derecha del Padre y prepararnos un lugar.',
+            application: 'Mantener la mirada en el cielo sin descuidar la tierra. Trabajar duro en nuestras responsabilidades diarias, pero recordando que nuestro destino final es la eternidad junto a Dios.'
+          },
+          {
+            num: '3º Misterio',
+            title: 'La Venida del Espíritu Santo sobre los Apóstoles',
+            ref: 'Hechos 2, 1-4',
+            verse: '"Se llenaron todos de Espíritu Santo y empezaron a hablar en otras lenguas." (Hch 2, 4)',
+            desc: 'El Espíritu Santo desciende sobre María y los Apóstoles en Pentecostés. Pasan del miedo a la valentía, saliendo a predicar el Evangelio con gran fuerza a todas las naciones.',
+            application: 'Invocar al Espíritu Santo antes de tomar decisiones importantes. Pedir sus dones (sabiduría, fortaleza, consejo) para ser valientes testigos de nuestra fe en nuestros entornos laborales y familiares.'
+          },
+          {
+            num: '4º Misterio',
+            title: 'La Asunción de María al Cielo',
+            ref: 'Apocalipsis 12, 1 (referencia teológica) / Lucas 1, 48-49',
+            verse: '"Desde ahora me felicitarán todas las generaciones, porque el Poderoso ha hecho obras grandes en mí." (Lc 1, 48-49)',
+            desc: 'Al final de su vida terrenal, la Virgen María es llevada en cuerpo y alma a la gloria del cielo, como anticipo de la resurrección de todos los creyentes.',
+            application: 'Respetar y cuidar nuestro propio cuerpo y el de los demás, pues somos templos del Espíritu y estamos llamados a la gloria. Confiar en la maternal protección de María que nos espera en el cielo.'
+          },
+          {
+            num: '5º Misterio',
+            title: 'La Coronación de María como Reina y Señora de todo lo creado',
+            ref: 'Apocalipsis 12, 1',
+            verse: '"Apareció en el cielo una gran señal: una mujer vestida del sol, con la luna debajo de sus pies, y sobre su cabeza una corona de doce estrellas." (Ap 12, 1)',
+            desc: 'María es coronada por la Santísima Trinidad como Reina del cielo y de la tierra, intercediendo constantemente por todos sus hijos como Madre amorosa y omnipotencia suplicante.',
+            application: 'Consagrar nuestra vida a la Virgen María. Recurrir a ella con confianza total (como un niño a su madre), sabiendo que, como Reina, nada le niega Dios, y como Madre, jamás nos abandona.'
+          }
         ]
       },
       luminosos: {
@@ -454,11 +595,46 @@
         name: 'Misterios Luminosos',
         daysDesc: 'Jueves',
         items: [
-          { num: '1º Misterio', title: 'El Bautismo de Jesús en el Jordán', ref: 'Mt 3, 16-17', desc: 'Jesús es bautizado por Juan y la voz del Padre lo proclama su Hijo muy amado.' },
-          { num: '2º Misterio', title: 'La Autorrevelación en las bodas de Caná', ref: 'Jn 2, 1-11', desc: 'Por intercesión de la Virgen María, Jesús realiza su primer signo convirtiendo el agua en vino.' },
-          { num: '3º Misterio', title: 'El Anuncio del Reino de Dios', ref: 'Mc 1, 15', desc: 'Jesús llama a la conversión y perdona los pecados de quienes se acercan con fe.' },
-          { num: '4º Misterio', title: 'La Transfiguración del Señor', ref: 'Lc 9, 28-35', desc: 'En el monte Tabor, Jesús manifiesta su gloria divina ante Pedro, Santiago y Juan.' },
-          { num: '5º Misterio', title: 'La Institución de la Eucaristía', ref: 'Lc 22, 19-20', desc: 'En la Última Cena, Cristo se queda con nosotros bajo las especies del pan y del vino.' }
+          {
+            num: '1º Misterio',
+            title: 'El Bautismo de Jesús en el Jordán',
+            ref: 'Mateo 3, 13-17',
+            verse: '"Este es mi Hijo, el amado, en quien me complazco." (Mt 3, 17)',
+            desc: 'Jesús, sin tener pecado, se somete al bautismo de Juan para solidarizarse con la humanidad. El cielo se abre y la Trinidad se manifiesta, confirmando su misión mesiánica.',
+            application: 'Recordar y vivir nuestro propio bautismo. Renovar nuestra identidad como hijos amados de Dios, esforzándonos por llevar una vida limpia y coherente con nuestra fe cristiana.'
+          },
+          {
+            num: '2º Misterio',
+            title: 'La Autorrevelación de Jesús en las bodas de Caná',
+            ref: 'Juan 2, 1-11',
+            verse: '"Haced lo que él os diga." (Jn 2, 5)',
+            desc: 'A petición de María, Jesús realiza su primer milagro convirtiendo el agua en vino, salvando la alegría de la fiesta nupcial y manifestando su gloria a los discípulos.',
+            application: 'Acudir siempre a la intercesión de María en nuestras necesidades. Aprender a invitar a Jesús a todas las áreas de nuestra vida (familia, trabajo, celebraciones) y confiar en Su providencia.'
+          },
+          {
+            num: '3º Misterio',
+            title: 'El Anuncio del Reino de Dios invitando a la conversión',
+            ref: 'Marcos 1, 14-15',
+            verse: '"El tiempo se ha cumplido y el reino de Dios está cerca; convertíos y creed en el Evangelio." (Mc 1, 15)',
+            desc: 'Jesús predica la llegada del Reino de Dios, perdonando los pecados y pidiendo un cambio profundo de corazón a través del arrepentimiento genuino.',
+            application: 'Examinar nuestra conciencia y reconocer nuestros errores. Practicar el sacramento de la reconciliación (confesión) y esforzarnos diariamente por mejorar y cambiar aquellas actitudes que nos alejan del amor.'
+          },
+          {
+            num: '4º Misterio',
+            title: 'La Transfiguración del Señor',
+            ref: 'Lucas 9, 28-35',
+            verse: '"Mientras oraba, el aspecto de su rostro cambió y sus vestidos brillaban de blancos." (Lc 9, 29)',
+            desc: 'Jesús muestra un destello de su gloria divina a Pedro, Santiago y Juan en el monte Tabor, fortaleciendo su fe para que puedan afrontar el escándalo de la futura cruz.',
+            application: 'Dedicar tiempo a la oración personal e íntima. Esos momentos de "encuentro en la montaña" nos dan la luz y la fuerza necesarias para sobrellevar las dificultades y "cruces" de nuestro trabajo y vida cotidiana.'
+          },
+          {
+            num: '5º Misterio',
+            title: 'La Institución de la Eucaristía',
+            ref: 'Lucas 22, 14-20',
+            verse: '"Esto es mi cuerpo, que se entrega por vosotros; haced esto en memoria mía." (Lc 22, 19)',
+            desc: 'En la Última Cena, Jesús transforma el pan y el vino en su Cuerpo y en su Sangre, entregándose sacramentalmente antes de su Pasión para quedarse con nosotros hasta el fin de los tiempos.',
+            application: 'Valorar profundamente la Santa Misa y la Comunión. Asistir a la Eucaristía no por obligación, sino como el alimento espiritual indispensable que nos da la fuerza para amar y perdonar a los demás.'
+          }
         ]
       }
     };
@@ -627,21 +803,6 @@
       return null;
     }
 
-    function saveCustomGozosoLong() {
-      const input = document.getElementById('input-custom-gozoso');
-      const id = extractYouTubeID(input.value);
-      if (!id) {
-        showToast('Por favor, pega un enlace válido de YouTube');
-        return;
-      }
-      customGozosoLongId = id;
-      ROSARY_VIDEOS.gozosos.long.id = id;
-      ROSARY_VIDEOS.gozosos.long.url = 'https://youtu.be/' + id;
-      input.value = '';
-      updateVideoPlayer();
-      showToast('Enlace de Lunes y Sábado actualizado');
-    }
-
     // Construir pasos para el modo interactivo
     function buildGuidedSteps(mysteryKey) {
       const mInfo = MYSTERY_INFO[mysteryKey];
@@ -790,16 +951,23 @@
       document.getElementById('mystery-title').textContent = mInfo.name;
       document.getElementById('mystery-days-hint').textContent = 'Se rezan los ' + mInfo.daysDesc;
 
-      // Lista de los 5 misterios
+      // Lista de los 5 misterios (clicables para abrir modal con información completa)
       const listEl = document.getElementById('mysteries-brief-list');
       listEl.innerHTML = mInfo.items.map((item, index) => [
-        '<li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">',
-          '<span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">',
+        '<li onclick="openMysteryDetailModal(\'' + mKey + '\', ' + index + ')" class="cursor-pointer group flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 hover:bg-amber-500/10 dark:bg-slate-800/50 dark:hover:bg-amber-500/10 border border-slate-100 hover:border-amber-500/40 dark:border-slate-800 dark:hover:border-amber-500/40 transition-all active:scale-[0.99]">',
+          '<span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-amber-500 group-hover:text-white transition-colors">',
             (index + 1),
           '</span>',
-          '<div class="space-y-0.5">',
-            '<div class="font-bold text-slate-800 dark:text-slate-100 leading-snug">' + item.title + ' <span class="text-[11px] font-normal text-amber-600 dark:text-amber-400">(' + item.ref + ')</span></div>',
-            '<p class="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">' + item.desc + '</p>',
+          '<div class="flex-1 min-w-0 space-y-1">',
+            '<div class="flex items-start justify-between gap-2">',
+              '<div class="font-bold text-slate-800 dark:text-slate-100 leading-snug group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">' + item.title + ' <span class="text-[11px] font-normal text-amber-600 dark:text-amber-400">(' + item.ref + ')</span></div>',
+              '<i class="fa-solid fa-circle-info text-amber-500/70 group-hover:text-amber-500 text-xs shrink-0 mt-0.5"></i>',
+            '</div>',
+            '<p class="text-[11px] text-slate-500 dark:text-slate-400 leading-normal line-clamp-2">' + item.desc + '</p>',
+            '<p class="text-[10px] font-semibold text-amber-600 dark:text-amber-400 pt-0.5 flex items-center gap-1">',
+              '<span>Tocar para ver versículo y aplicación</span>',
+              '<i class="fa-solid fa-chevron-right text-[8px]"></i>',
+            '</p>',
           '</div>',
         '</li>'
       ].join('')).join('');
@@ -828,12 +996,10 @@
       const versionTag = document.getElementById('video-version-tag');
       const timingEstimate = document.getElementById('video-timing-estimate');
       const externalBtn = document.getElementById('btn-external-youtube');
-      const customBox = document.getElementById('custom-link-box');
       const mysteriesCard = document.getElementById('mysteries-card-container');
       const homiliasHistoryCard = document.getElementById('homilias-history-container');
 
       if (currentLength === 'homilia') {
-        customBox.classList.add('hidden');
         if (mysteriesCard) mysteriesCard.classList.add('hidden');
         if (homiliasHistoryCard) homiliasHistoryCard.classList.remove('hidden');
         versionTag.textContent = latestHomiliaVideo.title || 'Homilía Diaria';
@@ -854,12 +1020,6 @@
         timingEstimate.textContent = currentLength === 'corta' ? '~15-20 min' : '~25-35 min';
         iframe.src = 'https://www.youtube.com/embed/' + selected.id + '?rel=0';
         externalBtn.href = selected.url;
-
-        if (mKey === 'gozosos' && currentLength === 'larga') {
-          customBox.classList.remove('hidden');
-        } else {
-          customBox.classList.add('hidden');
-        }
       }
 
       updateLengthButtonsUI();
@@ -977,6 +1137,37 @@
       document.getElementById('step-detail-pill').textContent = step.detail;
       document.getElementById('step-title').textContent = step.title;
 
+      const mKey = getMysteryKeyByDay(currentDayIndex);
+      const guidedCard = document.getElementById('guided-mystery-card');
+      const infoBtn = document.getElementById('btn-step-mystery-info');
+      if (step.decade >= 1 && step.decade <= 5 && MYSTERY_INFO[mKey] && MYSTERY_INFO[mKey].items[step.decade - 1]) {
+        const mIdx = step.decade - 1;
+        if (infoBtn) {
+          infoBtn.classList.remove('hidden');
+          infoBtn.classList.add('inline-flex');
+          infoBtn.onclick = function (e) {
+            e.stopPropagation();
+            openMysteryDetailModal(mKey, mIdx);
+          };
+        }
+        if (guidedCard) {
+          guidedCard.classList.add('cursor-pointer', 'hover:border-amber-500/40');
+          guidedCard.onclick = function () {
+            openMysteryDetailModal(mKey, mIdx);
+          };
+        }
+      } else {
+        if (infoBtn) {
+          infoBtn.classList.add('hidden');
+          infoBtn.classList.remove('inline-flex');
+          infoBtn.onclick = null;
+        }
+        if (guidedCard) {
+          guidedCard.classList.remove('cursor-pointer', 'hover:border-amber-500/40');
+          guidedCard.onclick = null;
+        }
+      }
+
       const scriptureBox = document.getElementById('step-scripture-box');
       if (step.quoteText) {
         scriptureBox.classList.remove('hidden');
@@ -1035,6 +1226,25 @@
 
     function closeConfigModal() {
       document.getElementById('modal-config').classList.add('hidden');
+    }
+
+    function openMysteryDetailModal(mysteryKey, itemIndex) {
+      const mInfo = MYSTERY_INFO[mysteryKey];
+      if (!mInfo || !mInfo.items[itemIndex]) return;
+      const item = mInfo.items[itemIndex];
+
+      document.getElementById('modal-mystery-badge').textContent = mInfo.name + ' • ' + item.num;
+      document.getElementById('modal-mystery-title').textContent = item.title;
+      document.getElementById('modal-mystery-ref').textContent = item.ref;
+      document.getElementById('modal-mystery-verse').textContent = item.verse;
+      document.getElementById('modal-mystery-explanation').textContent = item.desc;
+      document.getElementById('modal-mystery-application').textContent = item.application;
+
+      document.getElementById('modal-mystery-detail').classList.remove('hidden');
+    }
+
+    function closeMysteryDetailModal() {
+      document.getElementById('modal-mystery-detail').classList.add('hidden');
     }
 
     function selectDay(dayIdx) {
