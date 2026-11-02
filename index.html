@@ -63,10 +63,6 @@
 
     <!-- Controles superiores -->
     <div class="flex items-center space-x-1.5">
-      <!-- Botón de Bloqueo para Bolsillo -->
-      <button id="btn-pocket-lock" onclick="togglePocketLock()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Bloquear para el bolsillo">
-        <i id="lock-icon" class="fa-solid fa-lock-open text-sm"></i>
-      </button>
       <button id="btn-theme" onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Modo Claro/Oscuro">
         <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
       </button>
@@ -76,24 +72,8 @@
     </div>
   </header>
 
-  <!-- Capa de bloqueo para cuando se lleva en el bolsillo -->
-  <div id="pocket-lock-overlay" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] hidden flex flex-col items-center justify-center p-6 text-center">
-    <div class="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl space-y-4 max-w-xs w-full pointer-events-auto">
-      <div class="w-16 h-16 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl mx-auto animate-pulse">
-        <i class="fa-solid fa-lock"></i>
-      </div>
-      <div class="space-y-1">
-        <h3 class="font-bold text-slate-900 dark:text-white font-cinzel text-base">Pantalla Bloqueada</h3>
-        <p class="text-xs text-slate-600 dark:text-slate-400">Protegido contra toques accidentales en el bolsillo.</p>
-      </div>
-      <button onclick="togglePocketLock()" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider shadow-md">
-        Desbloquear Pantalla
-      </button>
-    </div>
-  </div>
-
   <!-- Pestañas de Modo Principal: Rosario / Interactivo / Homilías / Oraciones -->
-  <nav class="bg-white dark:bg-slate-900 px-3 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-center gap-1 text-xs">
+  <nav class="bg-white dark:bg-slate-900 px-3 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-center gap-0.5 text-xs">
     <button onclick="setViewMode('video')" id="tab-view-video" class="flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm">
       <i id="icon-tab-video" class="fa-brands fa-youtube text-sm text-white"></i>
       <span>Rosario</span>
@@ -115,7 +95,7 @@
   <!-- Contenedor Principal Adaptable a Móvil -->
   <main class="flex-1 overflow-y-auto no-scrollbar p-3 sm:p-4 max-w-lg mx-auto w-full space-y-4 pb-28">
 
-    <!-- Tarjeta informativa del día y misterios correspondientes (Oculta en Homilías y Oraciones) -->
+    <!-- Tarjeta informativa del día y misterios correspondientes (Oculta en vista de Oraciones) -->
     <section id="top-day-banner" class="rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/20 shadow-sm relative overflow-hidden">
       <div class="flex items-center justify-between mb-1.5">
         <span id="active-day-label" class="text-xs uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
@@ -129,11 +109,11 @@
       <p id="mystery-days-hint" class="text-xs text-slate-600 dark:text-slate-400 mt-1"></p>
     </section>
 
-    <!-- ================= VISTA 1: VERSIONES EN VÍDEO (CORTA / LARGA / HOMILÍAS) ================= -->
+    <!-- ================= VISTA 1: VERSIONES EN VÍDEO (CORTA / LARGA) ================= -->
     <section id="section-video" class="space-y-4">
       
-      <!-- Selector de Versión Corta vs Larga (Oculto en Homilías) -->
-      <div id="video-length-selector-container" class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold gap-1">
+      <!-- Selector de Versión Corta vs Larga -->
+      <div class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold gap-1">
         <button onclick="switchRosaryLength('corta')" id="btn-len-corta" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm">
           <i class="fa-solid fa-bolt text-amber-500"></i>
           <span>Corto</span>
@@ -179,7 +159,7 @@
         </div>
       </div>
 
-      <!-- Lista de los 5 misterios del día (Oculta en Homilías) -->
+      <!-- Lista de los 5 misterios del día -->
       <div id="mysteries-card-container" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
           <i class="fa-solid fa-list-check text-amber-500"></i>
@@ -503,293 +483,1157 @@
   </div>
 
   <script>
-    // Datos completos de los Misterios y sus preguntas de reflexión
-    const rosaryData = {
+    /* ========================================================================
+       CONFIGURACIÓN DE ENLACES DE YOUTUBE Y ESTADO EN MEMORIA
+       ======================================================================== */
+    const ROSARY_VIDEOS = {
       gozosos: {
-        name: "Misterios Gozosos",
-        days: [1, 6], // Lunes, Sábado
-        hint: "Lunes y Sábados",
-        mysteries: [
+        short: {
+          id: '5L5WfZIrUhQ',
+          url: 'https://youtu.be/5L5WfZIrUhQ',
+          title: 'Rosario Corto - Misterios Gozosos',
+          duration: 'Versión Corta'
+        },
+        long: {
+          id: 'Cg1mAMkpn20',
+          url: 'https://www.youtube.com/watch?v=Cg1mAMkpn20',
+          title: 'Rosario Largo - Misterios Gozosos',
+          duration: 'Versión Larga'
+        }
+      },
+      dolorosos: {
+        short: {
+          id: 'I4oqxPybPgU',
+          url: 'https://youtu.be/I4oqxPybPgU',
+          title: 'Rosario Corto - Misterios Dolorosos',
+          duration: 'Versión Corta'
+        },
+        long: {
+          id: '29-64zNMyQ8',
+          url: 'https://youtu.be/29-64zNMyQ8',
+          title: 'Rosario Largo - Misterios Dolorosos',
+          duration: 'Versión Larga'
+        }
+      },
+      gloriosos: {
+        short: {
+          id: 'Ojvu3uBzsXM',
+          url: 'https://youtu.be/Ojvu3uBzsXM',
+          title: 'Rosario Corto - Misterios Gloriosos',
+          duration: 'Versión Corta'
+        },
+        long: {
+          id: 'JbcPOJ3fdG4',
+          url: 'https://youtu.be/JbcPOJ3fdG4',
+          title: 'Rosario Largo - Misterios Gloriosos',
+          duration: 'Versión Larga'
+        }
+      },
+      luminosos: {
+        short: {
+          id: 'wZIFINvqbJw',
+          url: 'https://youtu.be/wZIFINvqbJw',
+          title: 'Rosario Corto - Misterios Luminosos',
+          duration: 'Versión Corta'
+        },
+        long: {
+          id: 'NbNhZZV9d2A',
+          url: 'https://youtu.be/NbNhZZV9d2A',
+          title: 'Rosario Largo - Misterios Luminosos',
+          duration: 'Versión Larga'
+        }
+      }
+    };
+
+    /* ========================================================================
+       MISTERIOS DE CADA DÍA DE LA SEMANA
+       ======================================================================== */
+    const MYSTERY_INFO = {
+      gozosos: {
+        key: 'gozosos',
+        name: 'Misterios Gozosos',
+        daysDesc: 'Lunes y Sábados',
+        items: [
           {
-            title: "1. La Encarnación del Hijo de Dios",
-            ref: "Lucas 1, 26-38",
-            verse: "Dijo María: 'He aquí la esclava del Señor; hágase en mí según tu palabra'.",
-            explanation: "El arcángel Gabriel anuncia a María que ha sido elegida para ser la Madre del Salvador. Ella, libre de todo pecado, acepta con total humildad y obediencia el plan de Dios.",
-            application: "Aprender a decir 'sí' a Dios en nuestro día a día. Implica estar abiertos a la voluntad divina, aceptando con humildad las circunstancias que nos tocan vivir y confiando en que los planes de Dios siempre son de amor.",
-            reflection: "¿Cuándo una dificultad inesperada altera por completo mis planes, reacciono con rebeldía o intento buscar qué me está pidiendo Dios en esa situación? ¿Soy capaz de decir 'hágase tu voluntad' incluso cuando el camino se torna incierto o doloroso?"
+            num: '1º Misterio',
+            title: 'La Encarnación del Hijo de Dios',
+            ref: 'Lucas 1, 26-38',
+            verse: '«Dijo María: "He aquí la esclava del Señor; hágase en mí según tu palabra".» (Lc 1, 38)',
+            desc: 'El arcángel Gabriel anuncia a María que ha sido elegida para ser la Madre del Salvador. Ella, libre de todo pecado, acepta con total humildad y obediencia el plan de Dios.',
+            application: 'Aprender a decir "sí" a Dios en nuestro día a día. Implica estar abiertos a la voluntad divina, aceptando con humildad las circunstancias que nos tocan vivir y confiando en que los planes de Dios siempre son de amor.',
+            reflection: 'Cuando una dificultad inesperada altera por completo mis planes, ¿reacciono con rebeldía o intento buscar qué me está pidiendo Dios en esa situación? ¿Soy capaz de decir "hágase tu voluntad" incluso cuando el camino se torna incierto o doloroso?'
           },
           {
-            title: "2. La Visitación de Nuestra Señora",
-            ref: "Lucas 1, 39-45",
-            verse: "En cuanto tu saludo llegó a mis oídos, la criatura saltó de alegría en mi vientre.",
-            explanation: "Sin dudarlo, María emprende un viaje para ayudar a su prima Isabel, que estaba embarazada en su vejez. María no se queda ensimismada en su propio milagro, sino que sale al encuentro del prójimo.",
-            application: "Cultivar la vocación de servicio y la caridad activa. Estar atentos a las necesidades de quienes nos rodean, especialmente en nuestra familia y amigos, ofreciendo nuestro tiempo y ayuda sin esperar nada a cambio.",
-            reflection: "En medio de mis propios problemas y sufrimientos, ¿tiendo a encerrarme en mí mismo, o soy capaz de mirar el dolor del otro y ofrecer mi ayuda? ¿Permito que mis dificultades me vuelvan amargo, o las uso para ser más empático con los que sufren?"
+            num: '2º Misterio',
+            title: 'La Visitación de Nuestra Señora a su prima Santa Isabel',
+            ref: 'Lucas 1, 39-45',
+            verse: '"En cuanto tu saludo llegó a mis oídos, la criatura saltó de alegría en mi vientre." (Lc 1, 44)',
+            desc: 'Sin dudarlo, María emprende un viaje para ayudar a su prima Isabel, que estaba embarazada en su vejez. María no se queda ensimismada en su propio milagro, sino que sale al encuentro del prójimo.',
+            application: 'Cultivar la vocación de servicio y la caridad activa. Estar atentos a las necesidades de quienes nos rodean, especialmente en nuestra familia y amigos, ofreciendo nuestro tiempo y ayuda sin esperar nada a cambio.',
+            reflection: 'En medio de mis propios problemas y sufrimientos, ¿tiendo a encerrarme en mí mismo, o soy capaz de mirar el dolor del otro y ofrecer mi ayuda? ¿Permito que mis dificultades me vuelvan amargo, o las uso para ser más empático con los que sufren?'
           },
           {
-            title: "3. El Nacimiento del Hijo de Dios en Belén",
-            ref: "Lucas 2, 1-7",
-            verse: "Y dio a luz a su hijo primogénito, lo envolvió en pañales y lo acostó en un pesebre.",
-            explanation: "Jesús, el Rey del Universo, nace en la pobreza y sencillez de un establo en Belén, rodeado del amor de María y José, mostrando que la verdadera grandeza no está en las riquezas materiales.",
-            application: "Fomentar el desapego de los bienes materiales y buscar la sencillez. Valorar más 'ser' que 'tener', encontrando la verdadera alegría en el amor, la familia y la paz interior.",
-            reflection: "Cuando enfrento carencias económicas o pierdo seguridades materiales, ¿dónde busco mi paz? ¿Puedo encontrar la alegría en la sencillez de lo que verdaderamente importa, como hizo la Sagrada Familia en la pobreza del pesebre?"
+            num: '3º Misterio',
+            title: 'El Nacimiento del Hijo de Dios en Belén',
+            ref: 'Lucas 2, 1-7',
+            verse: '"Y dio a luz a su hijo primogénito, lo envolvió en pañales y lo acostó en un pesebre." (Lc 2, 7)',
+            desc: 'Jesús, el Rey del Universo, nace en la pobreza y sencillez de un establo en Belén, rodeado del amor de María y José, mostrando que la verdadera grandeza no está en las riquezas materiales.',
+            application: 'Fomentar el desapego de los bienes materiales y buscar la sencillez. Valorar más "ser" que "tener", encontrando la verdadera alegría en el amor, la familia y la paz interior.',
+            reflection: 'Cuando enfrento carencias económicas o pierdo seguridades materiales, ¿dónde busco mi paz? ¿Puedo encontrar la alegría en la sencillez de lo que verdaderamente importa, como hizo la Sagrada Familia en la pobreza del pesebre?'
           },
           {
-            title: "4. La Presentación de Jesús en el Templo",
-            ref: "Lucas 2, 22-34",
-            verse: "Mis ojos han visto a tu Salvador, a quien has presentado ante todos los pueblos.",
-            explanation: "Cumpliendo la ley de Moisés, María y José presentan al niño Jesús en el Templo, consagrándolo a Dios. Allí se encuentran con Simeón, quien reconoce al Mesías y profetiza el sufrimiento de María.",
-            application: "La importancia de cumplir con nuestros deberes religiosos y cívicos. Nos invita a consagrar nuestra familia y nuestro trabajo diario a Dios, reconociéndolo como el centro de nuestra vida.",
-            reflection: "Simeón le profetizó a María que 'una espada le traspasaría el alma'. Cuando el sufrimiento golpea a mi familia o a mis seres queridos, ¿me desespero, o confío en que Dios me dará la gracia para sostenerlos, tal como sostuvo a María?"
+            num: '4º Misterio',
+            title: 'La Presentación de Jesús en el Templo',
+            ref: 'Lucas 2, 22-34',
+            verse: '"Mis ojos han visto a tu Salvador, a quien has presentado ante todos los pueblos." (Lc 2, 30-31)',
+            desc: 'Cumpliendo la ley de Moisés, María y José presentan al niño Jesús en el Templo, consagrándolo a Dios. Allí se encuentran con Simeón, quien reconoce al Mesías y profetiza el sufrimiento de María.',
+            application: 'La importancia de cumplir con nuestros deberes religiosos y cívicos. Nos invita a consagrar nuestra familia y nuestro trabajo diario a Dios, reconociéndolo como el centro de nuestra vida.',
+            reflection: 'Simeón le profetizó a María que "una espada le traspasaría el alma". Cuando el sufrimiento golpea a mi familia o a mis seres queridos, ¿me desespero, o confío en que Dios me dará la gracia para sostenerlos, tal como sostuvo a María?'
           },
           {
-            title: "5. El Niño Jesús perdido y hallado en el Templo",
-            ref: "Lucas 2, 41-52",
-            verse: "¿Por qué me buscabais? ¿No sabíais que yo debía estar en la casa de mi Padre?",
-            explanation: "A los 12 años, Jesús se queda en Jerusalén sin que sus padres lo sepan. Tras tres días de angustiosa búsqueda, lo encuentran en el Templo dialogando con los doctores de la ley.",
-            application: "No perder nunca la presencia de Dios. Si sentimos que por el pecado o el alejamiento hemos 'perdido' a Jesús, debemos buscarlo activamente a través de la oración, los sacramentos y la Iglesia.",
-            reflection: "En los momentos de 'oscuridad' o sequedad espiritual, cuando siento que Dios está lejos o que he perdido el rumbo de mi vida, ¿me rindo ante la angustia, o salgo a 'buscar a Jesús' incansablemente hasta encontrar la paz?"
+            num: '5º Misterio',
+            title: 'El Niño Jesús perdido y hallado en el Templo',
+            ref: 'Lucas 2, 41-52',
+            verse: '"¿Por qué me buscabais? ¿No sabíais que yo debía estar en la casa de mi Padre?" (Lc 2, 49)',
+            desc: 'A los 12 años, Jesús se queda en Jerusalén sin que sus padres lo sepan. Tras tres días de angustiosa búsqueda, lo encuentran en el Templo dialogando con los doctores de la ley.',
+            application: 'No perder nunca la presencia de Dios. Si sentimos que por el pecado o el alejamiento hemos "perdido" a Jesús, debemos buscarlo activamente a través de la oración, los sacramentos y la Iglesia.',
+            reflection: 'En los momentos de "oscuridad" o sequedad espiritual, cuando siento que Dios está lejos o que he perdido el rumbo de mi vida, ¿me rindo ante la angustia, o salgo a "buscar a Jesús" incansablemente hasta encontrar la paz?'
           }
         ]
       },
       dolorosos: {
-        name: "Misterios Dolorosos",
-        days: [2, 5], // Martes, Viernes
-        hint: "Martes y Viernes",
-        mysteries: [
+        key: 'dolorosos',
+        name: 'Misterios Dolorosos',
+        daysDesc: 'Martes y Viernes',
+        items: [
           {
-            title: "1. La Oración de Jesús en el Huerto",
-            ref: "Lucas 22, 39-46",
-            verse: "Padre, si quieres, aparta de mí este cáliz; pero que no se haga mi voluntad, sino la tuya.",
-            explanation: "Jesús experimenta angustia y tristeza profunda ante los sufrimientos que le esperan y el peso de los pecados del mundo. A pesar del miedo humano, somete su voluntad a la del Padre.",
-            application: "Frente al sufrimiento, la enfermedad o la ansiedad, recurrir a la oración. Aprender a aceptar la voluntad de Dios en los momentos oscuros, confiando en que Él nos dará la fuerza para soportarlo.",
-            reflection: "Cuando la ansiedad, el miedo al futuro o una prueba terrible me paralizan, ¿huyo de la situación o me refugio en la oración como hizo Jesús? ¿Puedo entregarle a Dios mi miedo y confiar en que Él me sostendrá?"
+            num: '1º Misterio',
+            title: 'La Oración de Jesús en el Huerto de Getsemaní',
+            ref: 'Lucas 22, 39-46',
+            verse: '"Padre, si quieres, aparta de mí este cáliz; pero que no se haga mi voluntad, sino la tuya." (Lc 22, 42)',
+            desc: 'Jesús experimenta angustia y tristeza profunda ante los sufrimientos que le esperan y el peso de los pecados del mundo. A pesar del miedo humano, somete su voluntad a la del Padre.',
+            application: 'Frente al sufrimiento, la enfermedad o la ansiedad, recurrir a la oración. Aprender a aceptar la voluntad de Dios en los momentos oscuros, confiando en que Él nos dará la fuerza para soportarlo.',
+            reflection: 'Cuando la ansiedad, el miedo al futuro o una prueba terrible me paralizan, ¿huyo de la situación o me refugio en la oración como hizo Jesús? ¿Puedo entregarle a Dios mi miedo y confiar en que Él me sostendrá?'
           },
           {
-            title: "2. La Flagelación del Señor",
-            ref: "Juan 19, 1",
-            verse: "Entonces Pilato tomó a Jesús y mandó azotarlo.",
-            explanation: "Jesús soporta en silencio y con inmenso amor una tortura brutal e injusta, entregando su cuerpo al dolor extremo por la redención de la humanidad.",
-            application: "Practicar la paciencia ante las injusticias y las ofensas. Ofrecer nuestros dolores físicos o morales unidos a los padecimientos de Cristo, dándoles así un sentido redentor.",
-            reflection: "¿Cómo manejo el dolor físico crónico, la enfermedad o el tormento emocional de las injusticias? ¿Me dejo consumir por la queja, o trato de unir mis sufrimientos a los de Cristo para encontrarles un sentido?"
+            num: '2º Misterio',
+            title: 'La Flagelación del Señor',
+            ref: 'Juan 19, 1',
+            verse: '"Entonces Pilato tomó a Jesús y mandó azotarlo." (Jn 19, 1)',
+            desc: 'Jesús soporta en silencio y con inmenso amor una tortura brutal e injusta, entregando su cuerpo al dolor extremo por la redención de la humanidad.',
+            application: 'Practicar la paciencia ante las injusticias y las ofensas. Ofrecer nuestros dolores físicos o morales unidos a los padecimientos de Cristo, dándoles así un sentido redentor.',
+            reflection: '¿Cómo manejo el dolor físico crónico, la enfermedad o el tormento emocional de las injusticias? ¿Me dejo consumir por la queja, o trato de unir mis sufrimientos a los de Cristo para encontrarles un sentido?'
           },
           {
-            title: "3. La Coronación de Espinas",
-            ref: "Mateo 27, 27-31",
-            verse: "Trenzarón una corona de espinas, se la pusieron en la cabeza y le dieron una caña en su mano derecha.",
-            explanation: "Los soldados se burlan de la realeza de Jesús, humillándolo física y psicológicamente. Cristo, Rey del universo, recibe burlas en lugar de honores.",
-            application: "Luchar contra la soberbia y el orgullo. Aceptar con humildad las críticas o incomprensiones de los demás, y evitar burlarnos o menospreciar a cualquier persona.",
-            reflection: "Cuando soy incomprendido, criticado injustamente, o cuando mi orgullo es herido profundamente, ¿reacciono con ira y deseos de venganza, o pido la gracia de soportar la humillación con la mansedumbre de Jesús?"
+            num: '3º Misterio',
+            title: 'La Coronación de Espinas',
+            ref: 'Mateo 27, 27-31',
+            verse: '"Trenzaron una corona de espinas, se la pusieron en la cabeza y le dieron una caña en su mano derecha." (Mt 27, 29)',
+            desc: 'Los soldados se burlan de la realeza de Jesús, humillándolo física y psicológicamente. Cristo, Rey del universo, recibe burlas en lugar de honores.',
+            application: 'Luchar contra la soberbia y el orgullo. Aceptar con humildad las críticas o incomprensiones de los demás, y evitar burlarnos o menospreciar a cualquier persona.',
+            reflection: 'Cuando soy incomprendido, criticado injustamente, o cuando mi orgullo es herido profundamente, ¿reacciono con ira y deseos de venganza, o pido la gracia de soportar la humillación con la mansedumbre de Jesús?'
           },
           {
-            title: "4. Jesús con la Cruz a cuestas",
-            ref: "Juan 19, 16-17",
-            verse: "Tomaron, pues, a Jesús, y él mismo, cargando con su cruz, salió hacia el lugar llamado Calvario.",
-            explanation: "Jesús carga con el madero de la cruz, exhausto, recorriendo el camino hacia el Gólgota. Cae varias veces, pero se levanta para cumplir su misión.",
-            application: "Aceptar nuestras propias cruces diarias (problemas laborales, conflictos familiares, enfermedades) con valentía. Levantarnos siempre después de cada caída o fracaso, ayudados por la gracia divina.",
-            reflection: "Cuando el peso de mis problemas diarios parece aplastarme y me hace 'caer' (en vicios, depresión, enojo), ¿tengo la determinación de volver a levantarme? ¿Me dejo ayudar por los 'cirineos' que Dios pone en mi camino?"
+            num: '4º Misterio',
+            title: 'Jesús con la Cruz a cuestas camino al Calvario',
+            ref: 'Juan 19, 16-17',
+            verse: '"Tomaron, pues, a Jesús, y él mismo, cargando con su cruz, salió hacia el lugar llamado Calvario." (Jn 19, 16-17)',
+            desc: 'Jesús carga con el madero de la cruz, exhausto, recorriendo el camino hacia el Gólgota. Cae varias veces, pero se levanta para cumplir su misión.',
+            application: 'Aceptar nuestras propias cruces diarias (problemas laborales, conflictos familiares, enfermedades) con valentía. Levantarnos siempre después de cada caída o fracaso, ayudados por la gracia divina.',
+            reflection: 'Cuando el peso de mis problemas diarios parece aplastarme y me hace "caer" (en vicios, depresión, enojo), ¿tengo la determinación de volver a levantarme? ¿Me dejo ayudar por los "cirineos" que Dios pone en mi camino?'
           },
           {
-            title: "5. La Crucifixión y Muerte",
-            ref: "Lucas 23, 33-46",
-            verse: "Padre, en tus manos encomiendo mi espíritu.",
-            explanation: "Jesús es clavado en la cruz y muere tras tres horas de agonía, derramando hasta la última gota de su sangre por amor a cada ser humano para abrirnos las puertas del cielo.",
-            application: "Crecer en gratitud por el inmenso amor de Dios. Aprender a perdonar a quienes nos hacen daño y estar dispuestos a sacrificarnos por el bien de las personas que amamos.",
-            reflection: "Frente a las heridas más profundas o las traiciones que he sufrido, ¿puedo pedir la gracia de perdonar, recordando que Jesús perdonó a quienes lo crucificaban? ¿Estoy dispuesto a entregarme por amor a mi familia aun cuando cueste y duela?"
+            num: '5º Misterio',
+            title: 'La Crucifixión y Muerte de Nuestro Señor',
+            ref: 'Lucas 23, 33-46',
+            verse: '"Padre, en tus manos encomiendo mi espíritu." (Lc 23, 46)',
+            desc: 'Jesús es clavado en la cruz y muere tras tres horas de agonía, derramando hasta la última gota de su sangre por amor a cada ser humano para abrirnos las puertas del cielo.',
+            application: 'Crecer en gratitud por el inmenso amor de Dios. Aprender a perdonar a quienes nos hacen daño (como Jesús perdonó a sus verdugos) y estar dispuestos a sacrificarnos por el bien de las personas que amamos.',
+            reflection: 'Frente a las heridas más profundas o las traiciones que he sufrido, ¿puedo pedir la gracia de perdonar, recordando que Jesús perdonó a quienes lo crucificaban? ¿Estoy dispuesto a entregarme por amor a mi familia aun cuando cueste y duela?'
           }
         ]
       },
       gloriosos: {
-        name: "Misterios Gloriosos",
-        days: [3, 0], // Miércoles, Domingo
-        hint: "Miércoles y Domingos",
-        mysteries: [
+        key: 'gloriosos',
+        name: 'Misterios Gloriosos',
+        daysDesc: 'Miércoles y Domingos',
+        items: [
           {
-            title: "1. La Resurrección del Hijo de Dios",
-            ref: "Marcos 16, 1-7",
-            verse: "No os asustéis. Buscáis a Jesús Nazareno, el crucificado; ha resucitado, no está aquí.",
-            explanation: "Al tercer día, Cristo vence a la muerte, resucitando glorioso. Es el pilar de la fe cristiana; la muerte y el pecado han sido derrotados definitivamente.",
-            application: "Vivir con esperanza y optimismo cristiano. Saber que el mal, el dolor y la muerte no tienen la última palabra. Ante las pérdidas, mantener la fe en la vida eterna.",
-            reflection: "Cuando enfrento el fracaso total, la ruina de un proyecto o la muerte de un ser querido, ¿mantengo firme la esperanza de que Dios puede sacar vida de la muerte? ¿Creo realmente que el dolor no tiene la última palabra?"
+            num: '1º Misterio',
+            title: 'La Resurrección del Hijo de Dios',
+            ref: 'Marcos 16, 1-7',
+            verse: '"No os asustéis. Buscáis a Jesús Nazareno, el crucificado; ha resucitado, no está aquí." (Mc 16, 6)',
+            desc: 'Al tercer día, Cristo vence a la muerte, resucitando glorioso. Es el pilar de la fe cristiana; la muerte y el pecado han sido derrotados definitivamente.',
+            application: 'Vivir con esperanza y optimismo cristiano. Saber que el mal, el dolor y la muerte no tienen la última palabra. Ante las pérdidas, mantener la fe en la vida eterna.',
+            reflection: 'Cuando enfrento el fracaso total, la ruina de un proyecto o la muerte de un ser querido, ¿mantengo firme la esperanza de que Dios puede sacar vida de la muerte? ¿Creo realmente que el dolor no tiene la última palabra?'
           },
           {
-            title: "2. La Ascensión del Señor al Cielo",
-            ref: "Lucas 24, 50-53",
-            verse: "Y mientras los bendecía, se separó de ellos, subiendo hacia el cielo.",
-            explanation: "Cuarenta días después de su resurrección, Jesús sube al cielo en presencia de sus apóstoles para sentarse a la derecha del Padre y prepararnos un lugar.",
-            application: "Mantener la mirada en el cielo sin descuidar la tierra. Trabajar duro en nuestras responsabilidades diarias, pero recordando que nuestro destino final es la eternidad junto a Dios.",
-            reflection: "En medio de las batallas diarias, cuando siento que Dios está 'ausente' o silencioso ante mis problemas, ¿sigo confiando en que Él está al mando de mi vida y preparándome un futuro mejor?"
+            num: '2º Misterio',
+            title: 'La Ascensión del Señor al Cielo',
+            ref: 'Lucas 24, 50-53',
+            verse: '"Y mientras los bendecía, se separó de ellos, subiendo hacia el cielo." (Lc 24, 51)',
+            desc: 'Cuarenta días después de su resurrección, Jesús sube al cielo en presencia de sus apóstoles para sentarse a la derecha del Padre y prepararnos un lugar.',
+            application: 'Mantener la mirada en el cielo sin descuidar la tierra. Trabajar duro en nuestras responsabilidades diarias, pero recordando que nuestro destino final es la eternidad junto a Dios.',
+            reflection: 'En medio de las batallas diarias, cuando siento que Dios está "ausente" o silencioso ante mis problemas, ¿sigo confiando en que Él está al mando de mi vida y preparándome un futuro mejor?'
           },
           {
-            title: "3. La Venida del Espíritu Santo",
-            ref: "Hechos 2, 1-4",
-            verse: "Se llenaron todos de Espíritu Santo y empezaron a hablar en otras lenguas.",
-            explanation: "El Espíritu Santo desciende sobre María y los Apóstoles en Pentecostés. Pasan del miedo a la valentía, saliendo a predicar el Evangelio con gran fuerza a todas las naciones.",
-            application: "Invocar al Espíritu Santo antes de tomar decisiones importantes. Pedir sus dones (sabiduría, fortaleza, consejo) para ser valientes testigos de nuestra fe en nuestros entornos laborales y familiares.",
-            reflection: "Cuando el miedo al futuro o a la opinión de los demás me paraliza para tomar decisiones correctas, ¿pido la fuerza del Espíritu Santo para actuar con valentía y superar mis cobardías?"
+            num: '3º Misterio',
+            title: 'La Venida del Espíritu Santo sobre los Apóstoles',
+            ref: 'Hechos 2, 1-4',
+            verse: '"Se llenaron todos de Espíritu Santo y empezaron a hablar en otras lenguas." (Hch 2, 4)',
+            desc: 'El Espíritu Santo desciende sobre María y los Apóstoles en Pentecostés. Pasan del miedo a la valentía, saliendo a predicar el Evangelio con gran fuerza a todas las naciones.',
+            application: 'Invocar al Espíritu Santo antes de tomar decisiones importantes. Pedir sus dones (sabiduría, fortaleza, consejo) para ser valientes testigos de nuestra fe en nuestros entornos laborales y familiares.',
+            reflection: 'Cuando el miedo al futuro o a la opinión de los demás me paraliza para tomar decisiones correctas, ¿pido la fuerza del Espíritu Santo para actuar con valentía y superar mis cobardías?'
           },
           {
-            title: "4. La Asunción de María al Cielo",
-            ref: "Apocalipsis 12, 1 / Lucas 1, 48-49",
-            verse: "Desde ahora me felicitarán todas las generaciones, porque el Poderoso ha hecho obras grandes en mí.",
-            explanation: "Al final de su vida terrenal, la Virgen María es llevada en cuerpo y alma a la gloria del cielo, como anticipo de la resurrección de todos los creyentes.",
-            application: "Respetar y cuidar nuestro propio cuerpo y el de los demás, pues somos templos del Espíritu y estamos llamados a la gloria. Confiar en la maternal protección de María que nos espera en el cielo.",
-            reflection: "Frente a la enfermedad, el deterioro físico o el envejecimiento que trae la vida, ¿puedo mantener la paz recordando que mi cuerpo y mi alma están destinados a la gloria eterna como los de María?"
+            num: '4º Misterio',
+            title: 'La Asunción de María al Cielo',
+            ref: 'Apocalipsis 12, 1 (referencia teológica) / Lucas 1, 48-49',
+            verse: '"Desde ahora me felicitarán todas las generaciones, porque el Poderoso ha hecho obras grandes en mí." (Lc 1, 48-49)',
+            desc: 'Al final de su vida terrenal, la Virgen María es llevada en cuerpo y alma a la gloria del cielo, como anticipo de la resurrección de todos los creyentes.',
+            application: 'Respetar y cuidar nuestro propio cuerpo y el de los demás, pues somos templos del Espíritu y estamos llamados a la gloria. Confiar en la maternal protección de María que nos espera en el cielo.',
+            reflection: 'Frente a la enfermedad, el deterioro físico o el envejecimiento que trae la vida, ¿puedo mantener la paz recordando que mi cuerpo y mi alma están destinados a la gloria eterna como los de María?'
           },
           {
-            title: "5. La Coronación de María como Reina",
-            ref: "Apocalipsis 12, 1",
-            verse: "Apareció en el cielo una gran señal: una mujer vestida del sol, con la luna debajo de sus pies...",
-            explanation: "María es coronada por la Santísima Trinidad como Reina del cielo y de la tierra, intercediendo constantemente por todos sus hijos como Madre amorosa.",
-            application: "Consagrar nuestra vida a la Virgen María. Recurrir a ella con confianza total, sabiendo que, como Reina, nada le niega Dios, y como Madre, jamás nos abandona.",
-            reflection: "Cuando los problemas me superan y siento que pierdo el control de mi vida, ¿sé refugiarme bajo el manto protector de María, confiando en que mi Madre Celestial intercede por mis necesidades más urgentes?"
+            num: '5º Misterio',
+            title: 'La Coronación de María como Reina y Señora de todo lo creado',
+            ref: 'Apocalipsis 12, 1',
+            verse: '"Apareció en el cielo una gran señal: una mujer vestida del sol, con la luna debajo de sus pies, y sobre su cabeza una corona de doce estrellas." (Ap 12, 1)',
+            desc: 'María es coronada por la Santísima Trinidad como Reina del cielo y de la tierra, intercediendo constantemente por todos sus hijos como Madre amorosa y omnipotencia suplicante.',
+            application: 'Consagrar nuestra vida a la Virgen María. Recurrir a ella con confianza total (como un niño a su madre), sabiendo que, como Reina, nada le niega Dios, y como Madre, jamás nos abandona.',
+            reflection: 'Cuando los problemas me superan y siento que pierdo el control de mi vida, ¿sé refugiarme bajo el manto protector de María, confiando en que mi Madre Celestial intercede por mis necesidades más urgentes?'
           }
         ]
       },
       luminosos: {
-        name: "Misterios Luminosos",
-        days: [4], // Jueves
-        hint: "Jueves",
-        mysteries: [
+        key: 'luminosos',
+        name: 'Misterios Luminosos',
+        daysDesc: 'Jueves',
+        items: [
           {
-            title: "1. El Bautismo de Jesús en el Jordán",
-            ref: "Mateo 3, 13-17",
-            verse: "Este es mi Hijo, el amado, en quien me complazco.",
-            explanation: "Jesús, sin tener pecado, se somete al bautismo de Juan para solidarizarse con la humanidad. El cielo se abre y la Trinidad se manifiesta, confirmando su misión.",
-            application: "Recordar y vivir nuestro propio bautismo. Renovar nuestra identidad como hijos amados de Dios, esforzándonos por llevar una vida limpia y coherente con nuestra fe.",
-            reflection: "Cuando fracaso o las circunstancias de la vida dañan mi autoestima, ¿recuerdo que mi verdadera identidad es ser un 'hijo amado de Dios'? ¿Dejo que las etiquetas negativas del mundo pesen más que el amor que Dios me tiene?"
+            num: '1º Misterio',
+            title: 'El Bautismo de Jesús en el Jordán',
+            ref: 'Mateo 3, 13-17',
+            verse: '"Este es mi Hijo, el amado, en quien me complazco." (Mt 3, 17)',
+            desc: 'Jesús, sin tener pecado, se somete al bautismo de Juan para solidarizarse con la humanidad. El cielo se abre y la Trinidad se manifiesta, confirmando su misión mesiánica.',
+            application: 'Recordar y vivir nuestro propio bautismo. Renovar nuestra identidad como hijos amados de Dios, esforzándonos por llevar una vida limpia y coherente con nuestra fe cristiana.',
+            reflection: 'Cuando fracaso o las circunstancias de la vida dañan mi autoestima, ¿recuerdo que mi verdadera identidad es ser un "hijo amado de Dios"? ¿Dejo que las etiquetas negativas del mundo pesen más que el amor que Dios me tiene?'
           },
           {
-            title: "2. La Autorrevelación en Caná",
-            ref: "Juan 2, 1-11",
-            verse: "Haced lo que él os diga.",
-            explanation: "A petición de María, Jesús realiza su primer milagro convirtiendo el agua en vino, salvando la alegría de la fiesta nupcial y manifestando su gloria a los discípulos.",
-            application: "Acudir siempre a la intercesión de María en nuestras necesidades. Aprender a invitar a Jesús a todas las áreas de nuestra vida y confiar en Su providencia.",
-            reflection: "Cuando el 'vino' de la alegría o la paciencia se agota en mi familia, ¿a quién acudo? ¿Confío en que Jesús, por intercesión de María, puede transformar la escasez en algo nuevo y bueno?"
+            num: '2º Misterio',
+            title: 'La Autorrevelación de Jesús en las bodas de Caná',
+            ref: 'Juan 2, 1-11',
+            verse: '"Haced lo que él os diga." (Jn 2, 5)',
+            desc: 'A petición de María, Jesús realiza su primer milagro convirtiendo el agua en vino, salvando la alegría de la fiesta nupcial y manifestando su gloria a los discípulos.',
+            application: 'Acudir siempre a la intercesión de María en nuestras necesidades. Aprender a invitar a Jesús a todas las áreas de nuestra vida (familia, trabajo, celebraciones) y confiar en Su providencia.',
+            reflection: 'Cuando el "vino" de la alegría, la paciencia o la esperanza se agota en mi matrimonio, en mi familia o en mi trabajo, ¿a quién acudo? ¿Confío en que Jesús, por intercesión de María, puede transformar la escasez y la rutina en algo nuevo y bueno?'
           },
           {
-            title: "3. El Anuncio del Reino de Dios",
-            ref: "Marcos 1, 14-15",
-            verse: "El tiempo se ha cumplido y el reino de Dios está cerca; convertíos y creed en el Evangelio.",
-            explanation: "Jesús predica la llegada del Reino de Dios, perdonando los pecados y pidiendo un cambio profundo de corazón a través del arrepentimiento genuino.",
-            application: "Examinar nuestra conciencia y reconocer nuestros errores. Practicar el sacramento de la reconciliación y esforzarnos diariamente por mejorar.",
-            reflection: "Muchas veces las dificultades nacen de mis propios errores y pecados. ¿Tengo la humildad de reconocer cuándo me he equivocado? ¿Estoy dispuesto a cambiar actitudes destructivas para sanar mis relaciones?"
+            num: '3º Misterio',
+            title: 'El Anuncio del Reino de Dios invitando a la conversión',
+            ref: 'Marcos 1, 14-15',
+            verse: '"El tiempo se ha cumplido y el reino de Dios está cerca; convertíos y creed en el Evangelio." (Mc 1, 15)',
+            desc: 'Jesús predica la llegada del Reino de Dios, perdonando los pecados y pidiendo un cambio profundo de corazón a través del arrepentimiento genuino.',
+            application: 'Examinar nuestra conciencia y reconocer nuestros errores. Practicar el sacramento de la reconciliación (confesión) y esforzarnos diariamente por mejorar y cambiar aquellas actitudes que nos alejan del amor.',
+            reflection: 'Muchas veces las dificultades nacen de mis propios errores y pecados. ¿Tengo la humildad de reconocer cuándo me he equivocado? ¿Estoy dispuesto a cambiar actitudes destructivas para sanar mis relaciones?'
           },
           {
-            title: "4. La Transfiguración del Señor",
-            ref: "Lucas 9, 28-35",
-            verse: "Mientras oraba, el aspecto de su rostro cambió y sus vestidos brillaban de blancos.",
-            explanation: "Jesús muestra un destello de su gloria divina a Pedro, Santiago y Juan en el monte Tabor, fortaleciendo su fe para que puedan afrontar el escándalo de la cruz.",
-            application: "Dedicar tiempo a la oración personal e íntima. Esos momentos de encuentro nos dan la luz y la fuerza necesarias para sobrellevar las dificultades y cruces cotidianas.",
-            reflection: "Cuando atravieso el valle oscuro de la depresión, la enfermedad o el agotamiento, ¿me aferro a los momentos de luz y de gracia que Dios me ha dado en el pasado para fortalecer mi esperanza?"
+            num: '4º Misterio',
+            title: 'La Transfiguración del Señor',
+            ref: 'Lucas 9, 28-35',
+            verse: '"Mientras oraba, el aspecto de su rostro cambió y sus vestidos brillaban de blancos." (Lc 9, 29)',
+            desc: 'Jesús muestra un destello de su gloria divina a Pedro, Santiago y Juan en el monte Tabor, fortaleciendo su fe para que puedan afrontar el escándalo de la futura cruz.',
+            application: 'Dedicar tiempo a la oración personal e íntima. Esos momentos de "encuentro en la montaña" nos dan la luz y la fuerza necesarias para sobrellevar las dificultades y "cruces" de nuestro trabajo y vida cotidiana.',
+            reflection: 'Cuando atravieso el valle oscuro de la depresión, la enfermedad o el agotamiento, ¿me aferro a los momentos de luz y de gracia que Dios me ha dado en el pasado para fortalecer mi esperanza?'
           },
           {
-            title: "5. La Institución de la Eucaristía",
-            ref: "Lucas 22, 14-20",
-            verse: "Esto es mi cuerpo, que se entrega por vosotros; haced esto en memoria mía.",
-            explanation: "En la Última Cena, Jesús transforma el pan y el vino en su Cuerpo y en su Sangre, entregándose sacramentalmente antes de su Pasión para quedarse con nosotros.",
-            application: "Valorar profundamente la Santa Misa y la Comunión como el alimento espiritual indispensable que nos da la fuerza para amar y perdonar.",
-            reflection: "En mis momentos de mayor debilidad o soledad frente a los desafíos de la vida, ¿busco mi fortaleza y consuelo en la Eucaristía? ¿Me dejo alimentar por Cristo para luego ser apoyo de otros?"
+            num: '5º Misterio',
+            title: 'La Institución de la Eucaristía',
+            ref: 'Lucas 22, 14-20',
+            verse: '"Esto es mi cuerpo, que se entrega por vosotros; haced esto en memoria mía." (Lc 22, 19)',
+            desc: 'En la Última Cena, Jesús transforma el pan y el vino en su Cuerpo y en su Sangre, entregándose sacramentalmente antes de su Pasión para quedarse con nosotros hasta el fin de los tiempos.',
+            application: 'Valorar profundamente la Santa Misa y la Comunión. Asistir a la Eucaristía no por obligación, sino como el alimento espiritual indispensable que nos da la fuerza para amar y perdonar a los demás.',
+            reflection: 'En mis momentos de mayor debilidad o soledad frente a los desafíos de la vida, ¿busco mi fortaleza y consuelo en la Eucaristía? ¿Me dejo alimentar por Cristo para luego ser apoyo de otros?'
           }
         ]
       }
     };
 
-    // Lista de Oraciones Especiales
-    const prayersList = [
+    const SPECIAL_PRAYERS = [
       {
-        title: "Oración a la Venerable Madre Antonia de Jesús",
-        text: "Dios todopoderoso y eterno, que concediste a tu sierva Antonia de Jesús el don de la contemplación, un profundo amor a Cristo crucificado y una ardiente caridad para con el prójimo; concédenos por su intercesión la gracia que te pedimos, para que pronto sea glorificada en la Iglesia. Por Jesucristo, nuestro Señor. Amén."
+        title: 'Oración a la Venerable Madre Antonia de Jesús',
+        text: 'Dios todopoderoso y eterno, que concediste a tu sierva Antonia de Jesús el don de la contemplación, un profundo amor a Cristo crucificado y una ardiente caridad para con el prójimo; concédenos por su intercesión la gracia que te pedimos (aquí se pide la gracia), para que pronto sea glorificada en la Iglesia. Por Jesucristo, nuestro Señor. Amén.'
       },
       {
-        title: "Oración a la Hermana Cristina de Jesús Sacramentado",
-        text: "Señor Dios nuestro, que concediste a tu sierva Cristina de Jesús Sacramentado la gracia de consagrarse totalmente a ti en la vida oculta del Carmelo, viviendo con profunda humildad, alegría y un ardiente amor a la Eucaristía y a la Virgen María; te suplicamos que, si es para tu mayor gloria y bien de las almas, glorifiques a tu sierva y nos concedas por su intercesión la gracia que ahora te pedimos. Por Jesucristo, nuestro Señor. Amén."
+        title: 'Oración a la Hermana Cristina de Jesús Sacramentado',
+        text: 'Señor Dios nuestro, que concediste a tu sierva Cristina de Jesús Sacramentado la gracia de consagrarse totalmente a ti en la vida oculta del Carmelo, viviendo con profunda humildad, alegría y un ardiente amor a la Eucaristía y a la Virgen María; te suplicamos que, si es para tu mayor gloria y bien de las almas, glorifiques a tu sierva y nos concedas por su intercesión la gracia que ahora te pedimos (aquí se pide la gracia). Por Jesucristo, nuestro Señor. Amén.'
       },
       {
-        title: "Oración a Sor María de los Dolores del Amor de Dios (Simi Cohen)",
-        text: "Señor Dios nuestro, que llamaste a tu sierva María de los Dolores (Simi Cohen) a la luz de la fe y le concediste la gracia de consagrarse a ti con profunda humildad, pobreza y caridad en la vida del claustro; concédenos, por su intercesión, vivir con esa misma entrega a tu voluntad, y otórganos la gracia que ahora te pedimos, para que un día sea glorificada en la Iglesia. Por Jesucristo, nuestro Señor. Amén."
+        title: 'Oración a Sor María de los Dolores del Amor de Dios (Simi Cohen)',
+        text: 'Señor Dios nuestro, que llamaste a tu sierva María de los Dolores (Simi Cohen) a la luz de la fe y le concediste la gracia de consagrarse a ti con profunda humildad, pobreza y caridad en la vida del claustro; concédenos, por su intercesión, vivir con esa misma entrega a tu voluntad, y otórganos la gracia que ahora te pedimos (aquí se pide la gracia), para que un día sea glorificada en la Iglesia. Por Jesucristo, nuestro Señor. Amén.'
       },
       {
-        title: "Oración a Santa Ana para las dificultades",
-        text: "¡Oh gloriosa Santa Ana! Tú que estás llena de compasión por quienes te invocan y de amor por los que sufren. Agobiado con el peso de mis dificultades, me postro a tus pies y te suplico humildemente que tomes bajo tu especial protección esta gran necesidad mía.\n\nTe ruego que la recomiendes a tu hija, la Bienaventurada Virgen María, y la presentes ante el trono de Jesús, para que Él la lleve a una feliz resolución. No ceses de intercesión por mí hasta que mi petición sea concedida. Y sobre todo, obtenme la gracia de ver a Dios un día, para que contigo, la Virgen María y todos los santos, pueda alabarlo y bendecirlo por toda la eternidad. Amén."
+        title: 'Oración a Santa Ana para las dificultades',
+        text: '¡Oh gloriosa Santa Ana! Tú que estás llena de compasión por quienes te invocan y de amor por los que sufren. Agobiado con el peso de mis dificultades, me postro a tus pies y te suplico humildemente que tomes bajo tu especial protección esta gran necesidad mía (aquí se menciona la dificultad o petición).\n\nTe ruego que la recomiendes a tu hija, la Bienaventurada Virgen María, y la presentes ante el trono de Jesús, para que Él la lleve a una feliz resolución. No ceses de interceder por mí hasta que mi petición sea concedida. Y sobre todo, obtenme la gracia de ver a Dios un día, para que contigo, la Virgen María y todos los santos, pueda alabarlo y bendecirlo por toda la eternidad. Amén.'
       }
     ];
 
-    // Datos de Vídeos de YouTube
-    const youtubeVideos = {
-      gozosos: { corta: "https://www.youtube.com/embed/dQw4w9WgXcQ", larga: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-      dolorosos: { corta: "https://www.youtube.com/embed/dQw4w9WgXcQ", larga: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-      gloriosos: { corta: "https://www.youtube.com/embed/dQw4w9WgXcQ", larga: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-      luminosos: { corta: "https://www.youtube.com/embed/dQw4w9WgXcQ", larga: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+    const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+    const HOMILIA_CHANNEL_ID = 'UCnL3Q3uW39R7kXIzEHALzBg';
+    const HOMILIA_UPLOADS_PLAYLIST = 'UUnL3Q3uW39R7kXIzEHALzBg';
+    let homiliaVideosList = [];
+    let selectedHomiliaIndex = 0;
+    let latestHomiliaVideo = {
+      id: null,
+      title: 'Última Homilía del Canal',
+      url: 'https://www.youtube.com/channel/' + HOMILIA_CHANNEL_ID + '/videos'
     };
 
-    // Homilías (Ejemplos con enlaces e información)
-    const homiliasData = [
-      {
-        title: "Homilia Dominical - Celebración de la Fe",
-        date: "Domingo Actual",
-        url: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-      },
-      {
-        title: "Homilía del Domingo Anterior",
-        date: "Domingo pasado",
-        url: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-      }
-    ];
+    // Estado de la aplicación
+    let realDayIndex = new Date().getDay();
+    let currentDayIndex = realDayIndex;
+    let currentLength = 'corta'; // 'corta' | 'larga' | 'homilia'
+    let currentViewMode = 'video'; // 'video' | 'guided'
+    let guidedSteps = [];
+    let currentStepIndex = 0;
 
-    let currentDayIndex = new Date().getDay();
-    let selectedDayOverride = null;
-    let currentLength = 'corta';
-    let currentViewMode = 'video'; // 'video', 'guided', 'prayers', 'homilia'
-    let currentHomiliaIndex = 0;
-    let currentGuidedStep = 0;
-    let isDark = false;
-    let isPocketLocked = false;
+    // Obtener automáticamente los últimos vídeos publicados en el canal de Homilías
+    async function fetchLatestHomiliaVideo() {
+      try {
+        const rssUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + HOMILIA_CHANNEL_ID;
+        const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data && data.items && data.items.length > 0) {
+          homiliaVideosList = data.items.slice(0, 6).map((item, idx) => {
+            let vidId = null;
+            if (item.guid && item.guid.includes(':')) {
+              vidId = item.guid.split(':').pop();
+            } else {
+              vidId = extractYouTubeID(item.link);
+            }
+            return {
+              index: idx,
+              id: vidId,
+              title: item.title || 'Homilía',
+              pubDate: item.pubDate || '',
+              thumbnail: item.thumbnail || (vidId ? 'https://i.ytimg.com/vi/' + vidId + '/mqdefault.jpg' : ''),
+              url: vidId ? 'https://youtu.be/' + vidId : item.link
+            };
+          }).filter(v => v.id);
 
-    // Inicialización al cargar la ventana
-    window.onload = function() {
-      // Aplicar tema guardado
-      if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        isDark = true;
-        document.documentElement.classList.add('dark');
-        document.getElementById('theme-icon').className = 'fa-solid fa-sun text-sm';
-      }
-      updateActiveDayInfo();
-      renderCurrentView();
-    };
-
-    function toggleTheme() {
-      isDark = !isDark;
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-        document.getElementById('theme-icon').className = 'fa-solid fa-sun text-sm';
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-        document.getElementById('theme-icon').className = 'fa-solid fa-moon text-sm';
+          if (homiliaVideosList.length > 0) {
+            if (selectedHomiliaIndex >= homiliaVideosList.length) {
+              selectedHomiliaIndex = 0;
+            }
+            latestHomiliaVideo = homiliaVideosList[selectedHomiliaIndex];
+            renderPreviousHomiliasList();
+            if (currentLength === 'homilia') {
+              updateVideoPlayer();
+            }
+          }
+        }
+      } catch (err) {
+        // Fallback automático a la lista de reproducción de subidas del canal
       }
     }
 
-    function togglePocketLock() {
-      isPocketLocked = !isPocketLocked;
-      const overlay = document.getElementById('pocket-lock-overlay');
-      const lockIcon = document.getElementById('lock-icon');
-      const pocketBtn = document.getElementById('btn-pocket-lock');
-
-      if (isPocketLocked) {
-        overlay.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        lockIcon.className = 'fa-solid fa-lock text-sm text-amber-500';
-        pocketBtn.classList.add('bg-amber-500/10');
-        showToast('Bloqueo de bolsillo activado');
-      } else {
-        overlay.classList.add('hidden');
-        document.body.style.overflow = '';
-        lockIcon.className = 'fa-solid fa-lock-open text-sm';
-        pocketBtn.classList.remove('bg-amber-500/10');
-        showToast('Pantalla desbloqueada');
+    function formatHomiliaDate(dateStr) {
+      if (!dateStr) return '';
+      try {
+        const d = new Date(dateStr.replace(' ', 'T'));
+        if (isNaN(d.getTime())) return '';
+        return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+      } catch (e) {
+        return '';
       }
+    }
+
+    function selectHomiliaByIndex(idx) {
+      if (!homiliaVideosList.length || !homiliaVideosList[idx]) return;
+      selectedHomiliaIndex = idx;
+      latestHomiliaVideo = homiliaVideosList[idx];
+      updateVideoPlayer();
+      renderPreviousHomiliasList();
+    }
+
+    function renderPreviousHomiliasList() {
+      const listEl = document.getElementById('homilias-previous-list');
+      const backBtn = document.getElementById('btn-back-latest-homilia');
+      if (!listEl) return;
+
+      if (backBtn) {
+        if (selectedHomiliaIndex !== 0) {
+          backBtn.classList.remove('hidden');
+        } else {
+          backBtn.classList.add('hidden');
+        }
+      }
+
+      // Mostramos los 5 vídeos anteriores por orden de fecha (índices 1 al 5)
+      const previousVideos = homiliaVideosList.slice(1, 6);
+      if (previousVideos.length === 0) {
+        listEl.innerHTML = '<p class="text-xs text-slate-500 dark:text-slate-400 py-2 text-center">Cargando homilías anteriores...</p>';
+        return;
+      }
+
+      listEl.innerHTML = previousVideos.map(video => {
+        const isSelected = selectedHomiliaIndex === video.index;
+        const dateFormatted = formatHomiliaDate(video.pubDate);
+        const safeTitle = (video.title || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        return [
+          '<button onclick="selectHomiliaByIndex(' + video.index + ')" class="w-full text-left flex items-center gap-3 p-2 rounded-xl border transition-all ' + (
+            isSelected
+              ? 'border-red-500 bg-red-500/10 dark:bg-red-500/15 shadow-sm'
+              : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800'
+          ) + '">',
+            '<div class="w-24 aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700 shrink-0 relative">',
+              '<img src="' + video.thumbnail + '" alt="' + safeTitle + '" class="w-full h-full object-cover">',
+              '<div class="absolute inset-0 bg-black/25 flex items-center justify-center">',
+                '<i class="fa-solid ' + (isSelected ? 'fa-volume-high text-red-400' : 'fa-play text-white/90') + ' text-xs"></i>',
+              '</div>',
+            '</div>',
+            '<div class="flex-1 min-w-0">',
+              '<p class="text-xs font-bold ' + (isSelected ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100') + ' line-clamp-2 leading-snug">' + video.title + '</p>',
+              (dateFormatted ? '<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1"><i class="fa-regular fa-calendar mr-1"></i>' + dateFormatted + '</p>' : ''),
+            '</div>',
+          '</button>'
+        ].join('');
+      }).join('');
+    }
+
+    function openHomilias() {
+      if (currentViewMode !== 'video') {
+        setViewMode('video');
+      }
+      switchRosaryLength('homilia');
+      fetchLatestHomiliaVideo();
+    }
+
+    function getMysteryKeyByDay(dayIdx) {
+      switch (dayIdx) {
+        case 1:
+        case 6:
+          return 'gozosos';
+        case 2:
+        case 5:
+          return 'dolorosos';
+        case 3:
+        case 0:
+          return 'gloriosos';
+        case 4:
+          return 'luminosos';
+        default:
+          return 'gozosos';
+      }
+    }
+
+    function extractYouTubeID(url) {
+      if (!url) return null;
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.trim().match(regExp);
+      if (match && match[2].length === 11) {
+        return match[2];
+      }
+      if (url.trim().length === 11) {
+        return url.trim();
+      }
+      return null;
+    }
+
+    const DEFAULT_PRAYERS = {
+      padrenuestro: localStorage.getItem('rosario_padrenuestro') || 'Padre nuestro, que estás en el cielo, santificado sea tu Nombre...',
+      avemaria: localStorage.getItem('rosario_avemaria') || 'Dios te salve, María, llena eres de gracia, el Señor es contigo...',
+      salve: localStorage.getItem('rosario_salve') || 'Dios te salve, Reina y Madre de misericordia, vida, dulzura y esperanza nuestra...'
+    };
+
+    function editCustomPrayers() {
+      const pn = prompt('Texto del Padre Nuestro:', DEFAULT_PRAYERS.padrenuestro);
+      if (pn !== null && pn.trim() !== '') {
+        DEFAULT_PRAYERS.padrenuestro = pn.trim();
+        localStorage.setItem('rosario_padrenuestro', DEFAULT_PRAYERS.padrenuestro);
+      }
+      const ave = prompt('Texto del Avemaría:', DEFAULT_PRAYERS.avemaria);
+      if (ave !== null && ave.trim() !== '') {
+        DEFAULT_PRAYERS.avemaria = ave.trim();
+        localStorage.setItem('rosario_avemaria', DEFAULT_PRAYERS.avemaria);
+      }
+      const salve = prompt('Texto de La Salve:', DEFAULT_PRAYERS.salve);
+      if (salve !== null && salve.trim() !== '') {
+        DEFAULT_PRAYERS.salve = salve.trim();
+        localStorage.setItem('rosario_salve', DEFAULT_PRAYERS.salve);
+      }
+      const mKey = getMysteryKeyByDay(currentDayIndex);
+      guidedSteps = buildGuidedSteps(mKey);
+      renderGuidedStep();
+      showToast('Textos de oración actualizados');
+    }
+
+    // Construir pasos para el modo interactivo
+    function buildGuidedSteps(mysteryKey) {
+      const mInfo = MYSTERY_INFO[mysteryKey];
+      const steps = [];
+
+      // Paso inicial: Señal de la Cruz e Invocación
+      steps.push({
+        type: 'Inicio del Rosario',
+        detail: 'Oraciones Iniciales',
+        title: 'Nos persignamos e invocamos al Señor',
+        ref: '1. Señal de la Cruz e Invocación',
+        quoteText: '',
+        text: [
+          '<div class="space-y-3">',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
+              '<p class="font-bold text-amber-600 dark:text-amber-400">1. Nos persignamos:</p>',
+              '<p class="italic leading-relaxed">Por la señal de la santa Cruz,<br>de nuestros enemigos,<br>líbranos, Señor, Dios nuestro.<br>En el nombre del Padre y del Hijo y del Espíritu Santo. Amén.</p>',
+            '</div>',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2">',
+              '<p class="font-bold text-amber-600 dark:text-amber-400">2. Decimos:</p>',
+              '<p class="leading-relaxed"><strong>V/.</strong> Dios mío, ven en mi auxilio.<br><strong>R/.</strong> Señor, date prisa en socorrerme.</p>',
+              '<p class="leading-relaxed"><strong>V/.</strong> Gloria al Padre y al Hijo y al Espíritu Santo.<br><strong>R/.</strong> Como era en el principio, ahora y siempre, por los siglos de los siglos. Amén.</p>',
+            '</div>',
+          '</div>'
+        ].join(''),
+        decade: 0,
+        bead: 0
+      });
+
+      // Los 5 misterios
+      mInfo.items.forEach((item, idx) => {
+        const decNum = idx + 1;
+
+        // Anuncio del Misterio + Padre Nuestro
+        steps.push({
+          type: mInfo.name,
+          detail: item.num + ' • Padre Nuestro',
+          title: item.title,
+          ref: 'Cita bíblica: ' + item.ref,
+          quoteText: item.verse + ' — ' + item.desc,
+          text: [
+            '<div class="space-y-2.5">',
+              '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
+                '<p class="font-bold text-amber-600 dark:text-amber-400">Padre Nuestro:</p>',
+                '<p class="leading-relaxed">' + DEFAULT_PRAYERS.padrenuestro + '</p>',
+              '</div>',
+            '</div>'
+          ].join(''),
+          decade: decNum,
+          bead: 0
+        });
+
+        // 10 Avemarías del misterio
+        for (let b = 1; b <= 10; b++) {
+          steps.push({
+            type: mInfo.name + ' • ' + item.num,
+            detail: 'Avemaría ' + b + ' de 10',
+            title: item.title,
+            ref: 'Cita bíblica: ' + item.ref,
+            quoteText: item.verse,
+            text: [
+              '<div class="space-y-2.5">',
+                '<div class="flex items-center justify-between">',
+                  '<span class="font-bold text-amber-600 dark:text-amber-400">' + b + 'ª Avemaría</span>',
+                  '<span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold">' + b + ' / 10</span>',
+                '</div>',
+                '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
+                  '<p class="leading-relaxed">' + DEFAULT_PRAYERS.avemaria + '</p>',
+                '</div>',
+              '</div>'
+            ].join(''),
+            decade: decNum,
+            bead: b
+          });
+        }
+
+        // Gloria y Jaculatorias al término de cada misterio
+        steps.push({
+          type: mInfo.name + ' • Cierre de Misterio',
+          detail: item.num + ' • Gloria y Jaculatorias',
+          title: 'Al término del ' + item.num,
+          ref: item.title,
+          quoteText: item.verse,
+          text: [
+            '<div class="space-y-2.5">',
+              '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">',
+                '<p class="font-bold text-amber-600 dark:text-amber-400">Gloria:</p>',
+                '<p class="leading-relaxed"><strong>V/.</strong> Gloria al Padre y al Hijo y al Espíritu Santo.<br><strong>R/.</strong> Como era en el principio, ahora y siempre, por los siglos de los siglos. Amén.</p>',
+              '</div>',
+              '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2.5">',
+                '<div class="space-y-1">',
+                  '<p class="font-bold text-amber-600 dark:text-amber-400">María, Madre de gracia</p>',
+                  '<p class="leading-relaxed">María, Madre de gracia, Madre de misericordia. Defiéndenos de nuestros enemigos y ampáranos ahora y en la hora de nuestra muerte. Amén.</p>',
+                '</div>',
+                '<div class="space-y-1 pt-1">',
+                  '<p class="font-bold text-amber-600 dark:text-amber-400">Oh, Jesús Mío</p>',
+                  '<p class="leading-relaxed">Oh Jesús mío, perdónanos. Líbranos del fuego del infierno, lleva a todas las almas al cielo, especialmente a las más necesitadas.</p>',
+                '</div>',
+              '</div>',
+            '</div>'
+          ].join(''),
+          decade: decNum,
+          bead: 10
+        });
+      });
+
+      // Paso: Letanías Lauretanas
+      steps.push({
+        type: 'Conclusión del Rosario',
+        detail: 'Letanías de la Virgen',
+        title: 'Letanías Lauretanas',
+        ref: 'Súplicas a Nuestra Señora',
+        quoteText: 'Aclamamos a la Santísima Virgen María con las letanías y la oración final.',
+        text: [
+          '<div class="space-y-3">',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">',
+              '<p>Señor, ten piedad</p>',
+              '<p>Cristo, ten piedad</p>',
+              '<p>Señor, ten piedad.</p>',
+              '<p>Cristo, óyenos.</p>',
+              '<p>Cristo, escúchanos.</p>',
+            '</div>',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">',
+              '<p>Dios, Padre celestial, <strong>ten piedad de nosotros.</strong></p>',
+              '<p>Dios, Hijo, Redentor del mundo, <strong>ten piedad de nosotros.</strong></p>',
+              '<p>Dios, Espíritu Santo, <strong>ten piedad de nosotros.</strong></p>',
+              '<p>Santísima Trinidad, un solo Dios, <strong>ten piedad de nosotros.</strong></p>',
+            '</div>',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">',
+              '<p class="text-xs font-bold text-amber-600 dark:text-amber-400 mb-1">Respondemos a cada invocación: "Ruega por nosotros"</p>',
+              '<p>Santa María, <strong>ruega por nosotros.</strong></p>',
+              '<p>Santa Madre de Dios,</p>',
+              '<p>Santa Virgen de las Vírgenes,</p>',
+              '<p>Madre de Cristo,</p>',
+              '<p>Madre de la Iglesia,</p>',
+              '<p>Madre de la misericordia,</p>',
+              '<p>Madre de la divina gracia,</p>',
+              '<p>Madre de la esperanza,</p>',
+              '<p>Madre purísima,</p>',
+              '<p>Madre castísima,</p>',
+              '<p>Madre siempre virgen,</p>',
+              '<p>Madre inmaculada,</p>',
+              '<p>Madre amable,</p>',
+              '<p>Madre admirable,</p>',
+              '<p>Madre del buen consejo,</p>',
+              '<p>Madre del Creador,</p>',
+              '<p>Madre del Salvador,</p>',
+              '<p>Virgen prudentísima,</p>',
+              '<p>Virgen digna de veneración,</p>',
+              '<p>Virgen digna de alabanza,</p>',
+              '<p>Virgen poderosa,</p>',
+              '<p>Virgen clemente,</p>',
+              '<p>Virgen fiel,</p>',
+              '<p>Espejo de justicia,</p>',
+              '<p>Trono de la sabiduría,</p>',
+              '<p>Causa de nuestra alegría,</p>',
+              '<p>Vaso espiritual,</p>',
+              '<p>Vaso digno de honor,</p>',
+              '<p>Vaso de insigne devoción,</p>',
+              '<p>Rosa mística,</p>',
+              '<p>Torre de David,</p>',
+              '<p>Torre de marfil,</p>',
+              '<p>Casa de oro,</p>',
+              '<p>Arca de la Alianza,</p>',
+              '<p>Puerta del cielo,</p>',
+              '<p>Estrella de la mañana,</p>',
+              '<p>Salud de los enfermos,</p>',
+              '<p>Refugio de los pecadores,</p>',
+              '<p>Consuelo de los migrantes,</p>',
+              '<p>Consoladora de los afligidos,</p>',
+              '<p>Auxilio de los cristianos,</p>',
+              '<p>Reina de los Ángeles,</p>',
+              '<p>Reina de los Patriarcas,</p>',
+              '<p>Reina de los Profetas,</p>',
+              '<p>Reina de los Apóstoles,</p>',
+              '<p>Reina de los Mártires,</p>',
+              '<p>Reina de los Confesores,</p>',
+              '<p>Reina de las Vírgenes,</p>',
+              '<p>Reina de todos los Santos,</p>',
+              '<p>Reina concebida sin pecado original,</p>',
+              '<p>Reina asunta a los Cielos,</p>',
+              '<p>Reina del Santísimo Rosario,</p>',
+              '<p>Reina de la familia,</p>',
+              '<p>Reina de la paz.</p>',
+            '</div>',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">',
+              '<p>Cordero de Dios, que quitas el pecado del mundo, <strong>perdónanos, Señor.</strong></p>',
+              '<p>Cordero de Dios, que quitas el pecado del mundo, <strong>escúchanos, Señor.</strong></p>',
+              '<p>Cordero de Dios, que quitas el pecado del mundo, <strong>ten misericordia de nosotros.</strong></p>',
+              '<p class="pt-1"><strong>V/.</strong> Ruega por nosotros, Santa Madre de Dios.<br><strong>R/.</strong> Para que seamos dignos de alcanzar las promesas de Cristo.</p>',
+            '</div>',
+            '<div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">',
+              '<p class="font-bold text-amber-700 dark:text-amber-300">ORACIÓN:</p>',
+              '<p class="leading-relaxed">Te rogamos nos concedas, Señor Dios nuestro, gozar de continua salud de alma y cuerpo, y por la gloriosa intercesión de la bienaventurada siempre Virgen María, vernos libres de las tristezas de la vida presente y disfrutar de las alegrías eternas. Por Cristo nuestro Señor. Amén.</p>',
+            '</div>',
+          '</div>'
+        ].join(''),
+        decade: 5,
+        bead: 10
+      });
+
+      // Paso Final: Intenciones del Papa y La Salve
+      steps.push({
+        type: 'Conclusión del Rosario',
+        detail: 'Intenciones del Papa y La Salve',
+        title: 'Por las intenciones del Papa y La Salve',
+        ref: 'Clausura del Santo Rosario',
+        quoteText: 'Rezamos un Padre Nuestro por las intenciones del Santo Padre y las necesidades de la Iglesia, y concluimos con La Salve.',
+        text: [
+          '<div class="space-y-3">',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
+              '<p class="font-bold text-amber-600 dark:text-amber-400">6. Por las intenciones del Papa y las necesidades de la Iglesia (Padre Nuestro):</p>',
+              '<p class="leading-relaxed">' + DEFAULT_PRAYERS.padrenuestro + '</p>',
+            '</div>',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
+              '<p class="font-bold text-amber-600 dark:text-amber-400">7. La Salve:</p>',
+              '<p class="leading-relaxed">' + DEFAULT_PRAYERS.salve + '</p>',
+            '</div>',
+          '</div>'
+        ].join(''),
+        decade: 5,
+        bead: 10
+      });
+
+      return steps;
+    }
+
+    /* ========================================================================
+       FUNCIONES DE INTERFAZ Y RENDERIZADO
+       ======================================================================== */
+    function renderCurrentDay() {
+      const mKey = getMysteryKeyByDay(currentDayIndex);
+      const mInfo = MYSTERY_INFO[mKey];
+      const dayName = DAY_NAMES[currentDayIndex];
+
+      // Encabezado superior
+      const todayBadge = document.getElementById('today-badge');
+      todayBadge.textContent = dayName + ' • ' + mInfo.name;
+
+      // Etiqueta Hoy vs Día elegido
+      const activeDayLabel = document.getElementById('active-day-label');
+      const btnReturnToday = document.getElementById('btn-return-today');
+      if (currentDayIndex === realDayIndex) {
+        activeDayLabel.textContent = 'Hoy • ' + dayName;
+        btnReturnToday.classList.add('hidden');
+      } else {
+        activeDayLabel.textContent = 'Viendo: ' + dayName;
+        btnReturnToday.classList.remove('hidden');
+      }
+
+      // Título de Misterios
+      document.getElementById('mystery-title').textContent = mInfo.name;
+      document.getElementById('mystery-days-hint').textContent = 'Se rezan los ' + mInfo.daysDesc;
+
+      // Lista de los 5 misterios (clicables para abrir modal con información completa)
+      const listEl = document.getElementById('mysteries-brief-list');
+      listEl.innerHTML = mInfo.items.map((item, index) => [
+        '<li onclick="openMysteryByCurrentDay(' + index + ')" class="cursor-pointer group flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 hover:bg-amber-500/10 dark:bg-slate-800/50 dark:hover:bg-amber-500/10 border border-slate-100 hover:border-amber-500/40 dark:border-slate-800 dark:hover:border-amber-500/40 transition-all active:scale-[0.99]">',
+          '<span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-amber-500 group-hover:text-white transition-colors">',
+            (index + 1),
+          '</span>',
+          '<div class="flex-1 min-w-0 space-y-1">',
+            '<div class="flex items-start justify-between gap-2">',
+              '<div class="font-bold text-slate-800 dark:text-slate-100 leading-snug group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">' + item.title + ' <span class="text-[11px] font-normal text-amber-600 dark:text-amber-400">(' + item.ref + ')</span></div>',
+              '<i class="fa-solid fa-circle-info text-amber-500/70 group-hover:text-amber-500 text-xs shrink-0 mt-0.5"></i>',
+            '</div>',
+            '<p class="text-[11px] text-slate-500 dark:text-slate-400 leading-normal line-clamp-2">' + item.desc + '</p>',
+            '<p class="text-[10px] font-semibold text-amber-600 dark:text-amber-400 pt-0.5 flex items-center gap-1">',
+              '<span>Tocar para ver versículo y aplicación</span>',
+              '<i class="fa-solid fa-chevron-right text-[8px]"></i>',
+            '</p>',
+          '</div>',
+        '</li>'
+      ].join('')).join('');
+
+      // Resaltar día en el modal
+      document.querySelectorAll('.day-selector-btn').forEach(btn => {
+        const d = parseInt(btn.getAttribute('data-day'), 10);
+        if (d === currentDayIndex) {
+          btn.className = 'day-selector-btn py-2.5 px-1 rounded-xl border border-amber-500 bg-amber-500 text-white font-bold text-center shadow-sm';
+        } else {
+          btn.className = 'day-selector-btn py-2.5 px-1 rounded-xl border border-slate-200 dark:border-slate-700 font-medium text-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        }
+      });
+
+      // Reconstruir pasos interactivos
+      guidedSteps = buildGuidedSteps(mKey);
+      currentStepIndex = 0;
+      renderGuidedStep();
+      updateVideoPlayer();
+    }
+
+    function updateVideoPlayer() {
+      const mKey = getMysteryKeyByDay(currentDayIndex);
+      const videoSection = ROSARY_VIDEOS[mKey];
+      const iframe = document.getElementById('youtube-player');
+      const versionTag = document.getElementById('video-version-tag');
+      const timingEstimate = document.getElementById('video-timing-estimate');
+      const externalBtn = document.getElementById('btn-external-youtube');
+      const mysteriesCard = document.getElementById('mysteries-card-container');
+      const homiliasHistoryCard = document.getElementById('homilias-history-container');
+
+      if (currentLength === 'homilia') {
+        if (mysteriesCard) mysteriesCard.classList.add('hidden');
+        if (homiliasHistoryCard) homiliasHistoryCard.classList.remove('hidden');
+        versionTag.textContent = latestHomiliaVideo.title || 'Homilía Diaria';
+        if (timingEstimate) timingEstimate.classList.add('hidden');
+        if (latestHomiliaVideo.id) {
+          iframe.src = 'https://www.youtube.com/embed/' + latestHomiliaVideo.id + '?rel=0';
+          externalBtn.href = latestHomiliaVideo.url;
+        } else {
+          iframe.src = 'https://www.youtube.com/embed/videoseries?list=' + HOMILIA_UPLOADS_PLAYLIST + '&rel=0';
+          externalBtn.href = latestHomiliaVideo.url;
+        }
+        renderPreviousHomiliasList();
+      } else {
+        if (mysteriesCard) mysteriesCard.classList.remove('hidden');
+        if (homiliasHistoryCard) homiliasHistoryCard.classList.add('hidden');
+        const selected = currentLength === 'corta' ? videoSection.short : videoSection.long;
+        versionTag.textContent = selected.title;
+        if (timingEstimate) timingEstimate.classList.add('hidden');
+        iframe.src = 'https://www.youtube.com/embed/' + selected.id + '?rel=0';
+        externalBtn.href = selected.url;
+      }
+
+      updateLengthButtonsUI();
+    }
+
+    function updateLengthButtonsUI() {
+      const topCorta = document.getElementById('btn-len-corta');
+      const topLarga = document.getElementById('btn-len-larga');
+
+      const footCorta = document.getElementById('footer-btn-corta');
+      const footLarga = document.getElementById('footer-btn-larga');
+
+      const tabVideo = document.getElementById('tab-view-video');
+      const tabGuided = document.getElementById('tab-view-guided');
+      const tabHomilia = document.getElementById('tab-view-homilia');
+      const tabPrayers = document.getElementById('tab-view-prayers');
+
+      const activeTopClass = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm font-bold';
+      const inactiveTopClass = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
+
+      if (topCorta) topCorta.className = currentLength === 'corta' ? activeTopClass : inactiveTopClass;
+      if (topLarga) topLarga.className = currentLength === 'larga' ? activeTopClass : inactiveTopClass;
+
+      const activeFootClass = 'flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+      const inactiveFootClass = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
+
+      if (footCorta) footCorta.className = currentLength === 'corta' ? activeFootClass : inactiveFootClass;
+      if (footLarga) footLarga.className = currentLength === 'larga' ? activeFootClass : inactiveFootClass;
+
+      // Actualizar pestañas superiores
+      const activeNavClass = 'flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm';
+      const activeNavHomiliaClass = 'flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm';
+      const inactiveNavClass = 'flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+
+      const iconVideo = document.getElementById('icon-tab-video');
+      const iconGuided = document.getElementById('icon-tab-guided');
+      const iconHomilia = document.getElementById('icon-tab-homilia');
+      const iconPrayers = document.getElementById('icon-tab-prayers');
+
+      if (currentViewMode === 'guided') {
+        tabVideo.className = inactiveNavClass;
+        tabGuided.className = activeNavClass;
+        tabHomilia.className = inactiveNavClass;
+        tabPrayers.className = inactiveNavClass;
+        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
+        if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-white text-sm';
+        if (iconHomilia) iconHomilia.className = 'fa-solid fa-church text-red-500 text-sm';
+        if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm';
+      } else if (currentLength === 'homilia') {
+        tabVideo.className = inactiveNavClass;
+        tabGuided.className = inactiveNavClass;
+        tabHomilia.className = activeNavHomiliaClass;
+        tabPrayers.className = inactiveNavClass;
+        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
+        if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-amber-500 text-sm';
+        if (iconHomilia) iconHomilia.className = 'fa-solid fa-church text-white text-sm';
+        if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm';
+      } else if (currentViewMode === 'prayers') {
+        tabVideo.className = inactiveNavClass;
+        tabGuided.className = inactiveNavClass;
+        tabHomilia.className = inactiveNavClass;
+        tabPrayers.className = activeNavClass;
+        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
+        if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-amber-500 text-sm';
+        if (iconHomilia) iconHomilia.className = 'fa-solid fa-church text-red-500 text-sm';
+        if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-white text-sm';
+      } else {
+        tabVideo.className = activeNavClass;
+        tabGuided.className = inactiveNavClass;
+        tabHomilia.className = inactiveNavClass;
+        tabPrayers.className = inactiveNavClass;
+        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-white text-sm';
+        if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-amber-500 text-sm';
+        if (iconHomilia) iconHomilia.className = 'fa-solid fa-church text-red-500 text-sm';
+        if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm';
+      }
+    }
+
+    function switchRosaryLength(len) {
+      currentLength = len;
+      updateVideoPlayer();
+    }
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      const secVideo = document.getElementById('section-video');
+      const secGuided = document.getElementById('section-guided');
+      const secPrayers = document.getElementById('section-prayers');
+      const banner = document.getElementById('top-day-banner');
+      const footVideo = document.getElementById('footer-controls-video');
+      const footGuided = document.getElementById('footer-controls-guided');
+      const footPrayers = document.getElementById('footer-controls-prayers');
+
+      const tabVideo = document.getElementById('tab-view-video');
+      const tabGuided = document.getElementById('tab-view-guided');
+      const tabHomilia = document.getElementById('tab-view-homilia');
+      const tabPrayers = document.getElementById('tab-view-prayers');
+
+      const activeNavClass = 'flex-1 py-1.5 px-1.5 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm';
+      const inactiveNavClass = 'flex-1 py-1.5 px-1.5 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+
+      const iconVideo = document.getElementById('icon-tab-video');
+      const iconGuided = document.getElementById('icon-tab-guided');
+      const iconPrayers = document.getElementById('icon-tab-prayers');
+
+      if (mode === 'video') {
+        if (currentLength === 'homilia') currentLength = 'corta';
+        secVideo.classList.remove('hidden');
+        secGuided.classList.add('hidden');
+        secPrayers.classList.add('hidden');
+        banner.classList.remove('hidden');
+        footVideo.classList.remove('hidden');
+        footGuided.classList.add('hidden');
+        footPrayers.classList.add('hidden');
+        tabVideo.className = activeNavClass;
+        tabGuided.className = inactiveNavClass;
+        tabHomilia.className = inactiveNavClass;
+        tabPrayers.className = inactiveNavClass;
+        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-white text-sm';
+        if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-amber-500 text-sm';
+        if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm';
+        updateVideoPlayer();
+      } else if (mode === 'guided') {
+        secVideo.classList.add('hidden');
+        secGuided.classList.remove('hidden');
+        secPrayers.classList.add('hidden');
+        banner.classList.remove('hidden');
+        footVideo.classList.add('hidden');
+        footGuided.classList.remove('hidden');
+        footPrayers.classList.add('hidden');
+        tabVideo.className = inactiveNavClass;
+        tabGuided.className = activeNavClass;
+        tabHomilia.className = inactiveNavClass;
+        tabPrayers.className = inactiveNavClass;
+        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
+        if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-white text-sm';
+        if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm';
+        renderGuidedStep();
+        updateLengthButtonsUI();
+      } else if (mode === 'prayers') {
+        secVideo.classList.add('hidden');
+        secGuided.classList.add('hidden');
+        secPrayers.classList.remove('hidden');
+        banner.classList.add('hidden');
+        footVideo.classList.add('hidden');
+        footGuided.classList.add('hidden');
+        footPrayers.classList.remove('hidden');
+        tabVideo.className = inactiveNavClass;
+        tabGuided.className = inactiveNavClass;
+        tabHomilia.className = inactiveNavClass;
+        tabPrayers.className = activeNavClass;
+        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
+        if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-amber-500 text-sm';
+        if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-white text-sm';
+      }
+    }
+
+    /* ========================================================================
+       LOGICA DEL DECENARIO Y REZO GUIADO
+       ======================================================================== */
+    function renderGuidedStep() {
+      if (!guidedSteps.length) return;
+      const step = guidedSteps[currentStepIndex];
+      const total = guidedSteps.length;
+      const pct = Math.round(((currentStepIndex + 1) / total) * 100);
+
+      document.getElementById('step-label').textContent = 'Paso ' + (currentStepIndex + 1) + ' de ' + total;
+      document.getElementById('step-percentage').textContent = pct + '%';
+      document.getElementById('progress-bar-fill').style.width = pct + '%';
+
+      document.getElementById('decade-indicator').textContent = step.decade > 0 ? step.decade + 'º Misterio' : 'Oraciones Generales';
+      document.getElementById('bead-indicator').textContent = step.bead > 0 ? 'Cuenta ' + step.bead + '/10' : 'Cuenta Mayor';
+
+      // Renderizar las 10 cuentas de la decena
+      const beadsRow = document.getElementById('beads-row');
+      let beadsHTML = '';
+      for (let i = 1; i <= 10; i++) {
+        let beadStyle = 'w-6 h-6 rounded-full border text-[10px] font-bold flex items-center justify-center transition-all ';
+        if (step.bead > i) {
+          beadStyle += 'bg-amber-500 border-amber-500 text-white';
+        } else if (step.bead === i) {
+          beadStyle += 'bg-amber-600 border-amber-400 text-white scale-125 ring-4 ring-amber-500/20';
+        } else {
+          beadStyle += 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-400';
+        }
+        beadsHTML += '<div class="' + beadStyle + '">' + i + '</div>';
+      }
+      beadsRow.innerHTML = beadsHTML;
+
+      // Contenido de la tarjeta
+      document.getElementById('step-title').textContent = step.title;
+
+      const mKey = getMysteryKeyByDay(currentDayIndex);
+      const guidedCard = document.getElementById('guided-mystery-card');
+      const infoBtn = document.getElementById('btn-step-mystery-info');
+      if (step.decade >= 1 && step.decade <= 5 && MYSTERY_INFO[mKey] && MYSTERY_INFO[mKey].items[step.decade - 1]) {
+        const mIdx = step.decade - 1;
+        if (infoBtn) {
+          infoBtn.classList.remove('hidden');
+          infoBtn.classList.add('inline-flex');
+          infoBtn.onclick = function (e) {
+            e.stopPropagation();
+            openMysteryDetailModal(mKey, mIdx);
+          };
+        }
+        if (guidedCard) {
+          guidedCard.classList.add('cursor-pointer', 'hover:border-amber-500/40');
+          guidedCard.onclick = function () {
+            openMysteryDetailModal(mKey, mIdx);
+          };
+        }
+      } else {
+        if (infoBtn) {
+          infoBtn.classList.add('hidden');
+          infoBtn.classList.remove('inline-flex');
+          infoBtn.onclick = null;
+        }
+        if (guidedCard) {
+          guidedCard.classList.remove('cursor-pointer', 'hover:border-amber-500/40');
+          guidedCard.onclick = null;
+        }
+      }
+
+      const scriptureBox = document.getElementById('step-scripture-box');
+      if (step.quoteText) {
+        scriptureBox.classList.remove('hidden');
+        document.getElementById('step-quote').textContent = step.ref;
+        document.getElementById('step-quote-text').textContent = step.quoteText;
+      } else {
+        scriptureBox.classList.add('hidden');
+      }
+
+      document.getElementById('step-text').innerHTML = step.text;
+
+      // Estado de botones inferior
+      document.getElementById('btn-guided-prev').disabled = currentStepIndex === 0;
+      const nextBtnText = document.getElementById('guided-btn-text');
+      if (currentStepIndex === total - 1) {
+        nextBtnText.textContent = 'Reiniciar Rosario';
+      } else {
+        nextBtnText.textContent = 'Rezar y Continuar';
+      }
+    }
+
+    function stepNext() {
+      if (currentStepIndex < guidedSteps.length - 1) {
+        currentStepIndex++;
+      } else {
+        currentStepIndex = 0;
+        showToast('Has completado el Santo Rosario');
+      }
+      renderGuidedStep();
+    }
+
+    function stepPrevious() {
+      if (currentStepIndex > 0) {
+        currentStepIndex--;
+        renderGuidedStep();
+      }
+    }
+
+    /* ========================================================================
+       UTILIDADES: TEMA, MODAL, PORTAPAPELES
+       ======================================================================== */
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      html.classList.toggle('dark');
+      if (html.classList.contains('dark')) {
+        icon.className = 'fa-solid fa-sun text-amber-400 text-sm';
+      } else {
+        icon.className = 'fa-solid fa-moon text-sm';
+      }
+    }
+
+    function openConfigModal() {
+      document.getElementById('modal-config').classList.remove('hidden');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('modal-config').classList.add('hidden');
+    }
+
+    function openMysteryByCurrentDay(itemIndex) {
+      const mKey = getMysteryKeyByDay(currentDayIndex);
+      openMysteryDetailModal(mKey, itemIndex);
+    }
+
+    function openPrayerDetail(prayerIndex) {
+      const p = SPECIAL_PRAYERS[prayerIndex];
+      if (!p) return;
+      document.getElementById('modal-prayer-title').textContent = p.title;
+      document.getElementById('modal-prayer-text').innerHTML = p.text.replace(/\n\n/g, '<br><br>');
+      document.getElementById('modal-prayer-detail').classList.remove('hidden');
+    }
+
+    function closePrayerDetailModal() {
+      document.getElementById('modal-prayer-detail').classList.add('hidden');
+    }
+
+    function openMysteryDetailModal(mysteryKey, itemIndex) {
+      const mInfo = MYSTERY_INFO[mysteryKey];
+      if (!mInfo || !mInfo.items[itemIndex]) return;
+      const item = mInfo.items[itemIndex];
+
+      document.getElementById('modal-mystery-badge').textContent = mInfo.name + ' • ' + item.num;
+      document.getElementById('modal-mystery-title').textContent = item.title;
+      document.getElementById('modal-mystery-ref').textContent = item.ref;
+      document.getElementById('modal-mystery-verse').textContent = item.verse;
+      document.getElementById('modal-mystery-explanation').textContent = item.desc;
+      document.getElementById('modal-mystery-application').textContent = item.application;
+      document.getElementById('modal-mystery-reflection').textContent = item.reflection;
+
+      document.getElementById('modal-mystery-detail').classList.remove('hidden');
+    }
+
+    function closeMysteryDetailModal() {
+      document.getElementById('modal-mystery-detail').classList.add('hidden');
+    }
+
+    function selectDay(dayIdx) {
+      currentDayIndex = dayIdx;
+      renderCurrentDay();
+      closeConfigModal();
+    }
+
+    function resetToToday() {
+      currentDayIndex = realDayIndex;
+      renderCurrentDay();
+      closeConfigModal();
+    }
+
+    function copyCurrentLink() {
+      const externalUrl = document.getElementById('btn-external-youtube').href;
+      const tempInput = document.createElement('textarea');
+      tempInput.value = externalUrl;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast('Enlace copiado al portapapeles');
     }
 
     function showToast(msg) {
@@ -798,338 +1642,14 @@
       toast.classList.remove('opacity-0');
       setTimeout(() => {
         toast.classList.add('opacity-0');
-      }, 2000);
+      }, 2400);
     }
 
-    function getActiveKey() {
-      const day = selectedDayOverride !== null ? selectedDayOverride : currentDayIndex;
-      if (day === 1 || day === 6) return 'gozosos';
-      if (day === 2 || day === 5) return 'dolorosos';
-      if (day === 3 || day === 0) return 'gloriosos';
-      if (day === 4) return 'luminosos';
-      return 'gozosos';
-    }
-
-    function updateActiveDayInfo() {
-      const daysNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-      const activeDay = selectedDayOverride !== null ? selectedDayOverride : currentDayIndex;
-      
-      document.getElementById('today-badge').textContent = daysNames[activeDay] + (selectedDayOverride !== null ? ' (Manual)' : '');
-      
-      const key = getActiveKey();
-      const info = rosaryData[key];
-      
-      document.getElementById('mystery-title').textContent = info.name;
-      document.getElementById('mystery-days-hint').textContent = 'Días correspondientes: ' + info.hint;
-      
-      // Banner superior indicador
-      if (selectedDayOverride !== null) {
-        document.getElementById('active-day-label').textContent = daysNames[activeDay];
-        document.getElementById('btn-return-today').classList.remove('hidden');
-      } else {
-        document.getElementById('active-day-label').textContent = 'Hoy (' + daysNames[activeDay] + ')';
-        document.getElementById('btn-return-today').classList.add('hidden');
-      }
-
-      // Renderizar lista breve de misterios
-      const briefList = document.getElementById('mysteries-brief-list');
-      briefList.innerHTML = '';
-      info.mysteries.forEach((m, idx) => {
-        const li = document.createElement('li');
-        li.className = 'flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-amber-500/10 transition-colors cursor-pointer';
-        li.innerHTML = `
-          <div class="flex items-center space-x-2 truncate">
-            <span class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-[11px] flex items-center justify-center shrink-0">${idx+1}</span>
-            <span class="font-medium truncate text-slate-800 dark:text-slate-200">${m.title.split('. ')[1]}</span>
-          </div>
-          <button onclick="openMysteryDetail(${idx})" class="text-xs font-semibold text-amber-600 dark:text-amber-400 shrink-0 ml-2">Ver</button>
-        `;
-        briefList.appendChild(li);
-      });
-    }
-
-    function setViewMode(mode) {
-      currentViewMode = mode;
-      
-      // Actualizar pestañas principales
-      const tabVideo = document.getElementById('tab-view-video');
-      const tabGuided = document.getElementById('tab-view-guided');
-      const tabHomilia = document.getElementById('tab-view-homilia');
-      const tabPrayers = document.getElementById('tab-view-prayers');
-      
-      // Reset classes
-      [tabVideo, tabGuided, tabHomilia, tabPrayers].forEach(t => {
-        t.className = "flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800";
-      });
-
-      document.getElementById('icon-tab-video').className = "fa-brands fa-youtube text-sm text-slate-500";
-      document.getElementById('icon-tab-guided').className = "fa-solid fa-hands-praying text-amber-500 text-sm";
-      document.getElementById('icon-tab-homilia').className = "fa-solid fa-church text-red-500 text-sm";
-      document.getElementById('icon-tab-prayers').className = "fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm";
-
-      if (mode === 'video') {
-        tabVideo.className = "flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm";
-        document.getElementById('icon-tab-video').className = "fa-brands fa-youtube text-sm text-white";
-        document.getElementById('top-day-banner').classList.remove('hidden');
-        document.getElementById('video-length-selector-container').classList.remove('hidden');
-        document.getElementById('mysteries-card-container').classList.remove('hidden');
-        document.getElementById('homilias-history-container').classList.add('hidden');
-      } else if (mode === 'homilia') {
-        tabHomilia.className = "flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-red-600 text-white shadow-sm";
-        document.getElementById('icon-tab-homilia').className = "fa-solid fa-church text-sm text-white";
-        // En homilias quitamos banner superior, selector de corto/largo y misterios
-        document.getElementById('top-day-banner').classList.add('hidden');
-        document.getElementById('video-length-selector-container').classList.add('hidden');
-        document.getElementById('mysteries-card-container').classList.add('hidden');
-        document.getElementById('homilias-history-container').classList.remove('hidden');
-        renderHomiliasHistory();
-      } else if (mode === 'guided') {
-        tabGuided.className = "flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm";
-        document.getElementById('icon-tab-guided').className = "fa-solid fa-hands-praying text-sm text-white";
-        document.getElementById('top-day-banner').classList.remove('hidden');
-      } else if (mode === 'prayers') {
-        tabPrayers.className = "flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm";
-        document.getElementById('icon-tab-prayers').className = "fa-solid fa-book-open text-sm text-white";
-        document.getElementById('top-day-banner').classList.add('hidden');
-      }
-
-      renderCurrentView();
-    }
-
-    function openHomilias() {
-      setViewMode('homilia');
-      selectHomiliaByIndex(0);
-    }
-
-    function renderCurrentView() {
-      const secVideo = document.getElementById('section-video');
-      const secGuided = document.getElementById('section-guided');
-      const secPrayers = document.getElementById('section-prayers');
-      
-      const footerVideo = document.getElementById('footer-controls-video');
-      const footerGuided = document.getElementById('footer-controls-guided');
-      const footerPrayers = document.getElementById('footer-controls-prayers');
-
-      // Ocultar todas las secciones y controles inferiores
-      secVideo.classList.add('hidden');
-      secGuided.classList.add('hidden');
-      secPrayers.classList.add('hidden');
-      footerVideo.classList.add('hidden');
-      footerGuided.classList.add('hidden');
-      footerPrayers.classList.add('hidden');
-
-      if (currentViewMode === 'video' || currentViewMode === 'homilia') {
-        secVideo.classList.remove('hidden');
-        if (currentViewMode === 'video') {
-          footerVideo.classList.remove('hidden');
-          updateVideoPlayer();
-        } else {
-          // Vista homilía
-          footerPrayers.classList.remove('hidden');
-        }
-      } else if (currentViewMode === 'guided') {
-        secGuided.classList.remove('hidden');
-        footerGuided.classList.remove('hidden');
-        renderGuidedStep();
-      } else if (currentViewMode === 'prayers') {
-        secPrayers.classList.remove('hidden');
-        footerPrayers.classList.remove('hidden');
-      }
-    }
-
-    function switchRosaryLength(len) {
-      currentLength = len;
-      const btnCorta = document.getElementById('btn-len-corta');
-      const btnLarga = document.getElementById('btn-len-larga');
-      const footerCorta = document.getElementById('footer-btn-corta');
-      const footerLarga = document.getElementById('footer-btn-larga');
-
-      if (len === 'corta') {
-        btnCorta.className = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm font-bold";
-        btnLarga.className = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold";
-        footerCorta.className = "flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all";
-        footerLarga.className = "flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all";
-      } else {
-        btnLarga.className = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm font-bold";
-        btnCorta.className = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold";
-        footerLarga.className = "flex-1 h-11 rounded-xl border border-blue-500 bg-blue-500/10 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all";
-        footerCorta.className = "flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all";
-      }
-      updateVideoPlayer();
-    }
-
-    function updateVideoPlayer() {
-      const key = getActiveKey();
-      const url = youtubeVideos[key][currentLength];
-      document.getElementById('youtube-player').src = url;
-      document.getElementById('btn-external-youtube').href = url;
-      document.getElementById('video-version-tag').textContent = (currentViewMode === 'homilia' ? 'Homilía' : `Rosario ${currentLength.toUpperCase()}`);
-    }
-
-    function selectHomiliaByIndex(idx) {
-      currentHomiliaIndex = idx;
-      const hom = homiliasData[idx];
-      document.getElementById('youtube-player').src = hom.url;
-      document.getElementById('btn-external-youtube').href = hom.url;
-      document.getElementById('video-version-tag').textContent = hom.title;
-      renderHomiliasHistory();
-    }
-
-    function renderHomiliasHistory() {
-      const container = document.getElementById('homilias-previous-list');
-      container.innerHTML = '';
-      homiliasData.forEach((h, idx) => {
-        const div = document.createElement('div');
-        div.className = `p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-colors ${idx === currentHomiliaIndex ? 'bg-red-500/10 border-red-500/40 text-red-700 dark:text-red-300 font-bold' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'}`;
-        div.onclick = () => selectHomiliaByIndex(idx);
-        div.innerHTML = `
-          <div class="flex items-center space-x-2.5 truncate">
-            <i class="fa-solid fa-church text-red-500 shrink-0"></i>
-            <span class="truncate text-xs">${h.title}</span>
-          </div>
-          <span class="text-[10px] text-slate-500 shrink-0">${h.date}</span>
-        `;
-        container.appendChild(div);
-      });
-      if (currentHomiliaIndex > 0) {
-        document.getElementById('btn-back-latest-homilia').classList.remove('hidden');
-      } else {
-        document.getElementById('btn-back-latest-homilia').classList.add('hidden');
-      }
-    }
-
-    // Config / Manual Day selection
-    function openConfigModal() {
-      document.getElementById('modal-config').classList.remove('hidden');
-    }
-    function closeConfigModal() {
-      document.getElementById('modal-config').classList.add('hidden');
-    }
-    function selectDay(dayNum) {
-      selectedDayOverride = dayNum;
-      closeConfigModal();
-      updateActiveDayInfo();
-      renderCurrentView();
-    }
-    function resetToToday() {
-      selectedDayOverride = null;
-      closeConfigModal();
-      updateActiveDayInfo();
-      renderCurrentView();
-    }
-
-    // Modal de detalle de misterio
-    function openMysteryDetail(mysteryIndex) {
-      const key = getActiveKey();
-      const m = rosaryData[key].mysteries[mysteryIndex];
-      document.getElementById('modal-mystery-badge').textContent = rosaryData[key].name;
-      document.getElementById('modal-mystery-title').textContent = m.title;
-      document.getElementById('modal-mystery-ref').textContent = m.ref;
-      document.getElementById('modal-mystery-verse').textContent = `"${m.verse}"`;
-      document.getElementById('modal-mystery-explanation').textContent = m.explanation;
-      document.getElementById('modal-mystery-application').textContent = m.application;
-      document.getElementById('modal-mystery-reflection').textContent = m.reflection;
-
-      document.getElementById('modal-mystery-detail').classList.remove('hidden');
-    }
-    function closeMysteryDetailModal() {
-      document.getElementById('modal-mystery-detail').classList.add('hidden');
-    }
-
-    // Modal de Oración Especial
-    function openPrayerDetail(idx) {
-      const p = prayersList[idx];
-      document.getElementById('modal-prayer-title').textContent = p.title;
-      document.getElementById('modal-prayer-text').textContent = p.text;
-      document.getElementById('modal-prayer-detail').classList.remove('hidden');
-    }
-    function closePrayerDetailModal() {
-      document.getElementById('modal-prayer-detail').classList.add('hidden');
-    }
-
-    function copyCurrentLink() {
-      const url = window.location.href;
-      const dummy = document.createElement('input');
-      document.body.appendChild(dummy);
-      dummy.value = url;
-      dummy.select();
-      document.execCommand('copy');
-      document.body.removeChild(dummy);
-      showToast('Enlace copiado al portapapeles');
-    }
-
-    // Lógica de Rezo Guiado Interactivo
-    // Pasos: 0: Inicio, 1-5: Misterios con sus avemarías y jaculatorias
-    let guidedStep = 0; // 0 a 50 aprox
-    function renderGuidedStep() {
-      // Simplificado para el flujo guiado interactivo
-      const totalSteps = 60;
-      const percentage = Math.round((guidedStep / totalSteps) * 100);
-      document.getElementById('step-percentage').textContent = percentage + '%';
-      document.getElementById('progress-bar-fill').style.width = percentage + '%';
-      document.getElementById('step-label').textContent = `Paso ${guidedStep + 1} de ${totalSteps}`;
-
-      const key = getActiveKey();
-      const info = rosaryData[key];
-      const currentDecade = Math.floor(guidedStep / 12);
-      
-      document.getElementById('decade-indicator').textContent = info.name;
-      document.getElementById('bead-indicator').textContent = `Decena ${currentDecade + 1} / 5`;
-
-      // Renderizar cuentas en la fila
-      const beadsRow = document.getElementById('beads-row');
-      beadsRow.innerHTML = '';
-      for (let i = 0; i < 10; i++) {
-        const span = document.createElement('span');
-        span.className = `w-4 h-4 rounded-full transition-all ${i === (guidedStep % 10) ? 'bg-amber-600 scale-125 shadow-sm' : 'bg-slate-200 dark:bg-slate-700'}`;
-        beadsRow.appendChild(span);
-      }
-
-      // Contenido de la tarjeta guiada
-      const titleEl = document.getElementById('step-title');
-      const scriptureBox = document.getElementById('step-scripture-box');
-      const textEl = document.getElementById('step-text');
-      const btnInfo = document.getElementById('btn-step-mystery-info');
-
-      if (currentDecade < info.mysteries.length) {
-        const m = info.mysteries[currentDecade];
-        titleEl.textContent = m.title;
-        scriptureBox.classList.remove('hidden');
-        document.getElementById('step-quote').textContent = `Cita Bíblica: ${m.ref}`;
-        document.getElementById('step-quote-text').textContent = `"${m.verse}"`;
-        
-        btnInfo.classList.remove('hidden');
-        btnInfo.onclick = () => openMysteryDetail(currentDecade);
-
-        textEl.innerHTML = `
-          <p class="font-semibold text-slate-800 dark:text-slate-100">Meditación:</p>
-          <p>${m.explanation}</p>
-          <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-2">
-            <p class="font-bold text-amber-700 dark:text-amber-300">Jaculatoria a la Virgen:</p>
-            <p class="italic text-xs">María, Madre de gracia, Madre de misericordia. Defiéndenos de nuestros enemigos y ampáranos ahora y en la hora de nuestra muerte. Amén.</p>
-            <p class="font-bold text-amber-700 dark:text-amber-300 pt-1">Oh, Jesús Mío:</p>
-            <p class="italic text-xs">Oh Jesús mío, perdónanos. Líbranos del fuego del infierno, lleva a todas las almas al cielo, especialmente a las más necesitadas.</p>
-          </div>
-        `;
-      }
-    }
-
-    function stepNext() {
-      if (guidedStep < 59) {
-        guidedStep++;
-        renderGuidedStep();
-      } else {
-        showToast('¡Has completado el Santo Rosario!');
-        setViewMode('video');
-      }
-    }
-
-    function stepPrevious() {
-      if (guidedStep > 0) {
-        guidedStep--;
-        renderGuidedStep();
-      }
-    }
+    // Inicializar al cargar la ventana
+    window.onload = function () {
+      renderCurrentDay();
+      fetchLatestHomiliaVideo();
+    };
   </script>
 </body>
 </html>
