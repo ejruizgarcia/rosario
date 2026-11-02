@@ -63,6 +63,10 @@
 
     <!-- Controles superiores -->
     <div class="flex items-center space-x-1.5">
+      <!-- Botón de Bloqueo para Bolsillo -->
+      <button id="btn-pocket-lock" onclick="togglePocketLock()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Bloquear para el bolsillo">
+        <i id="lock-icon" class="fa-solid fa-lock-open text-sm"></i>
+      </button>
       <button id="btn-theme" onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Modo Claro/Oscuro">
         <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
       </button>
@@ -71,6 +75,22 @@
       </button>
     </div>
   </header>
+
+  <!-- Capa de bloqueo para cuando se lleva en el bolsillo -->
+  <div id="pocket-lock-overlay" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] hidden flex flex-col items-center justify-center p-6 text-center">
+    <div class="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl space-y-4 max-w-xs w-full pointer-events-auto">
+      <div class="w-16 h-16 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl mx-auto animate-pulse">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <div class="space-y-1">
+        <h3 class="font-bold text-slate-900 dark:text-white font-cinzel text-base">Pantalla Bloqueada</h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400">Protegido contra toques accidentales en el bolsillo.</p>
+      </div>
+      <button onclick="togglePocketLock()" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider shadow-md">
+        Desbloquear Pantalla
+      </button>
+    </div>
+  </div>
 
   <!-- Pestañas de Modo Principal: Rosario / Interactivo / Homilías / Oraciones -->
   <nav class="bg-white dark:bg-slate-900 px-3 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-center gap-0.5 text-xs">
@@ -483,6 +503,28 @@
   </div>
 
   <script>
+    // Estado de bloqueo para bolsillo
+    let isPocketLocked = false;
+
+    function togglePocketLock() {
+      isPocketLocked = !isPocketLocked;
+      const overlay = document.getElementById('pocket-lock-overlay');
+      const lockIcon = document.getElementById('lock-icon');
+      const pocketBtn = document.getElementById('btn-pocket-lock');
+
+      if (isPocketLocked) {
+        overlay.classList.remove('hidden');
+        lockIcon.className = 'fa-solid fa-lock text-sm text-amber-500';
+        pocketBtn.classList.add('bg-amber-500/10');
+        showToast('Bloqueo de bolsillo activado');
+      } else {
+        overlay.classList.add('hidden');
+        lockIcon.className = 'fa-solid fa-lock-open text-sm';
+        pocketBtn.classList.remove('bg-amber-500/10');
+        showToast('Pantalla desbloqueada');
+      }
+    }
+
     /* ========================================================================
        CONFIGURACIÓN DE ENLACES DE YOUTUBE Y ESTADO EN MEMORIA
        ======================================================================== */
