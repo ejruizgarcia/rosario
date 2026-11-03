@@ -342,6 +342,29 @@
     </div>
   </div>
 
+  <!-- MODAL: Confirmación para Detener Novena -->
+  <div id="modal-confirm-novena" onclick="if(event.target === this) closeConfirmNovenaModal()" class="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800 text-center">
+      <div class="w-12 h-12 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 flex items-center justify-center text-xl mx-auto">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white">¿Detener Novena?</h3>
+        <p id="confirm-novena-desc" class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+          Se borrará el progreso actual de esta novena y podrás iniciar una nueva cuando lo desees.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 pt-2">
+        <button onclick="closeConfirmNovenaModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition-colors">
+          Cancelar
+        </button>
+        <button id="btn-confirm-stop-novena" onclick="confirmCancelNovena()" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors shadow-sm">
+          Sí, detener
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: Recordatorio de Novenas Activas al entrar a la App -->
   <div id="modal-novena-reminder" onclick="if(event.target === this) closeNovenaReminderModal()" class="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
@@ -806,6 +829,7 @@
        ======================================================================== */
     const NOVENAS_STORAGE_KEY = 'santo_rosario_novenas_v1';
     let currentOpenPrayerIndex = null;
+    let pendingCancelPrayerIndex = null;
 
     function getLocalTodayTimestamp() {
       const now = new Date();
@@ -874,6 +898,25 @@
 
     function cancelNovena(prayerIndex, event) {
       if (event) event.stopPropagation();
+      pendingCancelPrayerIndex = prayerIndex;
+      const prayer = SPECIAL_PRAYERS[prayerIndex];
+      const descEl = document.getElementById('confirm-novena-desc');
+      if (descEl && prayer) {
+        descEl.textContent = '¿Estás seguro de que deseas detener la novena de "' + prayer.shortName + '"? Se perderá el progreso actual.';
+      }
+      document.getElementById('modal-confirm-novena').classList.remove('hidden');
+    }
+
+    function closeConfirmNovenaModal() {
+      pendingCancelPrayerIndex = null;
+      document.getElementById('modal-confirm-novena').classList.add('hidden');
+    }
+
+    function confirmCancelNovena() {
+      if (pendingCancelPrayerIndex === null) return;
+      const prayerIndex = pendingCancelPrayerIndex;
+      closeConfirmNovenaModal();
+
       const prayer = SPECIAL_PRAYERS[prayerIndex];
       if (!prayer) return;
       const data = loadNovenasData();
