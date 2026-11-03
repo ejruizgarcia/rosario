@@ -238,73 +238,41 @@
     <!-- ================= VISTA 3: ORACIONES ESPECIALES ================= -->
     <section id="section-prayers" class="hidden space-y-4">
       <div class="space-y-1">
-        <h2 class="text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-tight">Oraciones Especiales</h2>
-        <p class="text-xs text-slate-600 dark:text-slate-400">Selecciona una oración para verla y rezarla con calma.</p>
+        <h2 class="text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-tight">Oraciones Especiales y Novenas</h2>
+        <p class="text-xs text-slate-600 dark:text-slate-400">Selecciona una oración para rezarla o inicia una novena de 9 días consecutivos.</p>
       </div>
 
-      <div class="grid grid-cols-1 gap-3">
-        <!-- Oración 1 -->
-        <div onclick="openPrayerDetail(0)" class="cursor-pointer group p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 shadow-sm transition-all active:scale-[0.99] space-y-2">
-          <div class="flex items-start justify-between gap-2">
-            <span class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-bold text-sm">
-              <i class="fa-solid fa-hands-praying"></i>
+      <!-- Panel Superior de Sistema de Novenas -->
+      <div class="rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/30 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-calendar-check"></i>
             </span>
-            <span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">Ver oración</span>
+            <div>
+              <h3 class="text-xs sm:text-sm font-bold font-cinzel text-slate-900 dark:text-amber-300">Sistema de Novenas (9 Días)</h3>
+              <p id="novenas-summary-subtitle" class="text-[11px] text-slate-600 dark:text-slate-400">Inicia una novena en cualquiera de las oraciones</p>
+            </div>
           </div>
-          <div>
-            <h3 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Venerable Madre Antonia de Jesús</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">Dios todopoderoso y eterno, que concediste a tu sierva Antonia de Jesús el don de la contemplación...</p>
-          </div>
+          <button onclick="openNovenasReminderModal(true)" id="btn-view-active-novenas" class="hidden text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 hover:bg-amber-500/30 transition-colors">
+            Ver resumen
+          </button>
         </div>
+        <div id="active-novenas-banner-list" class="hidden space-y-1.5 pt-1 border-t border-amber-500/20">
+          <!-- Inyectado por JS -->
+        </div>
+      </div>
 
-        <!-- Oración 2 -->
-        <div onclick="openPrayerDetail(1)" class="cursor-pointer group p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 shadow-sm transition-all active:scale-[0.99] space-y-2">
-          <div class="flex items-start justify-between gap-2">
-            <span class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-bold text-sm">
-              <i class="fa-solid fa-hands-praying"></i>
-            </span>
-            <span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">Ver oración</span>
-          </div>
-          <div>
-            <h3 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Hermana Cristina de Jesús Sacramentado</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">Señor Dios nuestro, que concediste a tu sierva Cristina de Jesús Sacramentado la gracia de consagrarse...</p>
-          </div>
-        </div>
-
-        <!-- Oración 3 -->
-        <div onclick="openPrayerDetail(2)" class="cursor-pointer group p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 shadow-sm transition-all active:scale-[0.99] space-y-2">
-          <div class="flex items-start justify-between gap-2">
-            <span class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-bold text-sm">
-              <i class="fa-solid fa-hands-praying"></i>
-            </span>
-            <span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">Ver oración</span>
-          </div>
-          <div>
-            <h3 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Sor María de los Dolores (Simi Cohen)</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">Señor Dios nuestro, que llamaste a tu sierva María de los Dolores (Simi Cohen) a la luz de la fe...</p>
-          </div>
-        </div>
-
-        <!-- Oración 4 -->
-        <div onclick="openPrayerDetail(3)" class="cursor-pointer group p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 shadow-sm transition-all active:scale-[0.99] space-y-2">
-          <div class="flex items-start justify-between gap-2">
-            <span class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-bold text-sm">
-              <i class="fa-solid fa-hands-praying"></i>
-            </span>
-            <span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">Ver oración</span>
-          </div>
-          <div>
-            <h3 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Santa Ana para las dificultades</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">¡Oh gloriosa Santa Ana! Tú que estás llena de compasión por quienes te invocan y de amor...</p>
-          </div>
-        </div>
+      <!-- Tarjetas de Oraciones con soporte de Novena -->
+      <div id="prayers-cards-container" class="grid grid-cols-1 gap-3">
+        <!-- Inyectado dinámicamente por JS -->
       </div>
     </section>
 
   </main>
 
-  <!-- Barra Inferior Fija para Móviles -->
-  <footer class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 glass-effect px-4 py-2.5 z-30 shadow-lg">
+  <!-- Barra Inferior Fija para Móviles (z-50 para quedar libre sobre el detalle de misterios) -->
+  <footer class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 glass-effect px-4 py-2.5 z-50 shadow-lg">
     <div class="max-w-lg mx-auto flex items-center justify-between gap-2.5">
       
       <!-- Controles para Vista de Video -->
@@ -342,32 +310,72 @@
   </footer>
 
   <!-- MODAL: Detalle de Oración Especial -->
-  <div id="modal-prayer-detail" onclick="if(event.target === this) closePrayerDetailModal()" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[88vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
+  <div id="modal-prayer-detail" onclick="if(event.target === this) closePrayerDetailModal()" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl p-6 sm:p-7 space-y-5 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
       <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
         <div>
-          <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1">Oración Especial</span>
-          <h3 id="modal-prayer-title" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-snug"></h3>
+          <div class="flex items-center gap-2 flex-wrap mb-1.5">
+            <span class="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">Oración Especial</span>
+            <span id="modal-prayer-novena-badge" class="hidden text-xs font-bold px-3 py-1 rounded-full"></span>
+          </div>
+          <h3 id="modal-prayer-title" class="text-lg sm:text-xl font-bold font-cinzel text-slate-900 dark:text-white leading-snug"></h3>
         </div>
-        <button onclick="closePrayerDetailModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">
-          <i class="fa-solid fa-xmark text-sm"></i>
+        <button onclick="closePrayerDetailModal()" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">
+          <i class="fa-solid fa-xmark text-base"></i>
         </button>
       </div>
 
-      <div class="space-y-3.5 text-xs sm:text-sm text-content-selectable">
-        <div class="p-4 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-2">
-          <p id="modal-prayer-text" class="text-slate-800 dark:text-slate-100 leading-relaxed font-medium italic"></p>
+      <div class="space-y-4 text-sm sm:text-base text-content-selectable">
+        <div class="p-5 sm:p-6 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-3">
+          <p id="modal-prayer-text" class="text-slate-900 dark:text-slate-100 leading-relaxed font-medium italic text-base sm:text-lg"></p>
         </div>
       </div>
 
-      <button onclick="closePrayerDetailModal()" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-colors">
+      <!-- Controles de Novena dentro del modal de oración -->
+      <div id="modal-prayer-novena-controls" class="pt-2">
+        <!-- Inyectado por JS -->
+      </div>
+
+      <button onclick="closePrayerDetailModal()" class="w-full py-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-colors">
         Cerrar
       </button>
     </div>
   </div>
 
+  <!-- MODAL: Recordatorio de Novenas Activas al entrar a la App -->
+  <div id="modal-novena-reminder" onclick="if(event.target === this) closeNovenaReminderModal()" class="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg shrink-0">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Recordatorio Diario</span>
+            <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white leading-tight">Tus Novenas Activas</h3>
+          </div>
+        </div>
+        <button onclick="closeNovenaReminderModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+        Tienes novenas en curso hoy. Puedes ir directamente a rezar tu oración del día o cerrar este aviso para continuar con otra cosa:
+      </p>
+
+      <div id="novena-reminder-list" class="space-y-2.5">
+        <!-- Inyectado por JS -->
+      </div>
+
+      <button onclick="closeNovenaReminderModal()" class="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-colors">
+        Cerrar y seguir con otra cosa
+      </button>
+    </div>
+  </div>
+
   <!-- MODAL: Selector Manual de Día / Misterios -->
-  <div id="modal-config" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="modal-config" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
         <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white">Días y Misterios</h3>
@@ -417,12 +425,15 @@
     </div>
   </div>
 
-  <!-- MODAL: Detalle de cada Misterio -->
-  <div id="modal-mystery-detail" onclick="if(event.target === this) closeMysteryDetailModal()" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[88vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
-      <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+  <!-- MODAL: Detalle de cada Misterio (Deja visible el footer inferior para seguir pasando cuentas) -->
+  <div id="modal-mystery-detail" onclick="if(event.target === this) closeMysteryDetailModal()" class="fixed inset-x-0 top-0 bottom-16 z-40 bg-black/50 backdrop-blur-[2px] hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-4 sm:p-5 space-y-3.5 max-h-full overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-start justify-between gap-3 pb-2.5 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10 pt-0.5">
         <div>
-          <span id="modal-mystery-badge" class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1"></span>
+          <div class="flex items-center gap-2 flex-wrap mb-1">
+            <span id="modal-mystery-badge" class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300"></span>
+            <span id="modal-mystery-live-step" class="hidden text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500 text-white shadow-sm"></span>
+          </div>
           <h3 id="modal-mystery-title" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-snug"></h3>
         </div>
         <button onclick="closeMysteryDetailModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">
@@ -430,7 +441,7 @@
         </button>
       </div>
 
-      <div class="space-y-3.5 text-xs sm:text-sm text-content-selectable">
+      <div class="space-y-3 text-xs sm:text-sm text-content-selectable">
         <!-- Cita Bíblica -->
         <div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
           <i class="fa-solid fa-book-bible text-amber-500"></i>
@@ -471,14 +482,14 @@
         </div>
       </div>
 
-      <button onclick="closeMysteryDetailModal()" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-colors">
-        Cerrar
+      <button onclick="closeMysteryDetailModal()" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs uppercase tracking-wider transition-colors">
+        Ocultar detalle
       </button>
     </div>
   </div>
 
   <!-- Toast de notificación -->
-  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 rounded-full text-xs font-semibold shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50">
+  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 rounded-full text-xs font-semibold shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-[80]">
     Enlace copiado al portapapeles
   </div>
 
@@ -761,22 +772,254 @@
 
     const SPECIAL_PRAYERS = [
       {
+        id: 'antonia',
+        shortName: 'Venerable Madre Antonia de Jesús',
         title: 'Oración a la Venerable Madre Antonia de Jesús',
+        preview: 'Dios todopoderoso y eterno, que concediste a tu sierva Antonia de Jesús el don de la contemplación...',
         text: 'Dios todopoderoso y eterno, que concediste a tu sierva Antonia de Jesús el don de la contemplación, un profundo amor a Cristo crucificado y una ardiente caridad para con el prójimo; concédenos por su intercesión la gracia que te pedimos (aquí se pide la gracia), para que pronto sea glorificada en la Iglesia. Por Jesucristo, nuestro Señor. Amén.'
       },
       {
+        id: 'cristina',
+        shortName: 'Hermana Cristina de Jesús Sacramentado',
         title: 'Oración a la Hermana Cristina de Jesús Sacramentado',
+        preview: 'Señor Dios nuestro, que concediste a tu sierva Cristina de Jesús Sacramentado la gracia de consagrarse...',
         text: 'Señor Dios nuestro, que concediste a tu sierva Cristina de Jesús Sacramentado la gracia de consagrarse totalmente a ti en la vida oculta del Carmelo, viviendo con profunda humildad, alegría y un ardiente amor a la Eucaristía y a la Virgen María; te suplicamos que, si es para tu mayor gloria y bien de las almas, glorifiques a tu sierva y nos concedas por su intercesión la gracia que ahora te pedimos (aquí se pide la gracia). Por Jesucristo, nuestro Señor. Amén.'
       },
       {
+        id: 'simi',
+        shortName: 'Sor María de los Dolores (Simi Cohen)',
         title: 'Oración a Sor María de los Dolores del Amor de Dios (Simi Cohen)',
+        preview: 'Señor Dios nuestro, que llamaste a tu sierva María de los Dolores (Simi Cohen) a la luz de la fe...',
         text: 'Señor Dios nuestro, que llamaste a tu sierva María de los Dolores (Simi Cohen) a la luz de la fe y le concediste la gracia de consagrarse a ti con profunda humildad, pobreza y caridad en la vida del claustro; concédenos, por su intercesión, vivir con esa misma entrega a tu voluntad, y otórganos la gracia que ahora te pedimos (aquí se pide la gracia), para que un día sea glorificada en la Iglesia. Por Jesucristo, nuestro Señor. Amén.'
       },
       {
+        id: 'santa_ana',
+        shortName: 'Santa Ana para las dificultades',
         title: 'Oración a Santa Ana para las dificultades',
+        preview: '¡Oh gloriosa Santa Ana! Tú que estás llena de compasión por quienes te invocan y de amor...',
         text: '¡Oh gloriosa Santa Ana! Tú que estás llena de compasión por quienes te invocan y de amor por los que sufren. Agobiado con el peso de mis dificultades, me postro a tus pies y te suplico humildemente que tomes bajo tu especial protección esta gran necesidad mía (aquí se menciona la dificultad o petición).\n\nTe ruego que la recomiendes a tu hija, la Bienaventurada Virgen María, y la presentes ante el trono de Jesús, para que Él la lleve a una feliz resolución. No ceses de interceder por mí hasta que mi petición sea concedida. Y sobre todo, obtenme la gracia de ver a Dios un día, para que contigo, la Virgen María y todos los santos, pueda alabarlo y bendecirlo por toda la eternidad. Amén.'
       }
     ];
+
+    /* ========================================================================
+       SISTEMA DE NOVENAS (9 DÍAS CONSECUTIVOS)
+       ======================================================================== */
+    const NOVENAS_STORAGE_KEY = 'santo_rosario_novenas_v1';
+    let currentOpenPrayerIndex = null;
+
+    function getLocalTodayTimestamp() {
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    }
+
+    function loadNovenasData() {
+      try {
+        const raw = localStorage.getItem(NOVENAS_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveNovenasData(data) {
+      try {
+        localStorage.setItem(NOVENAS_STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {}
+    }
+
+    // Devuelve el estado de la novena para una oración: { active: bool, day: 1..9, label: string, isLastDay: bool }
+    function getNovenaStatus(prayerIndex) {
+      const prayer = SPECIAL_PRAYERS[prayerIndex];
+      if (!prayer) return { active: false };
+      const data = loadNovenasData();
+      const entry = data[prayer.id];
+      if (!entry || !entry.startTimestamp) return { active: false };
+
+      const todayTs = getLocalTodayTimestamp();
+      const diffDays = Math.floor((todayTs - entry.startTimestamp) / 86400000);
+      const currentDay = diffDays + 1;
+
+      if (currentDay < 1) {
+        return { active: true, day: 1, label: 'Día 1', isLastDay: false };
+      }
+      if (currentDay > 9) {
+        // Ya finalizaron los 9 días consecutivos
+        delete data[prayer.id];
+        saveNovenasData(data);
+        return { active: false };
+      }
+
+      const isLast = currentDay === 9;
+      return {
+        active: true,
+        day: currentDay,
+        label: isLast ? '¡Último día!' : 'Día ' + currentDay,
+        isLastDay: isLast
+      };
+    }
+
+    function startNovena(prayerIndex, event) {
+      if (event) event.stopPropagation();
+      const prayer = SPECIAL_PRAYERS[prayerIndex];
+      if (!prayer) return;
+      const data = loadNovenasData();
+      data[prayer.id] = {
+        startTimestamp: getLocalTodayTimestamp()
+      };
+      saveNovenasData(data);
+      renderPrayersSection();
+      if (currentOpenPrayerIndex === prayerIndex) {
+        openPrayerDetail(prayerIndex);
+      }
+      showToast('Novena iniciada: Día 1 (' + prayer.shortName + ')');
+    }
+
+    function cancelNovena(prayerIndex, event) {
+      if (event) event.stopPropagation();
+      const prayer = SPECIAL_PRAYERS[prayerIndex];
+      if (!prayer) return;
+      const data = loadNovenasData();
+      delete data[prayer.id];
+      saveNovenasData(data);
+      renderPrayersSection();
+      if (currentOpenPrayerIndex === prayerIndex) {
+        openPrayerDetail(prayerIndex);
+      }
+      showToast('Novena finalizada');
+    }
+
+    function getActiveNovenasList() {
+      const activeList = [];
+      SPECIAL_PRAYERS.forEach((prayer, idx) => {
+        const status = getNovenaStatus(idx);
+        if (status.active) {
+          activeList.push({
+            index: idx,
+            prayer: prayer,
+            status: status
+          });
+        }
+      });
+      return activeList;
+    }
+
+    function renderPrayersSection() {
+      const container = document.getElementById('prayers-cards-container');
+      const bannerList = document.getElementById('active-novenas-banner-list');
+      const subtitle = document.getElementById('novenas-summary-subtitle');
+      const btnViewActive = document.getElementById('btn-view-active-novenas');
+      if (!container) return;
+
+      const activeNovenas = getActiveNovenasList();
+
+      if (activeNovenas.length > 0) {
+        subtitle.textContent = 'Tienes ' + activeNovenas.length + (activeNovenas.length === 1 ? ' novena activa hoy' : ' novenas activas hoy');
+        btnViewActive.classList.remove('hidden');
+        bannerList.classList.remove('hidden');
+        bannerList.innerHTML = activeNovenas.map(item => {
+          const badgeClass = item.status.isLastDay
+            ? 'bg-red-500 text-white animate-pulse'
+            : 'bg-amber-500 text-white';
+          return [
+            '<div onclick="openPrayerDetail(' + item.index + ')" class="cursor-pointer flex items-center justify-between gap-2 p-2 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-amber-500/20 hover:border-amber-500 transition-all">',
+              '<div class="flex items-center gap-2 min-w-0">',
+                '<i class="fa-solid fa-fire-flame-curved text-amber-500 text-xs shrink-0"></i>',
+                '<span class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">' + item.prayer.shortName + '</span>',
+              '</div>',
+              '<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full shrink-0 ' + badgeClass + '">' + item.status.label + '</span>',
+            '</div>'
+          ].join('');
+        }).join('');
+      } else {
+        subtitle.textContent = 'Pulsa "Iniciar Novena" en cualquier oración para llevar la cuenta de los 9 días.';
+        btnViewActive.classList.add('hidden');
+        bannerList.classList.add('hidden');
+        bannerList.innerHTML = '';
+      }
+
+      container.innerHTML = SPECIAL_PRAYERS.map((prayer, idx) => {
+        const st = getNovenaStatus(idx);
+        const badgeHTML = st.active
+          ? '<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm ' +
+              (st.isLastDay ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-500 text-white') +
+            '"><i class="fa-solid fa-star text-[9px] mr-1"></i>' + st.label + '</span>'
+          : '<span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">Ver oración</span>';
+
+        const actionBtnHTML = st.active
+          ? '<div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800/80 text-[11px]">' +
+              '<span class="text-amber-600 dark:text-amber-400 font-semibold">Novena en curso (' + (st.isLastDay ? 'Día 9 de 9 - ¡Último día!' : 'Día ' + st.day + ' de 9') + ')</span>' +
+              '<button onclick="cancelNovena(' + idx + ', event)" class="text-slate-400 hover:text-red-500 font-semibold transition-colors">Detener</button>' +
+            '</div>'
+          : '<div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800/80">' +
+              '<button onclick="startNovena(' + idx + ', event)" class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-1.5 rounded-xl transition-colors">' +
+                '<i class="fa-solid fa-play text-[10px]"></i>' +
+                '<span>Iniciar Novena (9 días)</span>' +
+              '</button>' +
+              '<span class="text-[11px] text-slate-400">Rezar <i class="fa-solid fa-chevron-right text-[9px]"></i></span>' +
+            '</div>';
+
+        return [
+          '<div onclick="openPrayerDetail(' + idx + ')" class="cursor-pointer group p-4 rounded-2xl bg-white dark:bg-slate-900 border ' + (st.active ? 'border-amber-500/50 ring-1 ring-amber-500/20' : 'border-slate-200 dark:border-slate-800') + ' hover:border-amber-500/60 shadow-sm transition-all active:scale-[0.99] space-y-2.5">',
+            '<div class="flex items-start justify-between gap-2">',
+              '<span class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-bold text-sm">',
+                '<i class="fa-solid fa-hands-praying"></i>',
+              '</span>',
+              badgeHTML,
+            '</div>',
+            '<div>',
+              '<h3 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">' + prayer.shortName + '</h3>',
+              '<p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">' + prayer.preview + '</p>',
+            '</div>',
+            actionBtnHTML,
+          '</div>'
+        ].join('');
+      }).join('');
+    }
+
+    function openNovenasReminderModal(forceOpen) {
+      const activeNovenas = getActiveNovenasList();
+      if (activeNovenas.length === 0) return;
+
+      const listEl = document.getElementById('novena-reminder-list');
+      if (!listEl) return;
+
+      listEl.innerHTML = activeNovenas.map(item => {
+        const badgeStyle = item.status.isLastDay
+          ? 'bg-red-500 text-white animate-pulse'
+          : 'bg-amber-500 text-white';
+        const subtitleText = item.status.isLastDay
+          ? '¡Hoy completas el 9º y último día de tu novena!'
+          : 'Hoy te corresponde rezar el día ' + item.status.day + ' de 9.';
+
+        return [
+          '<div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-amber-500/30 flex flex-col gap-2.5">',
+            '<div class="flex items-start justify-between gap-2">',
+              '<div>',
+                '<h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug">' + item.prayer.shortName + '</h4>',
+                '<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">' + subtitleText + '</p>',
+              '</div>',
+              '<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full shrink-0 ' + badgeStyle + '">' + item.status.label + '</span>',
+            '</div>',
+            '<button onclick="goToPrayerFromReminder(' + item.index + ')" class="w-full py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors">',
+              '<i class="fa-solid fa-book-open text-[11px]"></i>',
+              '<span>Ir a la oración ahora</span>',
+            '</button>',
+          '</div>'
+        ].join('');
+      }).join('');
+
+      document.getElementById('modal-novena-reminder').classList.remove('hidden');
+    }
+
+    function closeNovenaReminderModal() {
+      document.getElementById('modal-novena-reminder').classList.add('hidden');
+    }
+
+    function goToPrayerFromReminder(prayerIndex) {
+      closeNovenaReminderModal();
+      setViewMode('prayers');
+      openPrayerDetail(prayerIndex);
+    }
 
     const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -947,28 +1190,6 @@
       avemaria: localStorage.getItem('rosario_avemaria') || 'Dios te salve, María, llena eres de gracia, el Señor es contigo...',
       salve: localStorage.getItem('rosario_salve') || 'Dios te salve, Reina y Madre de misericordia, vida, dulzura y esperanza nuestra...'
     };
-
-    function editCustomPrayers() {
-      const pn = prompt('Texto del Padre Nuestro:', DEFAULT_PRAYERS.padrenuestro);
-      if (pn !== null && pn.trim() !== '') {
-        DEFAULT_PRAYERS.padrenuestro = pn.trim();
-        localStorage.setItem('rosario_padrenuestro', DEFAULT_PRAYERS.padrenuestro);
-      }
-      const ave = prompt('Texto del Avemaría:', DEFAULT_PRAYERS.avemaria);
-      if (ave !== null && ave.trim() !== '') {
-        DEFAULT_PRAYERS.avemaria = ave.trim();
-        localStorage.setItem('rosario_avemaria', DEFAULT_PRAYERS.avemaria);
-      }
-      const salve = prompt('Texto de La Salve:', DEFAULT_PRAYERS.salve);
-      if (salve !== null && salve.trim() !== '') {
-        DEFAULT_PRAYERS.salve = salve.trim();
-        localStorage.setItem('rosario_salve', DEFAULT_PRAYERS.salve);
-      }
-      const mKey = getMysteryKeyByDay(currentDayIndex);
-      guidedSteps = buildGuidedSteps(mKey);
-      renderGuidedStep();
-      showToast('Textos de oración actualizados');
-    }
 
     // Construir pasos para el modo interactivo
     function buildGuidedSteps(mysteryKey) {
@@ -1447,6 +1668,7 @@
         if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
         if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-amber-500 text-sm';
         if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-white text-sm';
+        renderPrayersSection();
       }
     }
 
@@ -1535,6 +1757,20 @@
       } else {
         nextBtnText.textContent = 'Rezar y Continuar';
       }
+
+      // Si el modal de detalle del misterio está abierto mientras rezamos en modo interactivo, sincronizar el paso y misterio actual
+      const mysteryModal = document.getElementById('modal-mystery-detail');
+      if (mysteryModal && !mysteryModal.classList.contains('hidden') && currentViewMode === 'guided') {
+        if (step.decade >= 1 && step.decade <= 5) {
+          openMysteryDetailModal(mKey, step.decade - 1);
+        } else {
+          const liveStepBadge = document.getElementById('modal-mystery-live-step');
+          if (liveStepBadge) {
+            liveStepBadge.textContent = step.detail || step.title;
+            liveStepBadge.classList.remove('hidden');
+          }
+        }
+      }
     }
 
     function stepNext() {
@@ -1584,12 +1820,46 @@
     function openPrayerDetail(prayerIndex) {
       const p = SPECIAL_PRAYERS[prayerIndex];
       if (!p) return;
+      currentOpenPrayerIndex = prayerIndex;
       document.getElementById('modal-prayer-title').textContent = p.title;
       document.getElementById('modal-prayer-text').innerHTML = p.text.replace(/\n\n/g, '<br><br>');
+
+      const st = getNovenaStatus(prayerIndex);
+      const badgeEl = document.getElementById('modal-prayer-novena-badge');
+      const controlsEl = document.getElementById('modal-prayer-novena-controls');
+
+      if (st.active) {
+        badgeEl.className = 'inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full ' +
+          (st.isLastDay ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-500 text-white');
+        badgeEl.textContent = 'Novena • ' + st.label;
+        badgeEl.classList.remove('hidden');
+
+        controlsEl.innerHTML = [
+          '<div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-2">',
+            '<div class="text-xs">',
+              '<span class="font-bold text-amber-700 dark:text-amber-300">' + (st.isLastDay ? '¡Último día de la Novena!' : 'Novena en curso: Día ' + st.day + ' de 9') + '</span>',
+              '<p class="text-[11px] text-slate-600 dark:text-slate-400">El contador avanza automáticamente cada día.</p>',
+            '</div>',
+            '<button onclick="cancelNovena(' + prayerIndex + ', event)" class="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold shrink-0 transition-colors">',
+              'Reiniciar / Detener',
+            '</button>',
+          '</div>'
+        ].join('');
+      } else {
+        badgeEl.classList.add('hidden');
+        controlsEl.innerHTML = [
+          '<button onclick="startNovena(' + prayerIndex + ', event)" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 transition-colors">',
+            '<i class="fa-solid fa-calendar-plus"></i>',
+            '<span>Iniciar Novena de 9 Días</span>',
+          '</button>'
+        ].join('');
+      }
+
       document.getElementById('modal-prayer-detail').classList.remove('hidden');
     }
 
     function closePrayerDetailModal() {
+      currentOpenPrayerIndex = null;
       document.getElementById('modal-prayer-detail').classList.add('hidden');
     }
 
@@ -1605,6 +1875,16 @@
       document.getElementById('modal-mystery-explanation').textContent = item.desc;
       document.getElementById('modal-mystery-application').textContent = item.application;
       document.getElementById('modal-mystery-reflection').textContent = item.reflection;
+
+      const liveStepBadge = document.getElementById('modal-mystery-live-step');
+      if (liveStepBadge) {
+        if (currentViewMode === 'guided' && guidedSteps[currentStepIndex]) {
+          liveStepBadge.textContent = guidedSteps[currentStepIndex].detail;
+          liveStepBadge.classList.remove('hidden');
+        } else {
+          liveStepBadge.classList.add('hidden');
+        }
+      }
 
       document.getElementById('modal-mystery-detail').classList.remove('hidden');
     }
@@ -1648,7 +1928,9 @@
     // Inicializar al cargar la ventana
     window.onload = function () {
       renderCurrentDay();
+      renderPrayersSection();
       fetchLatestHomiliaVideo();
+      openNovenasReminderModal(false);
     };
   </script>
 </body>
