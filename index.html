@@ -868,10 +868,8 @@
       };
       saveNovenasData(data);
       renderPrayersSection();
-      if (currentOpenPrayerIndex === prayerIndex) {
-        openPrayerDetail(prayerIndex);
-      }
       showToast('Novena iniciada: Día 1 (' + prayer.shortName + ')');
+      openPrayerDetail(prayerIndex);
     }
 
     function cancelNovena(prayerIndex, event) {
@@ -1201,16 +1199,16 @@
         type: 'Inicio del Rosario',
         detail: 'Oraciones Iniciales',
         title: 'Nos persignamos e invocamos al Señor',
-        ref: '1. Señal de la Cruz e Invocación',
+        ref: 'Señal de la Cruz e Invocación',
         quoteText: '',
         text: [
           '<div class="space-y-3">',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
-              '<p class="font-bold text-amber-600 dark:text-amber-400">1. Nos persignamos:</p>',
+              '<p class="font-bold text-amber-600 dark:text-amber-400">Nos persignamos:</p>',
               '<p class="italic leading-relaxed">Por la señal de la santa Cruz,<br>de nuestros enemigos,<br>líbranos, Señor, Dios nuestro.<br>En el nombre del Padre y del Hijo y del Espíritu Santo. Amén.</p>',
             '</div>',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2">',
-              '<p class="font-bold text-amber-600 dark:text-amber-400">2. Decimos:</p>',
+              '<p class="font-bold text-amber-600 dark:text-amber-400">Decimos:</p>',
               '<p class="leading-relaxed"><strong>V/.</strong> Dios mío, ven en mi auxilio.<br><strong>R/.</strong> Señor, date prisa en socorrerme.</p>',
               '<p class="leading-relaxed"><strong>V/.</strong> Gloria al Padre y al Hijo y al Espíritu Santo.<br><strong>R/.</strong> Como era en el principio, ahora y siempre, por los siglos de los siglos. Amén.</p>',
             '</div>',
@@ -1287,7 +1285,7 @@
                 '</div>',
                 '<div class="space-y-1 pt-1">',
                   '<p class="font-bold text-amber-600 dark:text-amber-400">Oh, Jesús Mío</p>',
-                  '<p class="leading-relaxed">Oh Jesús mío, perdónanos. Líbranos del fuego del infierno, lleva a todas las almas al cielo, especialmente a las más necesitadas.</p>',
+                  '<p class="leading-relaxed">Oh Jesús mío, perdona nuestros pecados, líbranos del fuego del infierno, lleva a todas las almas al cielo, especialmente a las más necesitadas de tu misericordia.</p>',
                 '</div>',
               '</div>',
             '</div>'
@@ -1307,17 +1305,17 @@
         text: [
           '<div class="space-y-3">',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">',
-              '<p>Señor, ten piedad</p>',
-              '<p>Cristo, ten piedad</p>',
-              '<p>Señor, ten piedad.</p>',
-              '<p>Cristo, óyenos.</p>',
-              '<p>Cristo, escúchanos.</p>',
+              '<p>Señor, ten piedad. <strong>Señor, ten piedad.</strong></p>',
+              '<p>Cristo, ten piedad. <strong>Cristo, ten piedad.</strong></p>',
+              '<p>Señor, ten piedad. <strong>Señor, ten piedad.</strong></p>',
+              '<p>Cristo, óyenos. <strong>Cristo, óyenos.</strong></p>',
+              '<p>Cristo, escúchanos. <strong>Cristo, escúchanos.</strong></p>',
             '</div>',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">',
-              '<p>Dios, Padre celestial, <strong>ten piedad de nosotros.</strong></p>',
-              '<p>Dios, Hijo, Redentor del mundo, <strong>ten piedad de nosotros.</strong></p>',
-              '<p>Dios, Espíritu Santo, <strong>ten piedad de nosotros.</strong></p>',
-              '<p>Santísima Trinidad, un solo Dios, <strong>ten piedad de nosotros.</strong></p>',
+              '<p>Dios, Padre celestial, <strong>ten misericordia de nosotros.</strong></p>',
+              '<p>Dios, Hijo, Redentor del mundo, <strong>ten misericordia de nosotros.</strong></p>',
+              '<p>Dios, Espíritu Santo, <strong>ten misericordia de nosotros.</strong></p>',
+              '<p>Santísima Trinidad, un solo Dios, <strong>ten misericordia de nosotros.</strong></p>',
             '</div>',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">',
               '<p class="text-xs font-bold text-amber-600 dark:text-amber-400 mb-1">Respondemos a cada invocación: "Ruega por nosotros"</p>',
@@ -1382,31 +1380,31 @@
               '<p>Cordero de Dios, que quitas el pecado del mundo, <strong>ten misericordia de nosotros.</strong></p>',
               '<p class="pt-1"><strong>V/.</strong> Ruega por nosotros, Santa Madre de Dios.<br><strong>R/.</strong> Para que seamos dignos de alcanzar las promesas de Cristo.</p>',
             '</div>',
-            '<div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">',
-              '<p class="font-bold text-amber-700 dark:text-amber-300">ORACIÓN:</p>',
-              '<p class="leading-relaxed">Te rogamos nos concedas, Señor Dios nuestro, gozar de continua salud de alma y cuerpo, y por la gloriosa intercesión de la bienaventurada siempre Virgen María, vernos libres de las tristezas de la vida presente y disfrutar de las alegrías eternas. Por Cristo nuestro Señor. Amén.</p>',
-            '</div>',
           '</div>'
         ].join(''),
         decade: 5,
         bead: 10
       });
 
-      // Paso Final: Intenciones del Papa y La Salve
+      // Paso Final: Intenciones del Papa, Oración y La Salve
       steps.push({
         type: 'Conclusión del Rosario',
         detail: 'Intenciones del Papa y La Salve',
         title: 'Por las intenciones del Papa y La Salve',
         ref: 'Clausura del Santo Rosario',
-        quoteText: 'Rezamos un Padre Nuestro por las intenciones del Santo Padre y las necesidades de la Iglesia, y concluimos con La Salve.',
+        quoteText: 'Rezamos un Padre Nuestro por las intenciones del Santo Padre y las necesidades de la Iglesia, la oración final y concluimos con La Salve.',
         text: [
           '<div class="space-y-3">',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
-              '<p class="font-bold text-amber-600 dark:text-amber-400">6. Por las intenciones del Papa y las necesidades de la Iglesia (Padre Nuestro):</p>',
+              '<p class="font-bold text-amber-600 dark:text-amber-400">Por las intenciones del Papa y las necesidades de la Iglesia (Padre Nuestro):</p>',
               '<p class="leading-relaxed">' + DEFAULT_PRAYERS.padrenuestro + '</p>',
             '</div>',
+            '<div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">',
+              '<p class="font-bold text-amber-700 dark:text-amber-300">ORACIÓN:</p>',
+              '<p class="leading-relaxed">Te rogamos nos concedas, Señor Dios nuestro, gozar de continua salud de alma y cuerpo, y por la gloriosa intercesión de la bienaventurada siempre Virgen María, vernos libres de las tristezas de la vida presente y disfrutar de las alegrías eternas. Por Cristo nuestro Señor. Amén.</p>',
+            '</div>',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
-              '<p class="font-bold text-amber-600 dark:text-amber-400">7. La Salve:</p>',
+              '<p class="font-bold text-amber-600 dark:text-amber-400">La Salve:</p>',
               '<p class="leading-relaxed">' + DEFAULT_PRAYERS.salve + '</p>',
             '</div>',
           '</div>'
