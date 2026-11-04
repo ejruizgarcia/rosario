@@ -56,7 +56,7 @@
         <i class="fa-solid fa-cross"></i>
       </div>
       <div>
-        <h1 class="text-sm font-bold font-cinzel text-slate-900 dark:text-amber-300 tracking-wide">Santo Rosario</h1>
+        <h1 class="text-sm font-bold font-cinzel text-slate-900 dark:text-amber-300 tracking-wide">Oratio</h1>
         <p id="today-badge" class="text-xs text-slate-500 dark:text-slate-400 font-medium capitalize"></p>
       </div>
     </div>
@@ -67,20 +67,16 @@
         <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
       </button>
       <button onclick="openConfigModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Cambiar día manualmente">
-        <i class="fa-solid fa-calendar-days text-sm"></i>
+        <i id="theme-icon-cal" class="fa-solid fa-calendar-days text-sm"></i>
       </button>
     </div>
   </header>
 
-  <!-- Pestañas de Modo Principal: Rosario / Interactivo / Homilías / Oraciones -->
+  <!-- Pestañas de Modo Principal: Rosario / Homilías / Oraciones / Lecturas / Momentos -->
   <nav class="bg-white dark:bg-slate-900 px-3 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-center gap-0.5 text-xs">
     <button onclick="setViewMode('video')" id="tab-view-video" class="flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm">
       <i id="icon-tab-video" class="fa-brands fa-youtube text-sm text-white"></i>
       <span>Rosario</span>
-    </button>
-    <button onclick="setViewMode('guided')" id="tab-view-guided" class="flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-      <i id="icon-tab-guided" class="fa-solid fa-hands-praying text-amber-500 text-sm"></i>
-      <span>Interactivo</span>
     </button>
     <button onclick="openHomilias()" id="tab-view-homilia" class="flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
       <i id="icon-tab-homilia" class="fa-solid fa-church text-red-500 text-sm"></i>
@@ -90,12 +86,20 @@
       <i id="icon-tab-prayers" class="fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm"></i>
       <span>Oraciones</span>
     </button>
+    <button onclick="openGospelModal('gospel')" id="tab-view-gospel" class="flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+      <i id="icon-tab-gospel" class="fa-solid fa-book-bible text-amber-500 text-sm"></i>
+      <span>Lecturas</span>
+    </button>
+    <button onclick="openMomentosModal()" id="tab-view-momentos" class="flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+      <i id="icon-tab-momentos" class="fa-solid fa-heart text-amber-500 text-sm"></i>
+      <span>Momentos</span>
+    </button>
   </nav>
 
   <!-- Contenedor Principal Adaptable a Móvil -->
   <main class="flex-1 overflow-y-auto no-scrollbar p-3 sm:p-4 max-w-lg mx-auto w-full space-y-4 pb-28">
 
-    <!-- Tarjeta informativa del día y misterios correspondientes (Oculta en vista de Oraciones / Favoritos) -->
+    <!-- Tarjeta informativa del día y misterios correspondientes -->
     <section id="top-day-banner" class="rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/20 shadow-sm relative overflow-hidden">
       <div class="flex items-center justify-between mb-1.5">
         <span id="active-day-label" class="text-xs uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
@@ -109,10 +113,10 @@
       <p id="mystery-days-hint" class="text-xs text-slate-600 dark:text-slate-400 mt-1"></p>
     </section>
 
-    <!-- ================= VISTA 1: VERSIONES EN VÍDEO (CORTA / LARGA / HOMILÍAS) ================= -->
+    <!-- ================= VISTA 1: VERSIONES EN VÍDEO ================= -->
     <section id="section-video" class="space-y-4">
       
-      <!-- Selector de Versión Corta vs Larga vs Homilías / Favoritos -->
+      <!-- Selector de Versión Corta vs Larga vs Homilías -->
       <div class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold gap-1">
         <button onclick="switchRosaryLength('corta')" id="btn-len-corta" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm">
           <i class="fa-solid fa-bolt text-amber-500"></i>
@@ -167,6 +171,22 @@
         </div>
       </div>
 
+      <!-- Acceso Integrado al Rezo Interactivo Guiado -->
+      <div class="bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-amber-500/5 border border-amber-500/30 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-base shrink-0 shadow-sm">
+            <i class="fa-solid fa-hands-praying"></i>
+          </div>
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold font-cinzel text-slate-900 dark:text-white">Modo Interactivo (Decenario)</h4>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Pasa las cuentas y lee las oraciones paso a paso</p>
+          </div>
+        </div>
+        <button onclick="setViewMode('guided')" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider shrink-0 shadow-md shadow-amber-600/20 transition-all active:scale-95">
+          Iniciar
+        </button>
+      </div>
+
       <!-- Lista de los 5 misterios del día -->
       <div id="mysteries-card-container" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
@@ -178,7 +198,7 @@
         </ol>
       </div>
 
-      <!-- Banco de Homilías y Favoritizadas (Visible al pulsar en Homilías) -->
+      <!-- Banco de Homilías y Favoritizadas -->
       <div id="homilias-history-container" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
@@ -286,7 +306,7 @@
 
   </main>
 
-  <!-- Barra Inferior Fija para Móviles (z-50 para quedar libre sobre el detalle de misterios) -->
+  <!-- Barra Inferior Fija para Móviles -->
   <footer class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 glass-effect px-4 py-2.5 z-50 shadow-lg">
     <div class="max-w-lg mx-auto flex items-center justify-between gap-2.5">
       
@@ -300,6 +320,32 @@
           <i class="fa-solid fa-book-open text-blue-500"></i>
           <span>Largo</span>
         </button>
+        <button onclick="setViewMode('guided')" class="flex-1 h-11 rounded-xl border border-amber-500/50 bg-amber-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm">
+          <i class="fa-solid fa-hands-praying"></i>
+          <span>Interactivo</span>
+        </button>
+      </div>
+
+      <!-- Controles para Vista de Rezo Guiado -->
+      <div id="footer-controls-guided" class="hidden w-full flex items-center gap-2">
+        <button onclick="stepPrevious()" id="btn-guided-prev" class="w-12 h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center text-sm disabled:opacity-40 active:scale-95 transition-all">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button onclick="stepNext()" class="flex-1 h-11 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 transition-all">
+          <span id="guided-btn-text">Rezar y Continuar</span>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+      </div>
+
+      <!-- Controles para Vista de Oraciones -->
+      <div id="footer-controls-prayers" class="hidden w-full flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-2">
+        <span>Selecciona una oración para meditar o iniciar novena</span>
+        <button onclick="openNovenasReminderModal(true)" class="font-bold text-amber-600 dark:text-amber-400 underline">Ver Novenas</button>
+      </div>
+
+    </div>
+  </footer>
+
   <!-- MODAL: Editar Título de Homilía Favorita -->
   <div id="modal-edit-homilia" onclick="if(event.target === this) closeEditHomiliaModal()" class="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800 relative z-[95]">
@@ -463,7 +509,7 @@
     </div>
   </div>
 
-  <!-- MODAL: Detalle de cada Misterio (Deja visible el footer inferior para seguir pasando cuentas) -->
+  <!-- MODAL: Detalle de cada Misterio -->
   <div id="modal-mystery-detail" onclick="if(event.target === this) closeMysteryDetailModal()" class="fixed inset-x-0 top-0 bottom-16 z-40 bg-black/50 backdrop-blur-[2px] hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-4 sm:p-5 space-y-3.5 max-h-full overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
       <div class="flex items-start justify-between gap-3 pb-2.5 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10 pt-0.5">
@@ -480,19 +526,16 @@
       </div>
 
       <div class="space-y-3 text-xs sm:text-sm text-content-selectable">
-        <!-- Cita Bíblica -->
         <div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
           <i class="fa-solid fa-book-bible text-amber-500"></i>
           <span>Cita Bíblica: <strong id="modal-mystery-ref"></strong></span>
         </div>
 
-        <!-- Versículo clave -->
         <div class="bg-slate-50 dark:bg-slate-800/70 border-l-4 border-amber-500 p-3.5 rounded-r-xl space-y-1">
           <p class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Versículo clave</p>
           <p id="modal-mystery-verse" class="italic text-slate-800 dark:text-slate-100 leading-relaxed font-medium"></p>
         </div>
 
-        <!-- Explicación -->
         <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 space-y-1">
           <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <i class="fa-solid fa-lightbulb text-amber-500"></i>
@@ -501,7 +544,6 @@
           <p id="modal-mystery-explanation" class="text-slate-700 dark:text-slate-200 leading-relaxed"></p>
         </div>
 
-        <!-- Aplicación a la vida -->
         <div class="p-3.5 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-1">
           <p class="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
             <i class="fa-solid fa-heart text-amber-500"></i>
@@ -510,7 +552,6 @@
           <p id="modal-mystery-application" class="text-slate-700 dark:text-slate-200 leading-relaxed"></p>
         </div>
 
-        <!-- Preguntas para reflexionar -->
         <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1">
           <p class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
             <i class="fa-solid fa-comments text-amber-500"></i>
@@ -529,6 +570,116 @@
   <!-- Toast de notificación -->
   <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 rounded-full text-xs font-semibold shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-[80]">
     Enlace copiado al portapapeles
+  </div>
+
+  <!-- MODAL: Selector de Momentos de Oración -->
+  <div id="modal-momentos-selector" onclick="if(event.target === this) closeMomentosModal()" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-heart"></i>
+          </div>
+          <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white">Momentos de Oración</h3>
+        </div>
+        <button onclick="closeMomentosModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2.5">
+        <button onclick="openMomentoDetail('escrutinio')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Oración para el Escrutinio</h4>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Invocación al Espíritu Santo y oración final</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
+        </button>
+
+        <button onclick="openMomentoDetail('restauracion')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Oración por la Restauración del Matrimonio</h4>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Dios de toda misericordia y amor paciente...</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
+        </button>
+
+        <button onclick="openMomentoDetail('esposos')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Oración por los Esposos y la Unidad</h4>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Dios, Padre eterno y de toda bondad...</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
+        </button>
+      </div>
+
+      <button onclick="closeMomentosModal()" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors">
+        Cerrar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Detalle de Momento de Oración -->
+  <div id="modal-momento-detail" onclick="if(event.target === this) closeMomentoDetailModal()" class="fixed inset-0 z-[110] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl p-6 space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div>
+          <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1">Momento de Oración</span>
+          <h3 id="momento-modal-title" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-snug"></h3>
+        </div>
+        <button onclick="closeMomentoDetailModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div id="momento-modal-text" class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-3 leading-relaxed text-content-selectable"></div>
+
+      <button onclick="closeMomentoDetailModal()" class="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-colors">
+        Cerrar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Lecturas y Comentario Litúrgico -->
+  <div id="modal-daily-gospel" onclick="if(event.target === this) closeGospelModal()" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl p-5 sm:p-6 space-y-4 max-h-[86vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800">
+      
+      <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800 shrink-0">
+        <div>
+          <span id="gospel-date-badge" class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1">Liturgia del Día</span>
+          <h3 class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-snug">Lecturas del Día</h3>
+        </div>
+        <button onclick="closeGospelModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shrink-0 text-xs">
+        <button onclick="switchGospelTab('gospel')" id="tab-gospel-reading" class="flex-1 py-2 rounded-lg bg-white dark:bg-slate-900 text-amber-600 shadow-sm font-bold">Lecturas</button>
+        <button onclick="switchGospelTab('comment')" id="tab-gospel-comment" class="flex-1 py-2 rounded-lg text-slate-600 dark:text-slate-300 font-semibold">Comentario</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto no-scrollbar space-y-3 pr-0.5 text-content-selectable">
+        <div id="panel-gospel-reading" class="space-y-3">
+          <div class="p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-2">
+            <div id="gospel-full-text" class="text-slate-700 dark:text-slate-200 space-y-3 text-xs sm:text-sm leading-relaxed"></div>
+          </div>
+        </div>
+        <div id="panel-gospel-comment" class="hidden space-y-3">
+          <div class="p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-2">
+            <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Meditación Espiritual</p>
+            <div id="gospel-comment-text" class="text-slate-700 dark:text-slate-200 text-xs sm:text-sm leading-relaxed"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end shrink-0">
+        <button onclick="closeGospelModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-colors">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
   </div>
 
   <script>
@@ -922,6 +1073,135 @@
     ];
 
     /* ========================================================================
+       DATOS Y LÓGICA DE MOMENTOS DE ORACIÓN Y LECTURAS LITÚRGICAS
+       ======================================================================== */
+    const MOMENTOS_CONTENT = {
+      escrutinio: {
+        title: 'Oración para el Escrutinio',
+        content: `
+          <div class="space-y-4">
+            <div>
+              <p class="font-bold text-amber-600 dark:text-amber-400 mb-1">Invocación al Espíritu Santo</p>
+              <p>En el nombre del Padre, y del Hijo y del Espíritu Santo.</p>
+              <p class="mt-1">Señor, ven tú mismo a iluminar mi interior y a aquietar mis pensamientos. Te pido que envíes tu Espíritu Santo para que me conceda la luz y la claridad que necesito al acercarme a ti. Abre mis ojos para ver lo que me quieres decir hoy, despeja el ruido de mi mente y haz que mi corazón esté verdadero dispuesto a escrutar tu Palabra, a dejarme interpelar por tu verdad y a descubrir el mensaje profundo que guardas para mí. Amén.</p>
+            </div>
+            <hr class="border-slate-200 dark:border-slate-700">
+            <div>
+              <p class="font-bold text-amber-600 dark:text-amber-400 mb-1">Oración final</p>
+              <p>Señor, te doy gracias por este momento de encuentro y por el don de tu Palabra. Te pido que todo lo que hoy he meditado y escrutado no se quede solo en un ejercicio intelectual, sino que eche raíces hondas en mi vida cotidiana. Dame la fuerza y la coherencia necesarias para llevarlo a la práctica, para que transforme mi manera de mirar, de decidir y de relacionarme con los demás, haciendo que tu luz se refleje en mis pasos.</p>
+              <p class="mt-1">En el nombre del Padre, y del Hijo y del Espíritu Santo.</p>
+            </div>
+          </div>
+        `
+      },
+      restauracion: {
+        title: 'Oración por la Restauración del Matrimonio',
+        content: `
+          <div class="space-y-4">
+            <p>Dios de toda misericordia y amor paciente, te presentamos nuestra vida en común. Ponemos ante Ti nuestra historia, nuestras heridas y el deseo profundo de sanar lo que se ha roto. Te pedimos que restaures nuestro matrimonio, que hagas que vuelva a ser como nunca debió dejar de ser: un refugio de paz, un espacio de entrega sincera y un reflejo vivo de tu fidelidad.</p>
+            <p>Señor, saca de nosotros toda distancia, todo orgullo y todo silencio que nos separa. Concédenos la gracia de volver a hablarnos con bondad, de mirarnos a los ojos con la ternura del primer día, y de recuperar esa complicidad limpia donde cabe la sonrisa compartida.</p>
+            <p>Danos también la fortaleza para estar unidos en el dolor y en la prueba. Permítenos llorar juntos ante las vicisitudes de la vida, sin aislarnos, sosteniéndonos el uno al otro en los momentos oscuros. Y concédenos celebrar y sonreír juntos ante cada alegría, reconociendo que cada don viene de tus manos.</p>
+            <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 italic text-amber-900 dark:text-amber-200">
+              *(Espacio para la oración libre: expresa aquí con tus propias palabras lo que hay en tu corazón, tus miedos, tus agradecimientos y los deseos concretos para este momento de vuestra vida)*
+            </div>
+            <p>Señor, haz nuevo nuestro amor. Que donde hubo desgaste y silencio, pongas vida, paciencia y un renacer constante.</p>
+            <p>Por Jesucristo, nuestro Señor.<br>Amén.</p>
+          </div>
+        `
+      },
+      esposos: {
+        title: 'Oración por los Esposos y la Unidad del Matrimonio',
+        content: `
+          <div class="space-y-4">
+            <p>Dios, Padre eterno y de toda bondad, que en tu designio de amor uniste nuestras vidas en el sacramento del Matrimonio:</p>
+            <p>Te pedimos que mires con bondad nuestro hogar. Envía sobre nosotros la gracia de tu Espíritu Santo para que el amor que un día nos condujo al altar permanezca vivo, firme y constante ante cualquier adversidad.</p>
+            <p>Concédenos, Señor:</p>
+            <ul class="list-disc pl-5 space-y-1.5">
+              <li>Paciencia y comprensión para sobrellevar nuestras debilidades.</li>
+              <li>Humildad para saber perdonar y pedir perdón.</li>
+              <li>Fidelidad inquebrantable en los momentos de bonanza y en los días de prueba.</li>
+            </ul>
+            <p>Haz que seamos un solo corazón y una sola alma. Que nuestra entrega mutua se renueve cada día con ternura, que la paz de Cristo reine en nuestro hogar y que nada ni nadie pueda romper la alianza que Tú mismo bendijiste y sellaste.</p>
+            <p>Por Jesucristo, nuestro Señor.<br>Amén.</p>
+          </div>
+        `
+      }
+    };
+
+    function openMomentosModal() {
+      document.getElementById('modal-momentos-selector').classList.remove('hidden');
+      highlightNavTab('momentos');
+    }
+
+    function closeMomentosModal() {
+      document.getElementById('modal-momentos-selector').classList.add('hidden');
+      updateLengthButtonsUI();
+    }
+
+    function openMomentoDetail(key) {
+      closeMomentosModal();
+      const m = MOMENTOS_CONTENT[key];
+      if (!m) return;
+      document.getElementById('momento-modal-title').textContent = m.title;
+      document.getElementById('momento-modal-text').innerHTML = m.content;
+      document.getElementById('modal-momento-detail').classList.remove('hidden');
+      highlightNavTab('momentos');
+    }
+
+    function closeMomentoDetailModal() {
+      document.getElementById('modal-momento-detail').classList.add('hidden');
+      updateLengthButtonsUI();
+    }
+
+    function loadDailyLiturgy() {
+      document.getElementById('gospel-date-badge').textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      
+      document.getElementById('gospel-full-text').innerHTML = [
+        '<div class="space-y-4">',
+          '<div>',
+            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Primera Lectura</p>',
+            '<p class="text-xs font-semibold text-slate-500 mb-1">Del libro de la Carta del apóstol san Pablo a los Filipenses (Flp 2, 12-18)</p>',
+            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">Hermanos: Así como siempre habéis obedecido, no solo cuando estaba presente, sino mucho más ahora en mi ausencia, llevad a cabo vuestra salvación con temor y temblor. Pues Dios es el que obra en vosotros el querer y el obrar, según su benevolencia. Hacedlo todo sin murmuraciones ni discusiones, para que seáis irreprochables y sencillos, hijos de Dios sin tacha en medio de una generación depravada y perversa, en la cual brilláis como lumbreras del mundo, manteniendo la palabra de vida.</p>',
+          '</div>',
+          '<hr class="border-slate-200 dark:border-slate-700">',
+          '<div>',
+            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Salmo Responsorial (Sal 26, 1. 4. 13-14)</p>',
+            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm italic">R. El Señor es mi luz y mi salvación.<br><br>El Señor es mi luz y mi salvación, ¿a quién temeré?<br>El Señor es la defensa de mi vida, ¿quién me hará temblar?<br>R. El Señor es mi luz y mi salvación.<br><br>Una cosa pido al Señor, esta buscaré:<br>habitar en la casa del Señor todos los días de mi vida.</p>',
+          '</div>',
+          '<hr class="border-slate-200 dark:border-slate-700">',
+          '<div>',
+            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Santo Evangelio</p>',
+            '<p class="text-xs font-semibold text-slate-500 mb-1">Lectura del santo Evangelio según san Lucas (Lc 14, 25-33)</p>',
+            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">En aquel tiempo, caminaba con Jesús mucha gente; él se volvió y les dijo: «Si alguno viene a mí y no me aborrece a su padre y a su madre, a su mujer y a sus hijos, a sus hermanos y a sus hermanas, e incluso a sí mismo, no puede ser discípulo mío. Quien no carga con su cruz y viene en pos de mí, no puede ser discípulo mío...»</p>',
+          '</div>',
+        '</div>'
+      ].join('');
+
+      document.getElementById('gospel-comment-text').innerHTML = [
+        '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">El evangelio de hoy nos presenta la exigencia radical del seguimiento de Jesús. Las palabras expresan una prioridad absoluta: el amor a Cristo debe ocupar el primer lugar en nuestro corazón, de modo que ningún vínculo terreno nos aparte de su voluntad.</p>'
+      ].join('');
+    }
+
+    function openGospelModal(tab) {
+      document.getElementById('modal-daily-gospel').classList.remove('hidden');
+      switchGospelTab(tab || 'gospel');
+      loadDailyLiturgy();
+      highlightNavTab('gospel');
+    }
+
+    function closeGospelModal() { 
+      document.getElementById('modal-daily-gospel').classList.add('hidden'); 
+      updateLengthButtonsUI();
+    }
+
+    function switchGospelTab(tab) {
+      document.getElementById('tab-gospel-reading').className = tab === 'gospel' ? 'flex-1 py-2 rounded-lg bg-white dark:bg-slate-900 text-amber-600 shadow-sm font-bold' : 'flex-1 py-2 rounded-lg text-slate-600 font-semibold';
+      document.getElementById('tab-gospel-comment').className = tab === 'comment' ? 'flex-1 py-2 rounded-lg bg-white dark:bg-slate-900 text-amber-600 shadow-sm font-bold' : 'flex-1 py-2 rounded-lg text-slate-600 font-semibold';
+      document.getElementById('panel-gospel-reading').classList.toggle('hidden', tab !== 'gospel');
+      document.getElementById('panel-gospel-comment').classList.toggle('hidden', tab !== 'comment');
+    }
+
+    /* ========================================================================
        SISTEMA DE NOVENAS (9 DÍAS CONSECUTIVOS)
        ======================================================================== */
     let novenasData = JSON.parse(localStorage.getItem('rosario_novenas_data') || '{}');
@@ -934,7 +1214,6 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
 
-    // Verificar si hoy ya se rezó esta novena
     function isNovenaCompletedToday(prayerId) {
       const todayStr = getTodayDateStr();
       return completedNovenasToday[prayerId] === todayStr;
@@ -1063,7 +1342,6 @@
       let activeItems = [];
       SPECIAL_PRAYERS.forEach((p, idx) => {
         const st = getNovenaStatus(idx);
-        // Excluir estrictamente si ya fue rezada hoy o no está activa
         if (st.active && !st.completedToday) {
           activeItems.push({ p, st, idx });
         }
@@ -1088,12 +1366,7 @@
         '</div>'
       ].join('')).join('');
 
-      document.getElementById('modal-novena-reminder').classList.add('hidden');
-      if (!forced && activeItems.length > 0) {
-        document.getElementById('modal-novena-reminder').classList.remove('hidden');
-      } else if (forced) {
-        document.getElementById('modal-novena-reminder').classList.remove('hidden');
-      }
+      document.getElementById('modal-novena-reminder').classList.remove('hidden');
     }
 
     function closeNovenaReminderModal() {
@@ -1138,20 +1411,17 @@
       url: 'https://www.youtube.com/channel/' + HOMILIA_CHANNEL_ID + '/videos'
     };
 
-    // Sistema de Homilías Favoritas en LocalStorage
     let favoriteHomilias = JSON.parse(localStorage.getItem('rosario_favorite_homilias') || '[]');
-    let currentHomiliasTab = 'recent'; // 'recent' | 'favorites'
+    let currentHomiliasTab = 'recent';
     let editingHomiliaId = null;
 
-    // Estado de la aplicación
     let realDayIndex = new Date().getDay();
     let currentDayIndex = realDayIndex;
-    let currentLength = 'corta'; // 'corta' | 'larga' | 'homilia'
-    let currentViewMode = 'video'; // 'video' | 'guided' | 'prayers'
+    let currentLength = 'corta';
+    let currentViewMode = 'video';
     let guidedSteps = [];
     let currentStepIndex = 0;
 
-    // Obtener automáticamente los últimos vídeos publicados en el canal de Homilías
     async function fetchLatestHomiliaVideo() {
       try {
         const rssUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + HOMILIA_CHANNEL_ID;
@@ -1189,7 +1459,7 @@
           }
         }
       } catch (err) {
-        // Fallback
+        // Fallback handled silently
       }
     }
 
@@ -1210,7 +1480,6 @@
         selectedHomiliaIndex = found.index;
         latestHomiliaVideo = found;
       } else {
-        // Buscar en favoritas si no está en recientes
         const fav = favoriteHomilias.find(f => f.id === vidId);
         if (fav) {
           latestHomiliaVideo = fav;
@@ -1288,7 +1557,6 @@
                 (dateFormatted ? '<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5"><i class="fa-regular fa-calendar mr-1"></i>' + dateFormatted + '</p>' : ''),
               '</div>',
             '</button>',
-            // Acciones para favoritas (editar título o desmarcar)
             (isFav ? [
               '<div class="flex flex-col gap-1 shrink-0 px-1">',
                 '<button onclick="openEditHomiliaModal(\'' + video.id + '\')" class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 flex items-center justify-center text-xs" title="Editar título">',
@@ -1429,7 +1697,6 @@
       salve: localStorage.getItem('rosario_salve') || 'Dios te salve, Reina y Madre de misericordia, vida, dulzura y esperanza nuestra...'
     };
 
-    // Construir pasos para el modo interactivo
     function buildGuidedSteps(mysteryKey) {
       const mInfo = MYSTERY_INFO[mysteryKey];
       const steps = [];
@@ -1715,7 +1982,6 @@
       const videoSection = ROSARY_VIDEOS[mKey];
       const iframe = document.getElementById('youtube-player');
       const versionTag = document.getElementById('video-version-tag');
-      const timingEstimate = document.getElementById('video-timing-estimate');
       const externalBtn = document.getElementById('btn-external-youtube');
       const mysteriesCard = document.getElementById('mysteries-card-container');
       const homiliasHistoryCard = document.getElementById('homilias-history-container');
@@ -1727,7 +1993,6 @@
         if (homiliasHistoryCard) homiliasHistoryCard.classList.remove('hidden');
         const displayTitle = latestHomiliaVideo.customTitle || latestHomiliaVideo.title || 'Homilía Diaria';
         if (versionTag) versionTag.textContent = displayTitle;
-        if (timingEstimate) timingEstimate.classList.add('hidden');
         if (latestHomiliaVideo.id) {
           iframe.src = 'https://www.youtube.com/embed/' + latestHomiliaVideo.id + '?rel=0';
           if (externalBtn) externalBtn.href = latestHomiliaVideo.url;
@@ -1742,7 +2007,6 @@
         if (homiliasHistoryCard) homiliasHistoryCard.classList.add('hidden');
         const selected = currentLength === 'corta' ? videoSection.short : videoSection.long;
         if (versionTag) versionTag.textContent = selected.title;
-        if (timingEstimate) timingEstimate.classList.add('hidden');
         iframe.src = 'https://www.youtube.com/embed/' + selected.id + '?rel=0';
         if (externalBtn) externalBtn.href = selected.url;
         const favBtn = document.getElementById('btn-toggle-favorite-current');
@@ -1758,10 +2022,12 @@
       const topHomilia = document.getElementById('btn-len-homilia');
       const footCorta = document.getElementById('footer-btn-corta');
       const footLarga = document.getElementById('footer-btn-larga');
+      
       const tabVideo = document.getElementById('tab-view-video');
-      const tabGuided = document.getElementById('tab-view-guided');
       const tabHomilia = document.getElementById('tab-view-homilia');
       const tabPrayers = document.getElementById('tab-view-prayers');
+      const tabGospel = document.getElementById('tab-view-gospel');
+      const tabMomentos = document.getElementById('tab-view-momentos');
 
       const activeTopClass = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm font-bold';
       const inactiveTopClass = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
@@ -1781,44 +2047,76 @@
       if (footLarga) footLarga.className = currentLength === 'larga' ? activeFootClass : inactiveFootClass;
 
       const activeNavClass = 'flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm';
-      const activeNavHomiliaClass = 'flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm';
       const inactiveNavClass = 'flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
 
       const iconVideo = document.getElementById('icon-tab-video');
-      const iconGuided = document.getElementById('icon-tab-guided');
       const iconHomilia = document.getElementById('icon-tab-homilia');
       const iconPrayers = document.getElementById('icon-tab-prayers');
+      const iconGospel = document.getElementById('icon-tab-gospel');
+      const iconMomentos = document.getElementById('icon-tab-momentos');
 
-      if (!tabVideo || !tabGuided) return;
+      if (!tabVideo || !tabHomilia) return;
 
-      if (currentViewMode === 'guided') {
-        tabVideo.className = inactiveNavClass;
-        tabGuided.className = activeNavClass;
-        if (tabHomilia) tabHomilia.className = inactiveNavClass;
-        if (tabPrayers) tabPrayers.className = inactiveNavClass;
-        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
-        if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-white text-sm';
+      // Reset all tabs to inactive first
+      tabVideo.className = inactiveNavClass;
+      tabHomilia.className = inactiveNavClass;
+      tabPrayers.className = inactiveNavClass;
+      if (tabGospel) tabGospel.className = inactiveNavClass;
+      if (tabMomentos) tabMomentos.className = inactiveNavClass;
+      
+      if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
+      if (iconHomilia) iconHomilia.className = 'fa-solid fa-church text-red-500 text-sm';
+      if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm';
+      if (iconGospel) iconGospel.className = 'fa-solid fa-book-bible text-amber-500 text-sm';
+      if (iconMomentos) iconMomentos.className = 'fa-solid fa-heart text-amber-500 text-sm';
+
+      if ((currentViewMode === 'video' || currentViewMode === 'guided') && currentLength !== 'homilia') {
+        tabVideo.className = activeNavClass;
+        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-white text-sm';
       } else if (currentLength === 'homilia') {
-        tabVideo.className = inactiveNavClass;
-        tabGuided.className = inactiveNavClass;
-        if (tabHomilia) tabHomilia.className = activeNavHomiliaClass;
-        if (tabPrayers) tabPrayers.className = inactiveNavClass;
-        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
+        tabHomilia.className = activeNavClass;
         if (iconHomilia) iconHomilia.className = 'fa-solid fa-church text-white text-sm';
       } else if (currentViewMode === 'prayers') {
-        tabVideo.className = inactiveNavClass;
-        tabGuided.className = inactiveNavClass;
-        if (tabHomilia) tabHomilia.className = inactiveNavClass;
-        if (tabPrayers) tabPrayers.className = activeNavClass;
-        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
+        tabPrayers.className = activeNavClass;
         if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-white text-sm';
-      } else {
-        tabVideo.className = activeNavClass;
-        tabGuided.className = inactiveNavClass;
-        if (tabHomilia) tabHomilia.className = inactiveNavClass;
-        if (tabPrayers) tabPrayers.className = inactiveNavClass;
-        if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-white text-sm';
-        if (iconGuided) iconGuided.className = 'fa-solid fa-hands-praying text-amber-500 text-sm';
+      }
+    }
+
+    function highlightNavTab(tabName) {
+      const tabVideo = document.getElementById('tab-view-video');
+      const tabHomilia = document.getElementById('tab-view-homilia');
+      const tabPrayers = document.getElementById('tab-view-prayers');
+      const tabGospel = document.getElementById('tab-view-gospel');
+      const tabMomentos = document.getElementById('tab-view-momentos');
+
+      const iconVideo = document.getElementById('icon-tab-video');
+      const iconHomilia = document.getElementById('icon-tab-homilia');
+      const iconPrayers = document.getElementById('icon-tab-prayers');
+      const iconGospel = document.getElementById('icon-tab-gospel');
+      const iconMomentos = document.getElementById('icon-tab-momentos');
+
+      const activeNavClass = 'flex-1 py-1.5 px-1 rounded-xl font-bold flex items-center justify-center gap-1 transition-all bg-amber-500 text-white shadow-sm';
+      const inactiveNavClass = 'flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+
+      if (tabVideo) tabVideo.className = inactiveNavClass;
+      if (tabHomilia) tabHomilia.className = inactiveNavClass;
+      if (tabPrayers) tabPrayers.className = inactiveNavClass;
+      if (tabGospel) tabGospel.className = inactiveNavClass;
+      if (tabMomentos) tabMomentos.className = inactiveNavClass;
+
+      if (iconVideo) iconVideo.className = 'fa-brands fa-youtube text-red-600 text-sm';
+      if (iconHomilia) iconHomilia.className = 'fa-solid fa-church text-red-500 text-sm';
+      if (iconPrayers) iconPrayers.className = 'fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm';
+      if (iconGospel) iconGospel.className = 'fa-solid fa-book-bible text-amber-500 text-sm';
+      if (iconMomentos) iconMomentos.className = 'fa-solid fa-heart text-amber-500 text-sm';
+
+      if (tabName === 'gospel' && tabGospel) {
+        tabGospel.className = activeNavClass;
+        if (iconGospel) iconGospel.className = 'fa-solid fa-book-bible text-white text-sm';
+      }
+      if (tabName === 'momentos' && tabMomentos) {
+        tabMomentos.className = activeNavClass;
+        if (iconMomentos) iconMomentos.className = 'fa-solid fa-heart text-white text-sm';
       }
     }
 
@@ -1874,316 +2172,4 @@
     }
 
     /* ========================================================================
-       LOGICA DEL DECENARIO Y REZO GUIADO
-       ======================================================================== */
-    function renderGuidedStep() {
-      if (!guidedSteps.length) return;
-      const step = guidedSteps[currentStepIndex];
-      const total = guidedSteps.length;
-      const pct = Math.round(((currentStepIndex + 1) / total) * 100);
-
-      const stepLabel = document.getElementById('step-label');
-      if (stepLabel) stepLabel.textContent = 'Paso ' + (currentStepIndex + 1) + ' de ' + total;
-      const stepPct = document.getElementById('step-percentage');
-      if (stepPct) stepPct.textContent = pct + '%';
-      const progressFill = document.getElementById('progress-bar-fill');
-      if (progressFill) progressFill.style.width = pct + '%';
-
-      const decadeInd = document.getElementById('decade-indicator');
-      if (decadeInd) decadeInd.textContent = step.decade > 0 ? step.decade + 'º Misterio' : 'Oraciones Generales';
-      const beadInd = document.getElementById('bead-indicator');
-      if (beadInd) beadInd.textContent = step.bead > 0 ? 'Cuenta ' + step.bead + '/10' : 'Cuenta Mayor';
-
-      const beadsRow = document.getElementById('beads-row');
-      if (beadsRow) {
-        let beadsHTML = '';
-        for (let i = 1; i <= 10; i++) {
-          let beadStyle = 'w-6 h-6 rounded-full border text-[10px] font-bold flex items-center justify-center transition-all ';
-          if (step.bead > i) {
-            beadStyle += 'bg-amber-500 border-amber-500 text-white';
-          } else if (step.bead === i) {
-            beadStyle += 'bg-amber-600 border-amber-400 text-white scale-125 ring-4 ring-amber-500/20';
-          } else {
-            beadStyle += 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-400';
-          }
-          beadsHTML += '<div class="' + beadStyle + '">' + i + '</div>';
-        }
-        beadsRow.innerHTML = beadsHTML;
-      }
-
-      const stepTitle = document.getElementById('step-title');
-      if (stepTitle) stepTitle.textContent = step.title;
-
-      const mKey = getMysteryKeyByDay(currentDayIndex);
-      const guidedCard = document.getElementById('guided-mystery-card');
-      const infoBtn = document.getElementById('btn-step-mystery-info');
-      
-      if (step.decade >= 1 && step.decade <= 5 && MYSTERY_INFO[mKey] && MYSTERY_INFO[mKey].items[step.decade - 1]) {
-        const mIdx = step.decade - 1;
-        if (infoBtn) {
-          infoBtn.classList.remove('hidden');
-          infoBtn.classList.add('inline-flex');
-          infoBtn.onclick = function (e) {
-            e.stopPropagation();
-            openMysteryDetailModal(mKey, mIdx);
-          };
-        }
-        if (guidedCard) {
-          guidedCard.classList.add('cursor-pointer', 'hover:border-amber-500/40');
-          guidedCard.onclick = function () {
-            openMysteryDetailModal(mKey, mIdx);
-          };
-        }
-      } else {
-        if (infoBtn) {
-          infoBtn.classList.add('hidden');
-          infoBtn.classList.remove('inline-flex');
-          infoBtn.onclick = null;
-        }
-        if (guidedCard) {
-          guidedCard.classList.remove('cursor-pointer', 'hover:border-amber-500/40');
-          guidedCard.onclick = null;
-        }
-      }
-
-      const scriptureBox = document.getElementById('step-scripture-box');
-      if (scriptureBox) {
-        if (step.quoteText) {
-          scriptureBox.classList.remove('hidden');
-          const qEl = document.getElementById('step-quote');
-          if (qEl) qEl.textContent = step.ref;
-          const qtEl = document.getElementById('step-quote-text');
-          if (qtEl) qtEl.textContent = step.quoteText;
-        } else {
-          scriptureBox.classList.add('hidden');
-        }
-      }
-
-      const stepText = document.getElementById('step-text');
-      if (stepText) stepText.innerHTML = step.text;
-
-      const prevBtn = document.getElementById('btn-guided-prev');
-      if (prevBtn) prevBtn.disabled = currentStepIndex === 0;
-      const nextBtnText = document.getElementById('guided-btn-text');
-      if (nextBtnText) {
-        if (currentStepIndex === total - 1) {
-          nextBtnText.textContent = 'Reiniciar Rosario';
-        } else {
-          nextBtnText.textContent = 'Rezar y Continuar';
-        }
-      }
-    }
-
-    function stepNext() {
-      if (currentStepIndex < guidedSteps.length - 1) {
-        currentStepIndex++;
-      } else {
-        currentStepIndex = 0;
-        showToast('Has completado el Santo Rosario');
-      }
-      renderGuidedStep();
-    }
-
-    function stepPrevious() {
-      if (currentStepIndex > 0) {
-        currentStepIndex--;
-        renderGuidedStep();
-      }
-    }
-
-    /* ========================================================================
-       UTILIDADES: TEMA, MODAL, PORTAPAPELES
-       ======================================================================== */
-    function toggleTheme() {
-      const html = document.documentElement;
-      const icon = document.getElementById('theme-icon');
-      html.classList.toggle('dark');
-      if (html.classList.contains('dark')) {
-        if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-sm';
-      } else {
-        if (icon) icon.className = 'fa-solid fa-moon text-sm';
-      }
-    }
-
-    function openConfigModal() {
-      const modal = document.getElementById('modal-config');
-      if (modal) modal.classList.remove('hidden');
-    }
-
-    function closeConfigModal() {
-      const modal = document.getElementById('modal-config');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function openMysteryByCurrentDay(itemIndex) {
-      const mKey = getMysteryKeyByDay(currentDayIndex);
-      openMysteryDetailModal(mKey, itemIndex);
-    }
-
-    function openPrayerDetail(prayerIndex) {
-      const p = SPECIAL_PRAYERS[prayerIndex];
-      if (!p) return;
-      currentOpenPrayerIndex = prayerIndex;
-      
-      const st = getNovenaStatus(prayerIndex);
-      const badgeEl = document.getElementById('modal-prayer-novena-badge');
-      const controlsEl = document.getElementById('modal-prayer-novena-controls');
-      const titleEl = document.getElementById('modal-prayer-title');
-      const textEl = document.getElementById('modal-prayer-text');
-
-      if (st.active) {
-        if (titleEl) titleEl.textContent = p.shortName + ' — ' + st.label + ' de la Novena';
-        if (badgeEl) {
-          badgeEl.className = 'inline-block text-xs font-bold px-3 py-1 rounded-full ' +
-            (st.isLastDay ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-500 text-white');
-          badgeEl.textContent = 'Novena • ' + st.label;
-          badgeEl.classList.remove('hidden');
-        }
-
-        const reflectionHtml = p.reflections && p.reflections[st.day - 1] ? p.reflections[st.day - 1] : '';
-        const novenaStepsHtml = p.steps.map(step => {
-          if (step.includes('{REFLECTION}')) {
-            return '<div class="p-4 my-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-sm sm:text-base leading-relaxed">' + reflectionHtml + '</div>';
-          }
-          return '<div class="mb-4 text-sm sm:text-base leading-relaxed">' + step + '</div>';
-        }).join('');
-
-        if (textEl) textEl.innerHTML = novenaStepsHtml;
-
-        if (controlsEl) {
-          controlsEl.innerHTML = [
-            '<div class="space-y-3">',
-              (st.completedToday ? [
-                '<div class="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold text-center">',
-                  '✓ Ya has rezado esta novena hoy. ¡Buen trabajo espiritual!',
-                '</div>'
-              ].join('') : [
-                '<button onclick="markNovenaDoneToday(' + prayerIndex + ')" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-colors">',
-                  '<i class="fa-solid fa-check-circle"></i>',
-                  '<span>Marcar como Rezada Hoy</span>',
-                '</button>'
-              ].join('')),
-              '<div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3">',
-                '<div class="text-xs sm:text-sm">',
-                  '<span class="font-bold text-amber-700 dark:text-amber-300">' + (st.isLastDay ? '¡Último día de la Novena!' : 'Novena en curso: Día ' + st.day + ' de 9') + '</span>',
-                  '<p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 mt-0.5">Progreso guardado automáticamente.</p>',
-                '</div>',
-                '<button onclick="cancelNovena(' + prayerIndex + ', event)" class="px-3.5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold shrink-0 transition-colors">',
-                  'Detener novena',
-                '</button>',
-              '</div>',
-            '</div>'
-          ].join('');
-        }
-      } else {
-        if (titleEl) titleEl.textContent = p.title;
-        if (badgeEl) badgeEl.classList.add('hidden');
-        if (textEl) textEl.innerHTML = p.text.replace(/\n\n/g, '<br><br>');
-        if (controlsEl) {
-          controlsEl.innerHTML = [
-            '<button onclick="startNovena(' + prayerIndex + ', event)" class="w-full py-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 transition-colors">',
-              '<i class="fa-solid fa-calendar-plus"></i>',
-              '<span>Iniciar Novena (9 días)</span>',
-            '</button>'
-          ].join('');
-        }
-      }
-
-      const modalEl = document.getElementById('modal-prayer-detail');
-      if (modalEl) modalEl.classList.remove('hidden');
-    }
-
-    function markNovenaDoneToday(prayerIdx) {
-      const p = SPECIAL_PRAYERS[prayerIdx];
-      if (!p) return;
-      markNovenaCompletedToday(p.id);
-      renderPrayersList();
-      updateNovenasBanner();
-      openPrayerDetail(prayerIdx);
-      showToast('¡Novena marcada como rezada hoy!');
-    }
-
-    function closePrayerDetailModal() {
-      const modal = document.getElementById('modal-prayer-detail');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function openMysteryDetailModal(mysteryKey, itemIndex) {
-      const mInfo = MYSTERY_INFO[mysteryKey];
-      if (!mInfo || !mInfo.items[itemIndex]) return;
-      const item = mInfo.items[itemIndex];
-
-      const badgeEl = document.getElementById('modal-mystery-badge');
-      if (badgeEl) badgeEl.textContent = mInfo.name + ' • ' + item.num;
-      const titleEl = document.getElementById('modal-mystery-title');
-      if (titleEl) titleEl.textContent = item.title;
-      const refEl = document.getElementById('modal-mystery-ref');
-      if (refEl) refEl.textContent = item.ref;
-      const verseEl = document.getElementById('modal-mystery-verse');
-      if (verseEl) verseEl.textContent = item.verse;
-      const explEl = document.getElementById('modal-mystery-explanation');
-      if (explEl) explEl.textContent = item.desc;
-      const appEl = document.getElementById('modal-mystery-application');
-      if (appEl) appEl.textContent = item.application;
-      const reflEl = document.getElementById('modal-mystery-reflection');
-      if (reflEl) reflEl.textContent = item.reflection;
-
-      const modal = document.getElementById('modal-mystery-detail');
-      if (modal) modal.classList.remove('hidden');
-    }
-
-    function closeMysteryDetailModal() {
-      const modal = document.getElementById('modal-mystery-detail');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function selectDay(dayIdx) {
-      currentDayIndex = dayIdx;
-      renderCurrentDay();
-      closeConfigModal();
-    }
-
-    function resetToToday() {
-      currentDayIndex = realDayIndex;
-      renderCurrentDay();
-      closeConfigModal();
-    }
-
-    function copyCurrentLink() {
-      const externalBtn = document.getElementById('btn-external-youtube');
-      if (!externalBtn) return;
-      const externalUrl = externalBtn.href;
-      const tempInput = document.createElement('textarea');
-      tempInput.value = externalUrl;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempInput);
-      showToast('Enlace copiado al portapapeles');
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      if (!toast) return;
-      toast.textContent = msg;
-      toast.classList.remove('opacity-0');
-      setTimeout(() => {
-        toast.classList.add('opacity-0');
-      }, 2400);
-    }
-
-    // Inicializar al cargar la ventana
-    window.onload = function () {
-      renderCurrentDay();
-      fetchLatestHomiliaVideo();
-      renderPrayersList();
-      updateNovenasBanner();
-
-      // Comprobar si hay novenas activas pendientes para hoy
-      setTimeout(() => {
-        openNovenasReminderModal(false);
-      }, 600);
-    };
-  </script>
-</body>
-</html>
+...ោង */
