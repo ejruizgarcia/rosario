@@ -355,6 +355,12 @@
           Guardar título
         </button>
       </div>
+      <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+        <button onclick="deleteHomiliaFromModal()" class="w-full py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 font-bold text-xs transition-colors flex items-center justify-center gap-2">
+          <i class="fa-solid fa-trash-can"></i>
+          <span>Eliminar de favoritas</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1382,6 +1388,21 @@
         }
         renderHomiliasListTab();
         showToast('Título actualizado con éxito');
+      }
+      closeEditHomiliaModal();
+    }
+
+    function deleteHomiliaFromModal() {
+      if (!editingHomiliaId) return;
+      const index = favoriteHomilias.findIndex(f => f.id === editingHomiliaId);
+      if (index >= 0) {
+        favoriteHomilias.splice(index, 1);
+        localStorage.setItem('rosario_favorite_homilias', JSON.stringify(favoriteHomilias));
+        if (latestHomiliaVideo.id === editingHomiliaId) {
+          updateFavoriteButtonUI();
+        }
+        renderHomiliasListTab();
+        showToast('Homilía eliminada de favoritas');
       }
       closeEditHomiliaModal();
     }
