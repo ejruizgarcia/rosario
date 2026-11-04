@@ -301,8 +301,8 @@
           <span>Largo</span>
         </button>
   <!-- MODAL: Editar Título de Homilía Favorita -->
-  <div id="modal-edit-homilia" onclick="if(event.target === this) closeEditHomiliaModal()" class="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800">
+  <div id="modal-edit-homilia" onclick="if(event.target === this) closeEditHomiliaModal()" class="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800 relative z-[95]">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
         <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white">Editar Título de Favorita</h3>
         <button onclick="closeEditHomiliaModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -1063,7 +1063,7 @@
       let activeItems = [];
       SPECIAL_PRAYERS.forEach((p, idx) => {
         const st = getNovenaStatus(idx);
-        // Solo recordar si la novena está activa Y NO se ha rezado hoy
+        // Excluir estrictamente si ya fue rezada hoy o no está activa
         if (st.active && !st.completedToday) {
           activeItems.push({ p, st, idx });
         }
@@ -1082,7 +1082,7 @@
             '<p class="text-xs font-bold text-slate-900 dark:text-white truncate">' + item.p.shortName + '</p>',
             '<p class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-0.5">' + (item.st.isLastDay ? '¡Último día!' : 'Estás en el Día ' + item.st.day + ' de la novena') + '</p>',
           '</div>',
-          '<button onclick="closeNovenaReminderModal(); setTimeout(function(){ openPrayerDetail(' + item.idx + '); }, 150);" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 transition-colors shadow-sm">',
+          '<button onclick="closeNovenaReminderModal(); openPrayerDetail(' + item.idx + ');" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 transition-colors shadow-sm">',
             'Rezar hoy',
           '</button>',
         '</div>'
