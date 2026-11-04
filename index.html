@@ -1617,6 +1617,7 @@
       const homiliasHistoryCard = document.getElementById('homilias-history-container');
       const favBtn = document.getElementById('btn-toggle-favorite-current');
       const guidedCardContainer = document.getElementById('guided-mode-card-container');
+      const topDayBanner = document.getElementById('top-day-banner');
 
       if (!iframe) return;
 
@@ -1625,6 +1626,7 @@
         if (homiliasHistoryCard) homiliasHistoryCard.classList.remove('hidden');
         if (favBtn) favBtn.classList.remove('hidden');
         if (guidedCardContainer) guidedCardContainer.classList.add('hidden');
+        if (topDayBanner) topDayBanner.classList.add('hidden');
         const displayTitle = latestHomiliaVideo.customTitle || latestHomiliaVideo.title || 'Homilía Diaria';
         if (versionTag) versionTag.textContent = displayTitle;
         if (latestHomiliaVideo.id) {
@@ -1641,6 +1643,7 @@
         if (homiliasHistoryCard) homiliasHistoryCard.classList.add('hidden');
         if (favBtn) favBtn.classList.add('hidden');
         if (guidedCardContainer) guidedCardContainer.classList.remove('hidden');
+        if (topDayBanner) topDayBanner.classList.remove('hidden');
         const selected = currentLength === 'corta' ? videoSection.short : videoSection.long;
         if (versionTag) versionTag.textContent = selected.title;
         iframe.src = 'https://www.youtube.com/embed/' + selected.id + '?rel=0';
