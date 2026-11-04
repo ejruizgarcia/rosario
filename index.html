@@ -92,7 +92,7 @@
     </button>
     <button onclick="openMomentosModal()" id="tab-view-momentos" class="flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
       <i id="icon-tab-momentos" class="fa-solid fa-heart text-amber-500 text-sm"></i>
-      <span>Momentos</span>
+      <span>Fav</span>
     </button>
   </nav>
 
@@ -171,7 +171,7 @@
       </div>
 
       <!-- Acceso Integrado al Rezo Interactivo Guiado -->
-      <div class="bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-amber-500/5 border border-amber-500/30 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3">
+      <div id="guided-mode-card-container" class="bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-amber-500/5 border border-amber-500/30 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-base shrink-0 shadow-sm">
             <i class="fa-solid fa-hands-praying"></i>
@@ -1350,7 +1350,7 @@
     function updateFavoriteButtonUI() {
       const favBtn = document.getElementById('btn-toggle-favorite-current');
       const favLabel = document.getElementById('fav-btn-label');
-      if (!favBtn || !latestHomiliaVideo.id) {
+      if (!favBtn || currentLength !== 'homilia' || !latestHomiliaVideo.id) {
         if (favBtn) favBtn.classList.add('hidden');
         return;
       }
@@ -1531,12 +1531,61 @@
       const externalBtn = document.getElementById('btn-external-youtube');
       const mysteriesCard = document.getElementById('mysteries-card-container');
       const homiliasHistoryCard = document.getElementById('homilias-history-container');
+      const favBtn = document.getElementById('btn-toggle-favorite-current');
 
       if (!iframe) return;
 
       if (currentLength === 'homilia') {
         if (mysteriesCard) mysteriesCard.classList.add('hidden');
         if (homiliasHistoryCard) homiliasHistoryCard.classList.remove('hidden');
+        if (favBtn) favBtn.classList.remove('hidden');
+        const displayTitle = latestHomiliaVideo.customTitle || latestHomiliaVideo.title || 'Homilía Diaria';
+        if (versionTag) versionTag.textContent = displayTitle;
+        if (latestHomiliaVideo.id) {
+          iframe.src = 'https://www.youtube.com/embed/' + latestHomiliaVideo.id + '?rel=0';
+          if (externalBtn) externalBtn.href = latestHomiliaVideo.url;
+        } else {
+          iframe.src = 'https://www.youtube.com/embed/videoseries?list=' + HOMILIA_UPLOADS_PLAYLIST + '&rel=0';
+          if (externalBtn) externalBtn.href = latestHomiliaVideo.url;
+        }
+        renderHomiliasListTab();
+        updateFavoriteButtonUI();
+      }
+    }
+
+    function toggleCurrentHomiliaFavorite() {
+      if (!latestHomiliaVideo.id) return;
+      const index = favoriteHomilias.findIndex(f => f.id === latestHomiliaVideo.id);
+      if (index >= 0) {
+        favoriteHomilias.splice(index, 1);
+        showToast('Homilía eliminada de favoritas');
+      } else {
+        favoriteHomilias.push(JSON.parse(JSON.stringify(latestHomiliaVideo)));
+        showToast('Homilía guardada en favoritas');
+      }
+      localStorage.setItem('rosario_favorite_homilias', JSON.stringify(favoriteHomilias));
+      updateFavoriteButtonUI();
+      renderHomiliasListTab();
+    }
+
+    function updateVideoPlayer() {
+      const mKey = getMysteryKeyByDay(currentDayIndex);
+      const videoSection = ROSARY_VIDEOS[mKey];
+      const iframe = document.getElementById('youtube-player');
+      const versionTag = document.getElementById('video-version-tag');
+      const externalBtn = document.getElementById('btn-external-youtube');
+      const mysteriesCard = document.getElementById('mysteries-card-container');
+      const homiliasHistoryCard = document.getElementById('homilias-history-container');
+      const favBtn = document.getElementById('btn-toggle-favorite-current');
+      const guidedCardContainer = document.getElementById('guided-mode-card-container');
+
+      if (!iframe) return;
+
+      if (currentLength === 'homilia') {
+        if (mysteriesCard) mysteriesCard.classList.add('hidden');
+        if (homiliasHistoryCard) homiliasHistoryCard.classList.remove('hidden');
+        if (favBtn) favBtn.classList.remove('hidden');
+        if (guidedCardContainer) guidedCardContainer.classList.add('hidden');
         const displayTitle = latestHomiliaVideo.customTitle || latestHomiliaVideo.title || 'Homilía Diaria';
         if (versionTag) versionTag.textContent = displayTitle;
         if (latestHomiliaVideo.id) {
@@ -1551,6 +1600,8 @@
       } else {
         if (mysteriesCard) mysteriesCard.classList.remove('hidden');
         if (homiliasHistoryCard) homiliasHistoryCard.classList.add('hidden');
+        if (favBtn) favBtn.classList.add('hidden');
+        if (guidedCardContainer) guidedCardContainer.classList.remove('hidden');
         const selected = currentLength === 'corta' ? videoSection.short : videoSection.long;
         if (versionTag) versionTag.textContent = selected.title;
         iframe.src = 'https://www.youtube.com/embed/' + selected.id + '?rel=0';
@@ -1802,59 +1853,59 @@
             '</div>',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1 text-xs">',
               '<p>Santa María - <strong>Ruega por nosotros</strong></p>',
-              '<p>Santa Madre de Dios - <strong>Ruega por nosotros</strong></p>',
-              '<p>Santa Virgen de las vírgenes - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre de Cristo - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre de la Iglesia - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre de la Divina Gracia - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre purísima - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre castísima - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre siempre virgen - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre inmaculada - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre amable - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre admirable - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre del buen consejo - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre del creador - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre del Salvador - <strong>Ruega por nosotros</strong></p>',
-              '<p>Madre de misericordia - <strong>Ruega por nosotros</strong></p>',
-              '<p>Virgen prudentísima - <strong>Ruega por nosotros</strong></p>',
-              '<p>Virgen digna de veneración - <strong>Ruega por nosotros</strong></p>',
-              '<p>Virgen digna de alabanza - <strong>Ruega por nosotros</strong></p>',
-              '<p>Virgen poderosa - <strong>Ruega por nosotros</strong></p>',
-              '<p>Virgen clemente - <strong>Ruega por nosotros</strong></p>',
-              '<p>Virgen fiel - <strong>Ruega por nosotros</strong></p>',
-              '<p>Espejo de justicia - <strong>Ruega por nosotros</strong></p>',
-              '<p>Trono de la sabiduría - <strong>Ruega por nosotros</strong></p>',
-              '<p>Causa de nuestra alegría - <strong>Ruega por nosotros</strong></p>',
-              '<p>Vaso espiritual - <strong>Ruega por nosotros</strong></p>',
-              '<p>Vaso digno de honor - <strong>Ruega por nosotros</strong></p>',
-              '<p>Vaso de insigne devoción - <strong>Ruega por nosotros</strong></p>',
-              '<p>Rosa mística - <strong>Ruega por nosotros</strong></p>',
-              '<p>Torre de David - <strong>Ruega por nosotros</strong></p>',
-              '<p>Torre de marfil - <strong>Ruega por nosotros</strong></p>',
-              '<p>Casa de oro - <strong>Ruega por nosotros</strong></p>',
-              '<p>Arca de la alianza - <strong>Ruega por nosotros</strong></p>',
-              '<p>Puerta del cielo - <strong>Ruega por nosotros</strong></p>',
-              '<p>Estrella de la mañana - <strong>Ruega por nosotros</strong></p>',
-              '<p>Salud de los enfermos - <strong>Ruega por nosotros</strong></p>',
-              '<p>Refugio de los pecadores - <strong>Ruega por nosotros</strong></p>',
-              '<p>Consoladora de los afligidos - <strong>Ruega por nosotros</strong></p>',
-              '<p>Auxilio de los cristianos - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de los ángeles - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de los patriarcas - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de los profetas - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de los apóstoles - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de los mártires - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de los confesores - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de las vírgenes - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de todos los santos - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina concebida sin pecado original - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina asunta de los cielos - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina del santísimo rosario - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de la familia - <strong>Ruega por nosotros</strong></p>',
-              '<p>Reina de la paz - <strong>Ruega por nosotros</strong></p>',
-              '<p>Modelo de unidad - <strong>Ruega por nosotros</strong></p>',
-              '<p>Modelo de agradecimiento - <strong>Ruega por nosotros</strong></p>',
+              '<p>Santa Madre de Dios</p>',
+              '<p>Santa Virgen de las vírgenes</p>',
+              '<p>Madre de Cristo</p>',
+              '<p>Madre de la Iglesia</p>',
+              '<p>Madre de la Divina Gracia</p>',
+              '<p>Madre purísima</p>',
+              '<p>Madre castísima</p>',
+              '<p>Madre siempre virgen</p>',
+              '<p>Madre inmaculada</p>',
+              '<p>Madre amable</p>',
+              '<p>Madre admirable</p>',
+              '<p>Madre del buen consejo</p>',
+              '<p>Madre del creador</p>',
+              '<p>Madre del Salvador</p>',
+              '<p>Madre de misericordia</p>',
+              '<p>Virgen prudentísima</p>',
+              '<p>Virgen digna de veneración</p>',
+              '<p>Virgen digna de alabanza</p>',
+              '<p>Virgen poderosa</p>',
+              '<p>Virgen clemente</p>',
+              '<p>Virgen fiel</p>',
+              '<p>Espejo de justicia</p>',
+              '<p>Trono de la sabiduría</p>',
+              '<p>Causa de nuestra alegría</p>',
+              '<p>Vaso espiritual</p>',
+              '<p>Vaso digno de honor</p>',
+              '<p>Vaso de insigne devoción</p>',
+              '<p>Rosa mística</p>',
+              '<p>Torre de David</p>',
+              '<p>Torre de marfil</p>',
+              '<p>Casa de oro</p>',
+              '<p>Arca de la alianza</p>',
+              '<p>Puerta del cielo</p>',
+              '<p>Estrella de la mañana</p>',
+              '<p>Salud de los enfermos</p>',
+              '<p>Refugio de los pecadores</p>',
+              '<p>Consoladora de los afligidos</p>',
+              '<p>Auxilio de los cristianos</p>',
+              '<p>Reina de los ángeles</p>',
+              '<p>Reina de los patriarcas</p>',
+              '<p>Reina de los profetas</p>',
+              '<p>Reina de los apóstoles</p>',
+              '<p>Reina de los mártires</p>',
+              '<p>Reina de los confesores</p>',
+              '<p>Reina de las vírgenes</p>',
+              '<p>Reina de todos los santos</p>',
+              '<p>Reina concebida sin pecado original</p>',
+              '<p>Reina asunta de los cielos</p>',
+              '<p>Reina del santísimo rosario</p>',
+              '<p>Reina de la familia</p>',
+              '<p>Reina de la paz</p>',
+              '<p>Modelo de unidad</p>',
+              '<p>Modelo de agradecimiento</p>',
               '<p>Cordero de Dios que quitas el pecado del mundo - <strong>Perdónanos, Señor</strong></p>',
               '<p>Cordero de Dios que quitas el pecado del mundo - <strong>Escúchanos, Señor</strong></p>',
               '<p>Cordero de Dios que quitas el pecado del mundo - <strong>Ten misericordia de nosotros</strong></p>',
@@ -2024,25 +2075,38 @@
         '<div class="space-y-4">',
           '<div>',
             '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Primera Lectura</p>',
-            '<p class="text-xs font-semibold text-slate-500 mb-1">Del libro de la Carta del apóstol san Pablo a los Filipenses (Flp 2, 12-18)</p>',
-            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">Hermanos: Así como siempre habéis obedecido, no solo cuando estaba presente, sino mucho más ahora en mi ausencia, llevad a cabo vuestra salvación con temor y temblor. Pues Dios es el que obra en vosotros el querer y el obrar, según su benevolencia. Hacedlo todo sin murmuraciones ni discusiones, para que seáis irreprochables y sencillos, hijos de Dios sin tacha en medio de una generación depravada y perversa, en la cual brilláis como lumbreras del mundo, manteniendo la palabra de vida.</p>',
+            '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Lectura de la carta del apóstol san Pablo a los Filipenses (2, 12-18)</p>',
+            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">Queridos hermanos:<br><br>Así como siempre habéis obedecido, no solo cuando yo estaba presente, sino mucho más ahora en mi ausencia, trabajad por vuestra salvación con temor y temblor, porque es Dios quien activa en vosotros el querer y el obrar para realizar su designio de amor.<br><br>Hacedlo todo sin murmurar ni discutir, para que seáis irreprochables y sencillos, hijos de Dios sin tacha, en medio de una generación tortuosa y pervertida, en medio de la cual brilláis como lumbreras del mundo, mostrando una razón para vivir.<br><br>Así podré gloriarme en el día de Cristo de no haber corrido en vano ni haberme fatigado en vano. Y, aunque mi sangre fuera derramada como libación sobre el sacrificio y la ofrenda de vuestra fe, me alegro y comparto vuestra alegría; de igual modo, también vosotros alegraos y compartid mi alegría.<br><br><strong>Palabra de Dios.</strong><br><span class="text-xs text-amber-600 dark:text-amber-400 font-semibold">R/. Te alabamos, Señor.</span></p>',
           '</div>',
           '<hr class="border-slate-200 dark:border-slate-700">',
           '<div>',
-            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Salmo Responsorial (Sal 26, 1. 4. 13-14)</p>',
-            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm italic">R. El Señor es mi luz y mi salvación.<br><br>El Señor es mi luz y mi salvación, ¿a quién temeré?<br>El Señor es la defensa de mi vida, ¿quién me hará temblar?<br>R. El Señor es mi luz y mi salvación.<br><br>Una cosa pido al Señor, esta buscaré:<br>habitar en la casa del Señor todos los días de mi vida.</p>',
+            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Salmo Responsorial</p>',
+            '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Salmo 26, 1. 4. 13-14</p>',
+            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm italic"><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong><br><br>El Señor es mi luz y mi salvación,<br>¿a quién temeré?<br>El Señor es la defensa de mi vida,<br>¿quién me hará temblar?<br><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong><br><br>Una cosa pido al Señor,<br>eso buscaré:<br>habitar en la casa del Señor<br>por los días de mi vida;<br>gozar de la dulzura del Señor,<br>contemplando su templo.<br><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong><br><br>Espero gozar de la dicha del Señor<br>en el país de la vida.<br>Espera en el Señor, sé valiente,<br>ten ánimo, espera en el Señor.<br><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong></p>',
+          '</div>',
+          '<hr class="border-slate-200 dark:border-slate-700">',
+          '<div>',
+            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Aclamación antes del Evangelio</p>',
+            '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Cf. 1 Pe 4, 14</p>',
+            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm italic"><strong>R/. Aleluya, aleluya.</strong><br>Dichosos vosotros si sois insultados por el nombre de Cristo, porque el Espíritu de la gloria, que es el Espíritu de Dios, reposa sobre vosotros.<br><strong>R/. Aleluya.</strong></p>',
           '</div>',
           '<hr class="border-slate-200 dark:border-slate-700">',
           '<div>',
             '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Santo Evangelio</p>',
-            '<p class="text-xs font-semibold text-slate-500 mb-1">Lectura del santo Evangelio según san Lucas (Lc 14, 25-33)</p>',
-            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">En aquel tiempo, caminaba con Jesús mucha gente; él se volvió y les dijo: «Si alguno viene a mí y no me aborrece a su padre y a su madre, a su mujer y a sus hijos, a sus hermanos y a sus hermanas, e incluso a sí mismo, no puede ser discípulo mío. Quien no carga con su cruz y viene en pos de mí, no puede ser discípulo mío...»</p>',
+            '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Lectura del santo Evangelio según san Lucas (14, 25-33)</p>',
+            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">En aquel tiempo, mucha gente acompañaba a Jesús; él se volvió y les dijo:<br><br>«Si alguno viene a mí y no pospone a su padre y a su madre, y a su mujer y a sus hijos, y a sus hermanos y a sus hermanas, e incluso a sí mismo, no puede ser discípulo mío.<br><br>Quien no lleve su cruz detrás de mí no puede ser discípulo mío.<br><br>Así, ¿quién de vosotros, si quiere construir una torre, no se sienta primero a calcular los gastos, a ver si tiene para terminarla? No sea que, si echa los cimientos y no puede acabarla, se pongan a burlarse de él los que miran, diciendo: "Este hombre empezó a construir y no ha podido acabar".<br><br>¿O qué rey, si va a dar la batalla a otro rey, no se sienta primero a deliberar si con diez mil hombres podrá salir al paso del que le ataca con veinte mil? Y si no, cuando el otro está todavía lejos, envía legados para pedir condiciones de paz.<br><br>Así pues, todo aquel de entre vosotros que no renuncia a todos sus bienes no puede ser discípulo mío».<br><br><strong>Palabra del Señor.</strong><br><span class="text-xs text-amber-600 dark:text-amber-400 font-semibold">R/. Gloria a ti, Señor Jesús.</span></p>',
           '</div>',
         '</div>'
       ].join('');
 
       document.getElementById('gospel-comment-text').innerHTML = [
-        '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">El evangelio de hoy nos presenta la exigencia radical del seguimiento de Jesús. Las palabras expresan una prioridad absoluta: el amor a Cristo debe ocupar el primer lugar en nuestro corazón, de modo que ningún vínculo terreno nos aparte de su voluntad.</p>'
+        '<div class="space-y-3 text-slate-800 dark:text-slate-100 leading-relaxed text-sm">',
+          '<p>El Evangelio de hoy nos sitúa ante la radicalidad y la honestidad de Jesús. Mientras grandes multitudes caminaban con Él —muchos movidos por el entusiasmo pasajero o el interés por sus milagros—, el Señor se vuelve y pronuncia palabras que invitan a un discernimiento profundo y maduro sobre lo que significa ser verdaderamente su discípulo.</p>',
+          '<p><strong>1. El primado absoluto del amor a Dios:</strong> Cuando Jesús habla de "posponer" a los seres más queridos e incluso la propia vida, utiliza un lenguaje semítico que no invita al desamor familiar, sino a establecer un orden verdadero en el corazón. Cuando Dios ocupa el primer lugar, todos los demás amores (esposos, hijos, padres, hermanos) quedan purificados, iluminados y fortalecidos con un amor que no es egoísta ni posesivo.</p>',
+          '<p><strong>2. Cargar con la cruz de cada día:</strong> Seguir a Cristo no es buscar un camino exento de dificultades, sino aprender a abrazar las contrariedades, deberes y sufrimientos cotidianos en unión con Él, sabiendo que el amor verdadero siempre implica entrega y sacrificio.</p>',
+          '<p><strong>3. La prudencia del constructor y del rey:</strong> Con las dos parábolas (el constructor de la torre y el rey que va a la batalla), Jesús nos enseña que la vida cristiana no puede basarse en un impulso superficial. Requiere sentarse a reflexionar en la oración, reconocer nuestra propia debilidad (con nuestras solas fuerzas —diez mil— no podemos vencer las pruebas de la vida —veinte mil—) y pedir humildemente la gracia de Dios y el desprendimiento interior de todo aquello que nos ata.</p>',
+          '<p class="italic text-amber-700 dark:text-amber-300 pt-1">Pidamos hoy al Señor, como nos exhorta san Pablo en la primera lectura, brillar como antorchas en medio del mundo mediante la sencillez, la alegría y una fe coherente hasta el final.</p>',
+        '</div>'
       ].join('');
     }
 
