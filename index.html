@@ -1343,8 +1343,47 @@
       listEl.innerHTML = sourceArray.map(video => {
         const isSelected = latestHomiliaVideo.id === video.id;
         const displayTitle = video.customTitle || video.title || 'Homilía';
-        return '<div class="flex items-center gap-2 p-2 rounded-xl border transition-all ' + (isSelected ? 'border-red-500 bg-red-500/10' : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50') + '"><button onclick="selectHomiliaById(\'' + video.id + '\')" class="flex-1 text-left flex items-center gap-3 min-w-0"><div class="w-24 aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700 shrink-0 relative"><img src="' + video.thumbnail + '" alt="' + displayTitle + '" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><p class="text-xs font-bold ' + (isSelected ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100') + ' line-clamp-2 leading-snug">' + displayTitle + '</p></div></button></div>';
+        const isFavTab = currentHomiliasTab === 'favorites';
+        return '<div class="flex items-center gap-2 p-2 rounded-xl border transition-all ' + (isSelected ? 'border-red-500 bg-red-500/10' : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50') + '"><button onclick="selectHomiliaById(\'' + video.id + '\')" class="flex-1 text-left flex items-center gap-3 min-w-0"><div class="w-24 aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700 shrink-0 relative"><img src="' + video.thumbnail + '" alt="' + displayTitle + '" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><p class="text-xs font-bold ' + (isSelected ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100') + ' line-clamp-2 leading-snug">' + displayTitle + '</p></div></button>' + (isFavTab ? '<button onclick="openEditHomiliaModal(\'' + video.id + '\', event)" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0" title="Editar título"><i class="fa-solid fa-pen text-xs"></i></button>' : '') + '</div>';
       }).join('');
+    }
+
+    function openEditHomiliaModal(vidId, event) {
+      if (event) event.stopPropagation();
+      const fav = favoriteHomilias.find(f => f.id === vidId);
+      if (!fav) return;
+      editingHomiliaId = vidId;
+      const input = document.getElementById('edit-homilia-title-input');
+      if (input) {
+        input.value = fav.customTitle || fav.title || '';
+      }
+      const modal = document.getElementById('modal-edit-homilia');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeEditHomiliaModal() {
+      const modal = document.getElementById('modal-edit-homilia');
+      if (modal) modal.classList.add('hidden');
+      editingHomiliaId = null;
+    }
+
+    function saveEditedHomiliaTitle() {
+      if (!editingHomiliaId) return;
+      const input = document.getElementById('edit-homilia-title-input');
+      if (!input) return;
+      const newTitle = input.value.trim();
+      const fav = favoriteHomilias.find(f => f.id === editingHomiliaId);
+      if (fav) {
+        fav.customTitle = newTitle || fav.title;
+        localStorage.setItem('rosario_favorite_homilias', JSON.stringify(favoriteHomilias));
+        if (latestHomiliaVideo.id === editingHomiliaId) {
+          latestHomiliaVideo.customTitle = fav.customTitle;
+          updateVideoPlayer();
+        }
+        renderHomiliasListTab();
+        showToast('Título actualizado con éxito');
+      }
+      closeEditHomiliaModal();
     }
 
     function updateFavoriteButtonUI() {
