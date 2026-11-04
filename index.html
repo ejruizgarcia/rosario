@@ -95,7 +95,7 @@
   <!-- Contenedor Principal Adaptable a Móvil -->
   <main class="flex-1 overflow-y-auto no-scrollbar p-3 sm:p-4 max-w-lg mx-auto w-full space-y-4 pb-28">
 
-    <!-- Tarjeta informativa del día y misterios correspondientes (Oculta en vista de Oraciones) -->
+    <!-- Tarjeta informativa del día y misterios correspondientes (Oculta en vista de Oraciones / Favoritos) -->
     <section id="top-day-banner" class="rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/20 shadow-sm relative overflow-hidden">
       <div class="flex items-center justify-between mb-1.5">
         <span id="active-day-label" class="text-xs uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
@@ -109,10 +109,10 @@
       <p id="mystery-days-hint" class="text-xs text-slate-600 dark:text-slate-400 mt-1"></p>
     </section>
 
-    <!-- ================= VISTA 1: VERSIONES EN VÍDEO (CORTA / LARGA) ================= -->
+    <!-- ================= VISTA 1: VERSIONES EN VÍDEO (CORTA / LARGA / HOMILÍAS) ================= -->
     <section id="section-video" class="space-y-4">
       
-      <!-- Selector de Versión Corta vs Larga -->
+      <!-- Selector de Versión Corta vs Larga vs Homilías / Favoritos -->
       <div class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold gap-1">
         <button onclick="switchRosaryLength('corta')" id="btn-len-corta" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm">
           <i class="fa-solid fa-bolt text-amber-500"></i>
@@ -122,18 +122,26 @@
           <i class="fa-solid fa-book-open text-blue-500"></i>
           <span>Largo</span>
         </button>
+        <button onclick="switchRosaryLength('homilia')" id="btn-len-homilia" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400">
+          <i class="fa-solid fa-church text-red-500"></i>
+          <span>Homilías</span>
+        </button>
       </div>
 
       <!-- Reproductor Integrado de YouTube -->
       <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span class="w-7 h-7 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs">
+          <div class="flex items-center space-x-2 min-w-0">
+            <span class="w-7 h-7 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs shrink-0">
               <i class="fa-brands fa-youtube"></i>
             </span>
-            <span id="video-version-tag" class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300"></span>
+            <span id="video-version-tag" class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 truncate"></span>
           </div>
-          <span id="video-timing-estimate" class="hidden text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full"></span>
+          <!-- Botón de Favorito para Homilía Actual -->
+          <button id="btn-toggle-favorite-current" onclick="toggleCurrentHomiliaFavorite()" class="hidden items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all shrink-0">
+            <i class="fa-solid fa-star"></i>
+            <span id="fav-btn-label">Guardar favorita</span>
+          </button>
         </div>
 
         <!-- Frame de Vídeo Responsivo -->
@@ -170,19 +178,26 @@
         </ol>
       </div>
 
-      <!-- Lista de las 5 homilías anteriores -->
+      <!-- Banco de Homilías y Favoritizadas (Visible al pulsar en Homilías) -->
       <div id="homilias-history-container" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-            <i class="fa-solid fa-clock-rotate-left text-red-500"></i>
-            <span>Homilías anteriores</span>
+            <i class="fa-solid fa-church text-red-500"></i>
+            <span>Banco de Homilías</span>
           </h3>
-          <button id="btn-back-latest-homilia" onclick="selectHomiliaByIndex(0)" class="hidden text-xs font-bold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1">
-            <i class="fa-solid fa-rotate-left text-[10px]"></i>
-            <span>Volver al último vídeo</span>
-          </button>
+          <div class="flex items-center gap-1.5 text-xs">
+            <button onclick="switchHomiliasTab('recent')" id="subtab-homilia-recent" class="px-2.5 py-1 rounded-full font-bold bg-red-500 text-white transition-colors">Recientes</button>
+            <button onclick="switchHomiliasTab('favorites')" id="subtab-homilia-favorites" class="px-2.5 py-1 rounded-full font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors">⭐ Favoritas (<span id="fav-count">0</span>)</button>
+          </div>
         </div>
-        <div id="homilias-previous-list" class="space-y-2">
+
+        <!-- Barra de Buscador de Homilías -->
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="homilia-search-input" oninput="filterHomilias()" placeholder="Buscar por título..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-red-500">
+        </div>
+
+        <div id="homilias-previous-list" class="space-y-2 pt-1">
           <!-- Inyectado por JS -->
         </div>
       </div>
@@ -285,29 +300,29 @@
           <i class="fa-solid fa-book-open text-blue-500"></i>
           <span>Largo</span>
         </button>
-      </div>
-
-      <!-- Controles para Vista Guiada -->
-      <div id="footer-controls-guided" class="hidden w-full flex items-center justify-between gap-2">
-        <button id="btn-guided-prev" onclick="stepPrevious()" class="w-12 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center active:scale-95 disabled:opacity-40">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-        <button id="btn-guided-next" onclick="stepNext()" class="flex-1 h-11 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center justify-center gap-2 active:scale-95 shadow-md shadow-amber-600/20">
-          <span id="guided-btn-text">Rezar y Continuar</span>
-          <i class="fa-solid fa-chevron-right text-xs"></i>
+  <!-- MODAL: Editar Título de Homilía Favorita -->
+  <div id="modal-edit-homilia" onclick="if(event.target === this) closeEditHomiliaModal()" class="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white">Editar Título de Favorita</h3>
+        <button onclick="closeEditHomiliaModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i class="fa-solid fa-xmark text-sm"></i>
         </button>
       </div>
-
-      <!-- Controles para Vista de Oraciones -->
-      <div id="footer-controls-prayers" class="hidden w-full flex items-center justify-center">
-        <button onclick="setViewMode('video')" class="w-full h-11 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center justify-center gap-2 active:scale-95 shadow-md shadow-amber-600/20">
-          <i class="fa-solid fa-arrow-left text-xs"></i>
-          <span>Volver al Rosario</span>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Título personalizado:</label>
+        <input type="text" id="edit-homilia-title-input" class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-amber-500 font-medium">
+      </div>
+      <div class="flex items-center gap-2 pt-1">
+        <button onclick="closeEditHomiliaModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors">
+          Cancelar
+        </button>
+        <button onclick="saveEditedHomiliaTitle()" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors shadow-sm">
+          Guardar título
         </button>
       </div>
-
     </div>
-  </footer>
+  </div>
 
   <!-- MODAL: Detalle de Oración Especial -->
   <div id="modal-prayer-detail" onclick="if(event.target === this) closePrayerDetailModal()" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
@@ -910,12 +925,25 @@
        SISTEMA DE NOVENAS (9 DÍAS CONSECUTIVOS)
        ======================================================================== */
     let novenasData = JSON.parse(localStorage.getItem('rosario_novenas_data') || '{}');
+    let completedNovenasToday = JSON.parse(localStorage.getItem('rosario_novenas_completed_today') || '{}');
     let currentOpenPrayerIndex = null;
     let pendingCancelNovenaIndex = null;
 
     function getTodayDateStr() {
       const d = new Date();
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    // Verificar si hoy ya se rezó esta novena
+    function isNovenaCompletedToday(prayerId) {
+      const todayStr = getTodayDateStr();
+      return completedNovenasToday[prayerId] === todayStr;
+    }
+
+    function markNovenaCompletedToday(prayerId) {
+      const todayStr = getTodayDateStr();
+      completedNovenasToday[prayerId] = todayStr;
+      localStorage.setItem('rosario_novenas_completed_today', JSON.stringify(completedNovenasToday));
     }
 
     function getNovenaStatus(prayerIdx) {
@@ -929,18 +957,20 @@
       const diffTime = today - startDate;
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
+      const completedToday = isNovenaCompletedToday(p.id);
+
       if (diffDays < 1) {
-        return { active: true, day: 1, label: 'Día 1', isLastDay: false, startDate: data.startDate };
+        return { active: true, day: 1, label: 'Día 1', isLastDay: false, startDate: data.startDate, completedToday };
       } else if (diffDays > 9) {
-        // Novena completada, la mantenemos como último día o la cerramos
-        return { active: true, day: 9, label: '¡Último día!', isLastDay: true, startDate: data.startDate };
+        return { active: true, day: 9, label: '¡Último día!', isLastDay: true, startDate: data.startDate, completedToday };
       } else {
         return { 
           active: true, 
           day: diffDays, 
           label: diffDays === 9 ? '¡Último día!' : 'Día ' + diffDays, 
           isLastDay: diffDays === 9,
-          startDate: data.startDate 
+          startDate: data.startDate,
+          completedToday
         };
       }
     }
@@ -976,7 +1006,9 @@
       const p = SPECIAL_PRAYERS[pendingCancelNovenaIndex];
       if (p && novenasData[p.id]) {
         delete novenasData[p.id];
+        delete completedNovenasToday[p.id];
         localStorage.setItem('rosario_novenas_data', JSON.stringify(novenasData));
+        localStorage.setItem('rosario_novenas_completed_today', JSON.stringify(completedNovenasToday));
       }
       closeConfirmNovenaModal();
       closePrayerDetailModal();
@@ -1004,7 +1036,9 @@
                 '<span class="w-6 h-6 rounded-lg bg-amber-500 text-white text-[11px] font-bold flex items-center justify-center shrink-0">' + st.day + '</span>',
                 '<span class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">' + p.shortName + '</span>',
               '</div>',
-              '<span class="text-[11px] font-bold px-2 py-0.5 rounded-full ' + (st.isLastDay ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-500/20 text-amber-700 dark:text-amber-300') + ' shrink-0">' + st.label + '</span>',
+              '<span class="text-[11px] font-bold px-2 py-0.5 rounded-full ' + (st.completedToday ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' : (st.isLastDay ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-500/20 text-amber-700 dark:text-amber-300')) + ' shrink-0">',
+                st.completedToday ? '✓ Rezada hoy' : st.label,
+              '</span>',
             '</div>'
           ].join('');
         }
@@ -1029,14 +1063,15 @@
       let activeItems = [];
       SPECIAL_PRAYERS.forEach((p, idx) => {
         const st = getNovenaStatus(idx);
-        if (st.active) {
+        // Solo recordar si la novena está activa Y NO se ha rezado hoy
+        if (st.active && !st.completedToday) {
           activeItems.push({ p, st, idx });
         }
       });
 
       if (activeItems.length === 0) {
         if (forced) {
-          showToast('No tienes ninguna novena activa actualmente');
+          showToast('¡Todas tus novenas activas ya han sido rezadas hoy!');
         }
         return;
       }
@@ -1053,7 +1088,12 @@
         '</div>'
       ].join('')).join('');
 
-      document.getElementById('modal-novena-reminder').classList.remove('hidden');
+      document.getElementById('modal-novena-reminder').classList.add('hidden'); // O abrir si hay pendientes
+      if (!forced && activeItems.length > 0) {
+        document.getElementById('modal-novena-reminder').classList.remove('hidden');
+      } else if (forced) {
+        document.getElementById('modal-novena-reminder').classList.remove('hidden');
+      }
     }
 
     function closeNovenaReminderModal() {
@@ -1073,7 +1113,7 @@
                 '<i class="fa-solid ' + (st.active ? 'fa-calendar-check text-amber-500' : 'fa-hands-praying') + '"></i>',
               '</span>',
               '<div class="flex items-center gap-1.5">',
-                (st.active ? '<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500 text-white shadow-sm">' + st.label + '</span>' : ''),
+                (st.active ? '<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ' + (st.completedToday ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white') + ' shadow-sm">' + (st.completedToday ? '✓ Rezada hoy' : st.label) + '</span>' : ''),
                 '<span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full">Ver oración</span>',
               '</div>',
             '</div>',
@@ -1098,6 +1138,11 @@
       url: 'https://www.youtube.com/channel/' + HOMILIA_CHANNEL_ID + '/videos'
     };
 
+    // Sistema de Homilías Favoritas en LocalStorage
+    let favoriteHomilias = JSON.parse(localStorage.getItem('rosario_favorite_homilias') || '[]');
+    let currentHomiliasTab = 'recent'; // 'recent' | 'favorites'
+    let editingHomiliaId = null;
+
     // Estado de la aplicación
     let realDayIndex = new Date().getDay();
     let currentDayIndex = realDayIndex;
@@ -1114,7 +1159,7 @@
         const response = await fetch(apiUrl);
         const data = await response.json();
         if (data && data.items && data.items.length > 0) {
-          homiliaVideosList = data.items.slice(0, 6).map((item, idx) => {
+          homiliaVideosList = data.items.slice(0, 10).map((item, idx) => {
             let vidId = null;
             if (item.guid && item.guid.includes(':')) {
               vidId = item.guid.split(':').pop();
@@ -1136,14 +1181,15 @@
               selectedHomiliaIndex = 0;
             }
             latestHomiliaVideo = homiliaVideosList[selectedHomiliaIndex];
-            renderPreviousHomiliasList();
+            renderHomiliasListTab();
+            updateFavoriteButtonUI();
             if (currentLength === 'homilia') {
               updateVideoPlayer();
             }
           }
         }
       } catch (err) {
-        // Fallback automático
+        // Fallback
       }
     }
 
@@ -1158,56 +1204,184 @@
       }
     }
 
-    function selectHomiliaByIndex(idx) {
-      if (!homiliaVideosList.length || !homiliaVideosList[idx]) return;
-      selectedHomiliaIndex = idx;
-      latestHomiliaVideo = homiliaVideosList[idx];
-      updateVideoPlayer();
-      renderPreviousHomiliasList();
-    }
-
-    function renderPreviousHomiliasList() {
-      const listEl = document.getElementById('homilias-previous-list');
-      const backBtn = document.getElementById('btn-back-latest-homilia');
-      if (!listEl) return;
-
-      if (backBtn) {
-        if (selectedHomiliaIndex !== 0) {
-          backBtn.classList.remove('hidden');
-        } else {
-          backBtn.classList.add('hidden');
+    function selectHomiliaById(vidId) {
+      const found = homiliaVideosList.find(v => v.id === vidId);
+      if (found) {
+        selectedHomiliaIndex = found.index;
+        latestHomiliaVideo = found;
+      } else {
+        // Buscar en favoritas si no está en recientes
+        const fav = favoriteHomilias.find(f => f.id === vidId);
+        if (fav) {
+          latestHomiliaVideo = fav;
         }
       }
+      updateVideoPlayer();
+      renderHomiliasListTab();
+      updateFavoriteButtonUI();
+    }
 
-      const previousVideos = homiliaVideosList.slice(1, 6);
-      if (previousVideos.length === 0) {
-        listEl.innerHTML = '<p class="text-xs text-slate-500 dark:text-slate-400 py-2 text-center">Cargando homilías anteriores...</p>';
+    function switchHomiliasTab(tab) {
+      currentHomiliasTab = tab;
+      const recentBtn = document.getElementById('subtab-homilia-recent');
+      const favBtn = document.getElementById('subtab-homilia-favorites');
+      if (recentBtn && favBtn) {
+        if (tab === 'recent') {
+          recentBtn.className = 'px-2.5 py-1 rounded-full font-bold bg-red-500 text-white transition-colors';
+          favBtn.className = 'px-2.5 py-1 rounded-full font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors';
+        } else {
+          favBtn.className = 'px-2.5 py-1 rounded-full font-bold bg-red-500 text-white transition-colors';
+          recentBtn.className = 'px-2.5 py-1 rounded-full font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors';
+        }
+      }
+      renderHomiliasListTab();
+    }
+
+    function filterHomilias() {
+      renderHomiliasListTab();
+    }
+
+    function renderHomiliasListTab() {
+      const listEl = document.getElementById('homilias-previous-list');
+      const favCountEl = document.getElementById('fav-count');
+      const searchInput = document.getElementById('homilia-search-input');
+      if (!listEl) return;
+
+      if (favCountEl) favCountEl.textContent = favoriteHomilias.length;
+
+      let query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      let sourceArray = currentHomiliasTab === 'recent' ? homiliaVideosList : favoriteHomilias;
+
+      let filtered = sourceArray.filter(v => {
+        let displayTitle = v.customTitle || v.title || '';
+        return displayTitle.toLowerCase().includes(query);
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = '<p class="text-xs text-slate-500 dark:text-slate-400 py-4 text-center">' + (currentHomiliasTab === 'favorites' ? 'No tienes homilías guardadas en favoritas todavía.' : 'No se encontraron homilías.') + '</p>';
         return;
       }
 
-      listEl.innerHTML = previousVideos.map(video => {
-        const isSelected = selectedHomiliaIndex === video.index;
+      listEl.innerHTML = filtered.map(video => {
+        const isSelected = latestHomiliaVideo.id === video.id;
+        const isFav = favoriteHomilias.some(f => f.id === video.id);
+        const displayTitle = video.customTitle || video.title || 'Homilía';
         const dateFormatted = formatHomiliaDate(video.pubDate);
-        const safeTitle = (video.title || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        const safeTitle = displayTitle.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
         return [
-          '<button onclick="selectHomiliaByIndex(' + video.index + ')" class="w-full text-left flex items-center gap-3 p-2 rounded-xl border transition-all ' + (
+          '<div class="flex items-center gap-2 p-2 rounded-xl border transition-all ' + (
             isSelected
               ? 'border-red-500 bg-red-500/10 dark:bg-red-500/15 shadow-sm'
               : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800'
           ) + '">',
-            '<div class="w-24 aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700 shrink-0 relative">',
-              '<img src="' + video.thumbnail + '" alt="' + safeTitle + '" class="w-full h-full object-cover">',
-              '<div class="absolute inset-0 bg-black/25 flex items-center justify-center">',
-                '<i class="fa-solid ' + (isSelected ? 'fa-volume-high text-red-400' : 'fa-play text-white/90') + ' text-xs"></i>',
+            '<button onclick="selectHomiliaById(\'' + video.id + '\')" class="flex-1 text-left flex items-center gap-3 min-w-0">',
+              '<div class="w-24 aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700 shrink-0 relative">',
+                '<img src="' + video.thumbnail + '" alt="' + safeTitle + '" class="w-full h-full object-cover">',
+                '<div class="absolute inset-0 bg-black/25 flex items-center justify-center">',
+                  '<i class="fa-solid ' + (isSelected ? 'fa-volume-high text-red-400' : 'fa-play text-white/90') + ' text-xs"></i>',
+                '</div>',
               '</div>',
-            '</div>',
-            '<div class="flex-1 min-w-0">',
-              '<p class="text-xs font-bold ' + (isSelected ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100') + ' line-clamp-2 leading-snug">' + video.title + '</p>',
-              (dateFormatted ? '<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1"><i class="fa-regular fa-calendar mr-1"></i>' + dateFormatted + '</p>' : ''),
-            '</div>',
-          '</button>'
+              '<div class="flex-1 min-w-0">',
+                '<p class="text-xs font-bold ' + (isSelected ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100') + ' line-clamp-2 leading-snug">' + displayTitle + '</p>',
+                (video.customTitle ? '<p class="text-[9px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5"><i class="fa-solid fa-pen mr-1"></i>Personalizada</p>' : ''),
+                (dateFormatted ? '<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5"><i class="fa-regular fa-calendar mr-1"></i>' + dateFormatted + '</p>' : ''),
+              '</div>',
+            '</button>',
+            // Acciones para favoritas (editar título o desmarcar)
+            (isFav ? [
+              '<div class="flex flex-col gap-1 shrink-0 px-1">',
+                '<button onclick="openEditHomiliaModal(\'' + video.id + '\')" class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 flex items-center justify-center text-xs" title="Editar título">',
+                  '<i class="fa-solid fa-pen"></i>',
+                '</button>',
+                '<button onclick="toggleFavoriteHomiliaById(\'' + video.id + '\')" class="w-7 h-7 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500/20 flex items-center justify-center text-xs" title="Quitar de favoritas">',
+                  '<i class="fa-solid fa-star"></i>',
+                '</button>',
+              '</div>'
+            ].join('') : ''),
+          '</div>'
         ].join('');
       }).join('');
+    }
+
+    function updateFavoriteButtonUI() {
+      const favBtn = document.getElementById('btn-toggle-favorite-current');
+      const favLabel = document.getElementById('fav-btn-label');
+      if (!favBtn || !latestHomiliaVideo.id) {
+        if (favBtn) favBtn.classList.add('hidden');
+        return;
+      }
+
+      favBtn.classList.remove('hidden');
+      favBtn.classList.add('flex');
+
+      const isFav = favoriteHomilias.some(f => f.id === latestHomiliaVideo.id);
+      if (isFav) {
+        favBtn.className = 'flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-sm shrink-0';
+        if (favLabel) favLabel.textContent = 'En Favoritas';
+      } else {
+        favBtn.className = 'flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-colors shrink-0';
+        if (favLabel) favLabel.textContent = 'Guardar favorita';
+      }
+    }
+
+    function toggleCurrentHomiliaFavorite() {
+      if (!latestHomiliaVideo.id) return;
+      toggleFavoriteHomiliaById(latestHomiliaVideo.id);
+    }
+
+    function toggleFavoriteHomiliaById(vidId) {
+      let target = homiliaVideosList.find(v => v.id === vidId) || favoriteHomilias.find(f => f.id === vidId);
+      if (!target) return;
+
+      const idx = favoriteHomilias.findIndex(f => f.id === vidId);
+      if (idx >= 0) {
+        favoriteHomilias.splice(idx, 1);
+        showToast('Homilía eliminada de favoritas');
+      } else {
+        favoriteHomilias.push({ ...target });
+        showToast('⭐ Homilía guardada en favoritas');
+      }
+
+      localStorage.setItem('rosario_favorite_homilias', JSON.stringify(favoriteHomilias));
+      renderHomiliasListTab();
+      updateFavoriteButtonUI();
+    }
+
+    function openEditHomiliaModal(vidId) {
+      editingHomiliaId = vidId;
+      const fav = favoriteHomilias.find(f => f.id === vidId);
+      if (!fav) return;
+
+      const input = document.getElementById('edit-homilia-title-input');
+      if (input) input.value = fav.customTitle || fav.title || '';
+      document.getElementById('modal-edit-homilia').classList.remove('hidden');
+    }
+
+    function closeEditHomiliaModal() {
+      document.getElementById('modal-edit-homilia').classList.add('hidden');
+      editingHomiliaId = null;
+    }
+
+    function saveEditedHomiliaTitle() {
+      if (!editingHomiliaId) return;
+      const input = document.getElementById('edit-homilia-title-input');
+      if (!input) return;
+      const newTitle = input.value.trim();
+
+      const fav = favoriteHomilias.find(f => f.id === editingHomiliaId);
+      if (fav) {
+        fav.customTitle = newTitle || fav.title;
+        localStorage.setItem('rosario_favorite_homilias', JSON.stringify(favoriteHomilias));
+        if (latestHomiliaVideo.id === editingHomiliaId) {
+          latestHomiliaVideo.customTitle = fav.customTitle;
+        }
+      }
+
+      closeEditHomiliaModal();
+      renderHomiliasListTab();
+      updateVideoPlayer();
+      showToast('Título actualizado');
     }
 
     function openHomilias() {
@@ -1260,7 +1434,6 @@
       const mInfo = MYSTERY_INFO[mysteryKey];
       const steps = [];
 
-      // Paso inicial: Señal de la Cruz e Invocación (sin números)
       steps.push({
         type: 'Inicio del Rosario',
         detail: 'Oraciones Iniciales',
@@ -1284,11 +1457,9 @@
         bead: 0
       });
 
-      // Los 5 misterios
       mInfo.items.forEach((item, idx) => {
         const decNum = idx + 1;
 
-        // Anuncio del Misterio + Padre Nuestro
         steps.push({
           type: mInfo.name,
           detail: item.num + ' • Padre Nuestro',
@@ -1307,7 +1478,6 @@
           bead: 0
         });
 
-        // 10 Avemarías del misterio
         for (let b = 1; b <= 10; b++) {
           steps.push({
             type: mInfo.name + ' • ' + item.num,
@@ -1331,7 +1501,6 @@
           });
         }
 
-        // Gloria y Jaculatorias al término de cada misterio
         steps.push({
           type: mInfo.name + ' • Cierre de Misterio',
           detail: item.num + ' • Gloria y Jaculatorias',
@@ -1361,7 +1530,6 @@
         });
       });
 
-      // Paso: Letanías Lauretanas con formato estricto solicitado
       steps.push({
         type: 'Conclusión del Rosario',
         detail: 'Letanías de la Virgen',
@@ -1448,7 +1616,6 @@
         bead: 10
       });
 
-      // Paso Final: Cierre del Rosario (con la oración de "Te rogamos nos concedas..." entre el Padre Nuestro y La Salve)
       steps.push({
         type: 'Conclusión del Rosario',
         detail: 'Cierre del Rosario',
@@ -1558,7 +1725,8 @@
       if (currentLength === 'homilia') {
         if (mysteriesCard) mysteriesCard.classList.add('hidden');
         if (homiliasHistoryCard) homiliasHistoryCard.classList.remove('hidden');
-        if (versionTag) versionTag.textContent = latestHomiliaVideo.title || 'Homilía Diaria';
+        const displayTitle = latestHomiliaVideo.customTitle || latestHomiliaVideo.title || 'Homilía Diaria';
+        if (versionTag) versionTag.textContent = displayTitle;
         if (timingEstimate) timingEstimate.classList.add('hidden');
         if (latestHomiliaVideo.id) {
           iframe.src = 'https://www.youtube.com/embed/' + latestHomiliaVideo.id + '?rel=0';
@@ -1567,7 +1735,8 @@
           iframe.src = 'https://www.youtube.com/embed/videoseries?list=' + HOMILIA_UPLOADS_PLAYLIST + '&rel=0';
           if (externalBtn) externalBtn.href = latestHomiliaVideo.url;
         }
-        renderPreviousHomiliasList();
+        renderHomiliasListTab();
+        updateFavoriteButtonUI();
       } else {
         if (mysteriesCard) mysteriesCard.classList.remove('hidden');
         if (homiliasHistoryCard) homiliasHistoryCard.classList.add('hidden');
@@ -1576,6 +1745,8 @@
         if (timingEstimate) timingEstimate.classList.add('hidden');
         iframe.src = 'https://www.youtube.com/embed/' + selected.id + '?rel=0';
         if (externalBtn) externalBtn.href = selected.url;
+        const favBtn = document.getElementById('btn-toggle-favorite-current');
+        if (favBtn) favBtn.classList.add('hidden');
       }
 
       updateLengthButtonsUI();
@@ -1584,6 +1755,7 @@
     function updateLengthButtonsUI() {
       const topCorta = document.getElementById('btn-len-corta');
       const topLarga = document.getElementById('btn-len-larga');
+      const topHomilia = document.getElementById('btn-len-homilia');
       const footCorta = document.getElementById('footer-btn-corta');
       const footLarga = document.getElementById('footer-btn-larga');
       const tabVideo = document.getElementById('tab-view-video');
@@ -1596,6 +1768,11 @@
 
       if (topCorta) topCorta.className = currentLength === 'corta' ? activeTopClass : inactiveTopClass;
       if (topLarga) topLarga.className = currentLength === 'larga' ? activeTopClass : inactiveTopClass;
+      if (topHomilia) {
+        topHomilia.className = currentLength === 'homilia' 
+          ? 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 shadow-sm font-bold'
+          : inactiveTopClass;
+      }
 
       const activeFootClass = 'flex-1 h-11 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
       const inactiveFootClass = 'flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all';
@@ -1875,14 +2052,26 @@
 
         if (controlsEl) {
           controlsEl.innerHTML = [
-            '<div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3">',
-              '<div class="text-xs sm:text-sm">',
-                '<span class="font-bold text-amber-700 dark:text-amber-300">' + (st.isLastDay ? '¡Último día de la Novena!' : 'Novena en curso: Día ' + st.day + ' de 9') + '</span>',
-                '<p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 mt-0.5">Progreso guardado automáticamente.</p>',
+            '<div class="space-y-3">',
+              (st.completedToday ? [
+                '<div class="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold text-center">',
+                  '✓ Ya has rezado esta novena hoy. ¡Buen trabajo espiritual!',
+                '</div>'
+              ].join('') : [
+                '<button onclick="markNovenaDoneToday(' + prayerIndex + ')" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-colors">',
+                  '<i class="fa-solid fa-check-circle"></i>',
+                  '<span>Marcar como Rezada Hoy</span>',
+                '</button>'
+              ].join('')),
+              '<div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3">',
+                '<div class="text-xs sm:text-sm">',
+                  '<span class="font-bold text-amber-700 dark:text-amber-300">' + (st.isLastDay ? '¡Último día de la Novena!' : 'Novena en curso: Día ' + st.day + ' de 9') + '</span>',
+                  '<p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 mt-0.5">Progreso guardado automáticamente.</p>',
+                '</div>',
+                '<button onclick="cancelNovena(' + prayerIndex + ', event)" class="px-3.5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold shrink-0 transition-colors">',
+                  'Detener novena',
+                '</button>',
               '</div>',
-              '<button onclick="cancelNovena(' + prayerIndex + ', event)" class="px-3.5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold shrink-0 transition-colors">',
-                'Detener novena',
-              '</button>',
             '</div>'
           ].join('');
         }
@@ -1902,6 +2091,16 @@
 
       const modalEl = document.getElementById('modal-prayer-detail');
       if (modalEl) modalEl.classList.remove('hidden');
+    }
+
+    function markNovenaDoneToday(prayerIdx) {
+      const p = SPECIAL_PRAYERS[prayerIdx];
+      if (!p) return;
+      markNovenaCompletedToday(p.id);
+      renderPrayersList();
+      updateNovenasBanner();
+      openPrayerDetail(prayerIdx);
+      showToast('¡Novena marcada como rezada hoy!');
     }
 
     function closePrayerDetailModal() {
@@ -1980,7 +2179,7 @@
       renderPrayersList();
       updateNovenasBanner();
 
-      // Comprobar si hay novenas activas para mostrar recordatorio diario al entrar
+      // Comprobar si hay novenas activas pendientes para hoy
       setTimeout(() => {
         openNovenasReminderModal(false);
       }, 600);
