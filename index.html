@@ -45,6 +45,11 @@
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
     }
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
   </style>
 </head>
 <body class="h-full bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300">
@@ -366,9 +371,16 @@
 
   <!-- MODAL: Detalle de Oración Especial -->
   <div id="modal-prayer-detail" onclick="if(event.target === this) closePrayerDetailModal()" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl p-6 sm:p-7 space-y-5 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800">
-      <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-        <div>
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl p-6 sm:p-7 space-y-5 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-200 dark:border-slate-800 relative">
+      
+      <!-- Contenedor de Imagen a Sangre para Novena -->
+      <div id="modal-prayer-novena-image-container" class="hidden -mx-6 sm:-mx-7 -mt-6 sm:-mt-7 mb-2 h-56 sm:h-64 relative overflow-hidden rounded-t-2xl shrink-0">
+        <img id="modal-prayer-novena-image" src="" class="w-full h-full object-cover object-[center_25%]">
+        <div class="absolute inset-0 bg-gradient-to-t from-white dark:from-slate-900 via-transparent to-transparent"></div>
+      </div>
+
+      <div id="modal-prayer-header" class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800 relative z-10">
+        <div id="modal-prayer-header-text">
           <div class="flex items-center gap-2 flex-wrap mb-1.5">
             <span class="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">Oración Especial</span>
             <span id="modal-prayer-novena-badge" class="hidden text-xs font-bold px-3 py-1 rounded-full"></span>
@@ -380,17 +392,50 @@
         </button>
       </div>
 
-      <div class="space-y-4 text-sm sm:text-base text-content-selectable">
-        <div class="p-5 sm:p-6 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-3">
-          <p id="modal-prayer-text" class="text-slate-900 dark:text-slate-100 leading-relaxed font-medium italic text-base sm:text-lg"></p>
+      <div id="prayer-novena-view" class="space-y-4">
+        <div class="space-y-4 text-sm sm:text-base text-content-selectable">
+          <div class="p-5 sm:p-6 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-3">
+            <p id="modal-prayer-text" class="text-slate-900 dark:text-slate-100 leading-relaxed font-medium italic text-base sm:text-lg"></p>
+          </div>
         </div>
+        <div id="modal-prayer-novena-controls" class="pt-2"></div>
       </div>
 
-      <div id="modal-prayer-novena-controls" class="pt-2">
-        <!-- Inyectado por JS -->
+      <div id="prayer-holycard-view" class="hidden relative w-full flex flex-col items-center">
+        <div class="w-full flex items-center justify-between absolute inset-y-0 px-1 pointer-events-none z-10">
+           <button onclick="prevHolyCard(event)" class="pointer-events-auto w-10 h-10 -ml-5 sm:-ml-8 rounded-full bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center active:scale-95 transition-transform"><i class="fa-solid fa-chevron-left"></i></button>
+           <button onclick="nextHolyCard(event)" class="pointer-events-auto w-10 h-10 -mr-5 sm:-mr-8 rounded-full bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center active:scale-95 transition-transform"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+
+        <div id="holy-card-container" class="flip-card perspective-1000 w-full max-w-[280px] sm:max-w-[320px] aspect-[2/3] cursor-pointer" onclick="toggleCardFlip()">
+          <div class="flip-card-inner relative w-full h-full rounded-2xl shadow-2xl transition-transform duration-700 transform-style-3d">
+            <div class="absolute inset-0 backface-hidden rounded-2xl overflow-hidden bg-slate-900 border-4 border-amber-500/30">
+              <img id="hc-image" src="" class="w-full h-full object-cover opacity-90">
+              <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/70 to-transparent pt-12 pb-4 px-4 text-center">
+                <h3 id="hc-front-title" class="text-white font-cinzel font-bold text-lg sm:text-xl drop-shadow-md"></h3>
+              </div>
+            </div>
+            <div class="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl bg-[#fdfbf7] dark:bg-slate-900 border-4 border-amber-500/30 p-5 sm:p-6 flex flex-col shadow-inner overflow-hidden">
+              <h3 id="hc-back-title" class="font-cinzel font-bold text-amber-800 dark:text-amber-400 text-center mb-3 text-sm sm:text-base border-b border-amber-500/20 pb-2 shrink-0"></h3>
+              <div class="flex-1 overflow-y-auto no-scrollbar text-center flex flex-col items-center justify-center text-content-selectable">
+                <p id="hc-back-text" class="text-[13px] sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium italic"></p>
+              </div>
+              <div class="pt-4 mt-2 shrink-0 w-full" onclick="event.stopPropagation()">
+                <button id="hc-btn-novena" onclick="startNovenaFromCard(event)" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 transition-colors">
+                  <i class="fa-solid fa-calendar-plus"></i>
+                  <span>Iniciar Novena</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-center text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-5 uppercase tracking-widest animate-pulse flex items-center gap-2">
+          <i class="fa-solid fa-rotate"></i>
+          Toca para girar
+        </p>
       </div>
 
-      <button onclick="closePrayerDetailModal()" class="w-full py-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-colors">
+      <button onclick="closePrayerDetailModal()" class="w-full py-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-colors mt-2">
         Cerrar
       </button>
     </div>
@@ -602,6 +647,14 @@
           </div>
           <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
         </button>
+
+        <button onclick="openMomentoDetail('5peticiones')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">5 Peticiones para la Restauración</h4>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Reconexión, perdón y nuevo comienzo</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
+        </button>
       </div>
 
       <button onclick="closeMomentosModal()" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors">
@@ -637,8 +690,9 @@
       
       <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800 shrink-0">
         <div>
-          <span id="gospel-date-badge" class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1">Liturgia del Día</span>
-          <h3 class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-snug">Lecturas del Día</h3>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1">Liturgia del Día</span>
+          <h3 id="gospel-date-badge" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-snug"></h3>
+          <p id="gospel-liturgical-name" class="text-xs font-semibold text-amber-600 dark:text-amber-400 mt-0.5"></p>
         </div>
         <button onclick="closeGospelModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">
           <i class="fa-solid fa-xmark text-base"></i>
@@ -963,6 +1017,7 @@
     const SPECIAL_PRAYERS = [
       {
         id: 'antonia',
+        image: 'https://raw.githubusercontent.com/ejruizgarcia/images/main/antonia.jpg',
         shortName: 'Venerable Madre Antonia de Jesús',
         title: 'Oración a la Venerable Madre Antonia de Jesús',
         preview: 'Dios todopoderoso y eterno, que concediste a tu sierva M. Antonia de Jesús...',
@@ -991,6 +1046,7 @@
       },
       {
         id: 'cristina',
+        image: 'https://raw.githubusercontent.com/ejruizgarcia/images/main/hermanacristina.jpeg',
         shortName: 'Hermana Cristina de Jesús Sacramentado',
         title: 'Oración a la Hermana Cristina de Jesús Sacramentado',
         preview: 'Santísima Trinidad, que otorgaste a la Hermana María Cristina un corazón compasivo...',
@@ -1018,6 +1074,7 @@
       },
       {
         id: 'simi',
+        image: 'https://raw.githubusercontent.com/ejruizgarcia/images/main/simi.png',
         shortName: 'Sor María de los Dolores (Simi Cohen)',
         title: 'Oración a Sor María de los Dolores del Amor de Dios (Simi Cohen)',
         preview: 'Dios de todo poder, que infundiste en tu sierva Simi Cohen, el espíritu de verdad...',
@@ -1045,6 +1102,7 @@
       },
       {
         id: 'santa_ana',
+        image: 'https://raw.githubusercontent.com/ejruizgarcia/images/main/santanana.jpg',
         shortName: 'Santa Ana para las dificultades',
         title: 'Oración a Santa Ana para las dificultades',
         preview: '¡Oh gloriosa Santa Ana! Tú que estás llena de compasión por quienes te invocan y de amor...',
@@ -1298,6 +1356,37 @@
             '</ul>',
             '<p>Haz que seamos un solo corazón y una sola alma. Que nuestra entrega mutua se renueve cada día con ternura, que la paz de Cristo reine en nuestro hogar y que nada ni nadie pueda romper la alianza que Tú mismo bendijiste y sellaste.</p>',
             '<p>Por Jesucristo, nuestro Señor.<br>Amén.</p>',
+          '</div>'
+        ].join('')
+      },
+      '5peticiones': {
+        title: '5 Peticiones para la Restauración del Matrimonio',
+        content: [
+          '<div class="space-y-4">',
+            '<div>',
+              '<p class="font-bold text-amber-600 dark:text-amber-400 mb-1">1. Oración para la Reconexión Espiritual</p>',
+              '<p>Señor, restaura esos lazos invisibles que nos unían y que se han roto. Que Tu Espíritu Santo vuelva a conectarnos de alma a alma y nos acerque al propósito que Tú tienes para nosotros.</p>',
+            '</div>',
+            '<hr class="border-slate-200 dark:border-slate-700">',
+            '<div>',
+              '<p class="font-bold text-amber-600 dark:text-amber-400 mb-1">2. Oración del Perdón que Libera</p>',
+              '<p>Padre, quita de mi corazón todo resentimiento, rencor y dolor. Enséñame a perdonar y también a recibir perdón, para que nada se interponga en la restauración de este amor.</p>',
+            '</div>',
+            '<hr class="border-slate-200 dark:border-slate-700">',
+            '<div>',
+              '<p class="font-bold text-amber-600 dark:text-amber-400 mb-1">3. Oración para Romper la Frialdad y la Indiferencia</p>',
+              '<p>Dios mío, entra donde yo no puedo entrar. Rompe ese corazón endurecido, sopla con Tu viento y vuelve a encender lo que se ha enfriado. Donde ya no hay sentimientos, que pueda volver a nacer el amor, si esa es Tu voluntad.</p>',
+            '</div>',
+            '<hr class="border-slate-200 dark:border-slate-700">',
+            '<div>',
+              '<p class="font-bold text-amber-600 dark:text-amber-400 mb-1">4. Oración para Recordar el Amor</p>',
+              '<p>Señor, haz que recuerde nuestros momentos más sinceros, las promesas, las sonrisas y el amor que un día nos unió. Que la nostalgia no sea alimentada por el orgullo, sino por un corazón dispuesto a sanar y cambiar.</p>',
+            '</div>',
+            '<hr class="border-slate-200 dark:border-slate-700">',
+            '<div>',
+              '<p class="font-bold text-amber-600 dark:text-amber-400 mb-1">5. Oración para un Nuevo Comienzo Bajo Tu Voluntad</p>',
+              '<p>Padre, si es Tu voluntad, renueva nuestra historia. Danos una nueva oportunidad, esta vez contigo en el centro de nuestra relación. No quiero seguir viviendo lejos del propósito que tienes para mi vida.</p>',
+            '</div>',
           '</div>'
         ].join('')
       }
@@ -1943,7 +2032,10 @@
         text: [
           '<div class="space-y-3">',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
-              '<p class="font-bold text-amber-600 dark:text-amber-400">Por las intenciones del Papa y las necesidades de la Iglesia (Padre Nuestro):</p>',
+              '<p class="leading-relaxed"><strong>V/.</strong> Ruega por nosotros, Santa Madre de Dios.<br><strong>R/.</strong> Para que seamos dignos de alcanzar las promesas de Nuestro Señor Jesucristo. Amén.</p>',
+            '</div>',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
+              '<p class="font-bold text-amber-600 dark:text-amber-400">Por las intenciones del Papa y las necesidades de la Iglesia:</p>',
               '<p class="leading-relaxed">' + DEFAULT_PRAYERS.padrenuestro + '</p>',
             '</div>',
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">',
@@ -1953,6 +2045,9 @@
             '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
               '<p class="font-bold text-amber-600 dark:text-amber-400">La Salve:</p>',
               '<p class="leading-relaxed">' + DEFAULT_PRAYERS.salve + '</p>',
+            '</div>',
+            '<div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">',
+              '<p class="leading-relaxed"><strong>V/.</strong> Ave María Purísima.<br><strong>R/.</strong> Sin pecado concebida.</p>',
             '</div>',
           '</div>'
         ].join(''),
@@ -2086,44 +2181,99 @@
       document.getElementById('panel-gospel-comment').classList.toggle('hidden', tab !== 'comment');
     }
 
-    function loadDailyLiturgy() {
-      document.getElementById('gospel-date-badge').textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    function formatLiturgicTitle(title) {
+      const roman = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XXIV", "XXV", "XXVI", "XXVII", "XXVIII", "XXIX", "XXX", "XXXI", "XXXII", "XXXIII", "XXXIV"];
+      return title.replace(/\b(\d+)(º|\.a|\.o|a|o)?\b/gi, (match, p1) => {
+        const num = parseInt(p1);
+        return roman[num] || p1;
+      });
+    }
+
+    async function loadDailyLiturgy() {
+      const now = new Date();
+      // Formatear fecha para el título (ej: 8 de noviembre de 2026)
+      document.getElementById('gospel-date-badge').textContent = now.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById('gospel-liturgical-name').textContent = getLiturgicalDayString(now.getDay());
       
-      document.getElementById('gospel-full-text').innerHTML = [
-        '<div class="space-y-4">',
-          '<div>',
-            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Primera Lectura</p>',
-            '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Lectura de la carta del apóstol san Pablo a los Filipenses (2, 12-18)</p>',
-            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">Queridos hermanos:<br><br>Así como siempre habéis obedecido, no solo cuando yo estaba presente, sino mucho más ahora en mi ausencia, trabajad por vuestra salvación con temor y temblor, porque es Dios quien activa en vosotros el querer y el obrar para realizar su designio de amor.<br><br>Hacedlo todo sin murmurar ni discutir, para que seáis irreprochables y sencillos, hijos de Dios sin tacha, en medio de una generación tortuosa y pervertida, en medio de la cual brilláis como lumbreras del mundo, mostrando una razón para vivir.<br><br>Así podré gloriarme en el día de Cristo de no haber corrido en vano ni haberme fatigado en vano. Y, aunque mi sangre fuera derramada como libación sobre el sacrificio y la ofrenda de vuestra fe, me alegro y comparto vuestra alegría; de igual modo, también vosotros alegraos y compartid mi alegría.<br><br><strong>Palabra de Dios.</strong><br><span class="text-xs text-amber-600 dark:text-amber-400 font-semibold">R/. Te alabamos, Señor.</span></p>',
-          '</div>',
-          '<hr class="border-slate-200 dark:border-slate-700">',
-          '<div>',
-            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Salmo Responsorial</p>',
-            '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Salmo 26, 1. 4. 13-14</p>',
-            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm italic"><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong><br><br>El Señor es mi luz y mi salvación,<br>¿a quién temeré?<br>El Señor es la defensa de mi vida,<br>¿quién me hará temblar?<br><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong><br><br>Una cosa pido al Señor,<br>eso buscaré:<br>habitar en la casa del Señor<br>por los días de mi vida;<br>gozar de la dulzura del Señor,<br>contemplando su templo.<br><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong><br><br>Espero gozar de la dicha del Señor<br>en el país de la vida.<br>Espera en el Señor, sé valiente,<br>ten ánimo, espera en el Señor.<br><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong></p>',
-          '</div>',
-          '<hr class="border-slate-200 dark:border-slate-700">',
-          '<div>',
-            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Aclamación antes del Evangelio</p>',
-            '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Cf. 1 Pe 4, 14</p>',
-            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm italic"><strong>R/. Aleluya, aleluya.</strong><br>Dichosos vosotros si sois insultados por el nombre de Cristo, porque el Espíritu de la gloria, que es el Espíritu de Dios, reposa sobre vosotros.<br><strong>R/. Aleluya.</strong></p>',
-          '</div>',
-          '<hr class="border-slate-200 dark:border-slate-700">',
-          '<div>',
-            '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Santo Evangelio</p>',
-            '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Lectura del santo Evangelio según san Lucas (14, 25-33)</p>',
-            '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">En aquel tiempo, mucha gente acompañaba a Jesús; él se volvió y les dijo:<br><br>«Si alguno viene a mí y no pospone a su padre y a su madre, y a su mujer y a sus hijos, y a sus hermanos y a sus hermanas, e incluso a sí mismo, no puede ser discípulo mío.<br><br>Quien no lleve su cruz detrás de mí no puede ser discípulo mío.<br><br>Así, ¿quién de vosotros, si quiere construir una torre, no se sienta primero a calcular los gastos, a ver si tiene para terminarla? No sea que, si echa los cimientos y no puede acabarla, se pongan a burlarse de él los que miran, diciendo: "Este hombre empezó a construir y no ha podido acabar".<br><br>¿O qué rey, si va a dar la batalla a otro rey, no se sienta primero a deliberar si con diez mil hombres podrá salir al paso del que le ataca con veinte mil? Y si no, cuando el otro está todavía lejos, envía legados para pedir condiciones de paz.<br><br>Así pues, todo aquel de entre vosotros que no renuncia a todos sus bienes no puede ser discípulo mío».<br><br><strong>Palabra del Señor.</strong><br><span class="text-xs text-amber-600 dark:text-amber-400 font-semibold">R/. Gloria a ti, Señor Jesús.</span></p>',
-          '</div>',
-        '</div>'
-      ].join('');
+      document.getElementById('gospel-full-text').innerHTML = `
+        <div class="flex items-center justify-center py-8">
+          <i class="fa-solid fa-spinner fa-spin text-amber-500 text-xl mr-2"></i>
+          <span class="text-xs text-slate-500">Cargando lecturas litúrgicas de hoy...</span>
+        </div>`;
+
+      // API de Evangelizo para obtener lecturas reales del día
+      const dateStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      
+      try {
+        const response = await fetch(`https://publication.evangelizo.ws/SP/days/${dateStr}`);
+        const data = await response.json();
+        
+        if (data && data.data && data.data.readings) {
+          if (data.data.liturgic_title) {
+            document.getElementById('gospel-liturgical-name').textContent = formatLiturgicTitle(data.data.liturgic_title);
+          }
+          
+          let readingsHtml = '<div class="space-y-4">';
+          data.data.readings.forEach((r, idx) => {
+            let badgeTitle = '';
+            if (r.type === 'reading') badgeTitle = idx === 0 ? 'Primera Lectura' : 'Segunda Lectura';
+            else if (r.type === 'psalm') badgeTitle = 'Salmo Responsorial';
+            else if (r.type === 'gospel') badgeTitle = 'Santo Evangelio';
+            else badgeTitle = 'Lectura';
+            
+            // Eliminar referencias a versículos como [[Sg 6,12]] o [12] o [12a]
+            let cleanText = r.text.replace(/\[\[.*?\]\]\s*/g, '').replace(/\[\d+[a-z]?\]\s*/g, '').replace(/\n/g, '<br>');
+            
+            // Construir la cita bíblica exacta con la abreviatura (ej. "(Mt 2, 3-15)")
+            let citation = '';
+            if (r.book && r.book.reference && r.reference) {
+              citation = ` (${r.book.reference} ${r.reference})`;
+            } else if (r.reference) {
+              citation = ` (${r.reference})`;
+            }
+            
+            readingsHtml += `
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">${badgeTitle}</p>
+              <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">${r.title || ''}${citation}</p>
+              <p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">${cleanText}</p>
+            </div>
+            <hr class="border-slate-200 dark:border-slate-700">`;
+          });
+          readingsHtml += '</div>';
+          document.getElementById('gospel-full-text').innerHTML = readingsHtml;
+        } else {
+          throw new Error("Formato de datos no válido");
+        }
+      } catch (err) {
+        // Fallback a las lecturas por defecto en caso de error o falta de internet
+        document.getElementById('gospel-full-text').innerHTML = [
+          '<div class="space-y-4">',
+            '<div>',
+              '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Primera Lectura</p>',
+              '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Lectura de la carta del apóstol san Pablo a los Filipenses (Flp 2, 12-18)</p>',
+              '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">Queridos hermanos:<br><br>Así como siempre habéis obedecido, no solo cuando yo estaba presente, sino mucho más ahora en mi ausencia, trabajad por vuestra salvación con temor y temblor, porque es Dios quien activa en vosotros el querer y el obrar para realizar su designio de amor.<br><br>Hacedlo todo sin murmurar ni discutir, para que seáis irreprochables y sencillos, hijos de Dios sin tacha, en medio de una generación tortuosa y pervertida, en medio de la cual brilláis como lumbreras del mundo, mostrando una razón para vivir.<br><br>Así podré gloriarme en el día de Cristo de no haber corrido en vano ni haberme fatigado en vano. Y, aunque mi sangre fuera derramada como libación sobre el sacrificio y la ofrenda de vuestra fe, me alegro y comparto vuestra alegría; de igual modo, también vosotros alegraos y compartid mi alegría.<br><br><strong>Palabra de Dios.</strong><br><span class="text-xs text-amber-600 dark:text-amber-400 font-semibold">R/. Te alabamos, Señor.</span></p>',
+            '</div>',
+            '<hr class="border-slate-200 dark:border-slate-700">',
+            '<div>',
+              '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Salmo Responsorial</p>',
+              '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Salmo 26 (Sal 26, 1. 4. 13-14)</p>',
+              '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm italic"><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong><br><br>El Señor es mi luz y mi salvación,<br>¿a quién temeré?<br>El Señor es la defensa de mi vida,<br>¿quién me hará temblar?<br><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong><br><br>Una cosa pido al Señor,<br>eso buscaré:<br>habitar en la casa del Señor<br>por los días de mi vida;<br>gozar de la dulzura del Señor,<br>contemplando su templo.<br><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong><br><br>Espero gozar de la dicha del Señor<br>en el país de la vida.<br>Espera en el Señor, sé valiente,<br>ten ánimo, espera en el Señor.<br><strong class="not-italic text-amber-700 dark:text-amber-300">R/. El Señor es mi luz y mi salvación.</strong></p>',
+            '</div>',
+            '<hr class="border-slate-200 dark:border-slate-700">',
+            '<div>',
+              '<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Santo Evangelio</p>',
+              '<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Lectura del santo Evangelio según san Lucas (Lc 14, 25-33)</p>',
+              '<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">En aquel tiempo, mucha gente acompañaba a Jesús; él se volvió y les dijo:<br><br>«Si alguno viene a mí y no pospone a su padre y a su madre, y a su mujer y a sus hijos, y a sus hermanos y a sus hermanas, e incluso a sí mismo, no puede ser discípulo mío.<br><br>Quien no lleve su cruz detrás de mí no puede ser discípulo mío.<br><br>Así, ¿quién de vosotros, si quiere construir una torre, no se sienta primero a calcular los gastos, a ver si tiene para terminarla? No sea que, si echa los cimientos y no puede acabarla, se pongan a burlarse de él los que miran, diciendo: "Este hombre empezó a construir y no ha podido acabar".<br><br>¿O qué rey, si va a dar la batalla a otro rey, no se sienta primero a deliberar si con diez mil hombres podrá salir al paso del que le ataca con veinte mil? Y si no, cuando el otro está todavía lejos, envía legados para pedir condiciones de paz.<br><br>Así pues, todo aquel de entre vosotros que no renuncia a todos sus bienes no puede ser discípulo mío».<br><br><strong>Palabra del Señor.</strong><br><span class="text-xs text-amber-600 dark:text-amber-400 font-semibold">R/. Gloria a ti, Señor Jesús.</span></p>',
+            '</div>',
+          '</div>'
+        ].join('');
+      }
 
       document.getElementById('gospel-comment-text').innerHTML = [
         '<div class="space-y-3 text-slate-800 dark:text-slate-100 leading-relaxed text-sm">',
-          '<p>El Evangelio de hoy nos sitúa ante la radicalidad y la honestidad de Jesús. Mientras grandes multitudes caminaban con Él —muchos movidos por el entusiasmo pasajero o el interés por sus milagros—, el Señor se vuelve y pronuncia palabras que invitan a un discernimiento profundo y maduro sobre lo que significa ser verdaderamente su discípulo.</p>',
-          '<p><strong>1. El primado absoluto del amor a Dios:</strong> Cuando Jesús habla de "posponer" a los seres más queridos e incluso la propia vida, utiliza un lenguaje semítico que no invita al desamor familiar, sino a establecer un orden verdadero en el corazón. Cuando Dios ocupa el primer lugar, todos los demás amores (esposos, hijos, padres, hermanos) quedan purificados, iluminados y fortalecidos con un amor que no es egoísta ni posesivo.</p>',
-          '<p><strong>2. Cargar con la cruz de cada día:</strong> Seguir a Cristo no es buscar un camino exento de dificultades, sino aprender a abrazar las contrariedades, deberes y sufrimientos cotidianos en unión con Él, sabiendo que el amor verdadero siempre implica entrega y sacrificio.</p>',
-          '<p><strong>3. La prudencia del constructor y del rey:</strong> Con las dos parábolas (el constructor de la torre y el rey que va a la batalla), Jesús nos enseña que la vida cristiana no puede basarse en un impulso superficial. Requiere sentarse a reflexionar en la oración, reconocer nuestra propia debilidad (con nuestras solas fuerzas —diez mil— no podemos vencer las pruebas de la vida —veinte mil—) y pedir humildemente la gracia de Dios y el desprendimiento interior de todo aquello que nos ata.</p>',
-          '<p class="italic text-amber-700 dark:text-amber-300 pt-1">Pidamos hoy al Señor, como nos exhorta san Pablo en la primera lectura, brillar como antorchas en medio del mundo mediante la sencillez, la alegría y una fe coherente hasta el final.</p>',
+          '<p>Tómate un momento para meditar en las lecturas de hoy. Deja que la Palabra de Dios ilumine tus circunstancias actuales, te fortalezca en la prueba y te guíe en tus decisiones.</p>',
+          '<p class="italic text-amber-700 dark:text-amber-300 pt-1">Pidamos al Señor la gracia de brillar como antorchas en medio del mundo mediante la sencillez, la alegría y una fe coherente hasta el final.</p>',
         '</div>'
       ].join('');
     }
@@ -2143,13 +2293,36 @@
       currentOpenPrayerIndex = prayerIndex;
       
       const st = getNovenaStatus(prayerIndex);
+      
+      const headerTextEl = document.getElementById('modal-prayer-header-text');
+      const novenaView = document.getElementById('prayer-novena-view');
+      const holycardView = document.getElementById('prayer-holycard-view');
+      const topImageContainer = document.getElementById('modal-prayer-novena-image-container');
+      const topImage = document.getElementById('modal-prayer-novena-image');
+
       const badgeEl = document.getElementById('modal-prayer-novena-badge');
       const controlsEl = document.getElementById('modal-prayer-novena-controls');
       const titleEl = document.getElementById('modal-prayer-title');
       const textEl = document.getElementById('modal-prayer-text');
 
       if (st.active) {
-        if (titleEl) titleEl.textContent = p.shortName + ' — ' + st.label + ' de la Novena';
+        headerTextEl.classList.remove('hidden');
+        novenaView.classList.remove('hidden');
+        holycardView.classList.add('hidden');
+
+        if (p.image) {
+          topImage.src = p.image;
+          // Ajuste específico de encuadre para que se vea el rostro de Simi Cohen
+          topImage.style.objectPosition = p.id === 'simi' ? 'center 10%' : 'center 25%';
+          topImageContainer.classList.remove('hidden');
+        } else {
+          topImageContainer.classList.add('hidden');
+        }
+
+        if (titleEl) {
+          titleEl.textContent = p.shortName + ' — ' + st.label + ' de la Novena';
+          titleEl.classList.remove('hidden');
+        }
         if (badgeEl) {
           badgeEl.className = 'inline-block text-xs font-bold px-3 py-1 rounded-full ' +
             (st.isLastDay ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-500 text-white');
@@ -2193,20 +2366,97 @@
           ].join('');
         }
       } else {
-        if (titleEl) titleEl.textContent = p.title;
-        if (badgeEl) badgeEl.classList.add('hidden');
-        if (textEl) textEl.innerHTML = p.text.replace(/\n\n/g, '<br><br>');
-        if (controlsEl) {
-          controlsEl.innerHTML = [
-            '<button onclick="startNovena(' + prayerIndex + ', event)" class="w-full py-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 transition-colors">',
-              '<i class="fa-solid fa-calendar-plus"></i>',
-              '<span>Iniciar Novena (9 días)</span>',
-            '</button>'
-          ].join('');
-        }
+        headerTextEl.classList.add('hidden');
+        novenaView.classList.add('hidden');
+        holycardView.classList.remove('hidden');
+        topImageContainer.classList.add('hidden');
+        
+        currentHolyCardIndex = prayerIndex;
+        renderHolyCard(currentHolyCardIndex);
       }
 
       document.getElementById('modal-prayer-detail').classList.remove('hidden');
+    }
+
+    let currentHolyCardIndex = 0;
+
+    function renderHolyCard(index) {
+      const p = SPECIAL_PRAYERS[index];
+      if (!p) return;
+      
+      const st = getNovenaStatus(index);
+      const btn = document.getElementById('hc-btn-novena');
+      if (st.active) {
+          btn.innerHTML = '<i class="fa-solid fa-play"></i><span>Continuar Novena</span>';
+          btn.className = 'w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-colors';
+      } else {
+          btn.innerHTML = '<i class="fa-solid fa-calendar-plus"></i><span>Iniciar Novena (9 días)</span>';
+          btn.className = 'w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 transition-colors';
+      }
+
+      document.getElementById('hc-image').src = p.image || '';
+      document.getElementById('hc-front-title').textContent = p.shortName;
+      document.getElementById('hc-back-title').textContent = p.title;
+      document.getElementById('hc-back-text').innerHTML = p.text.replace(/\n\n/g, '<br><br>');
+    }
+
+    function toggleCardFlip() {
+      const container = document.getElementById('holy-card-container');
+      container.classList.toggle('flipped');
+    }
+
+    function nextHolyCard(event) {
+      if (event) event.stopPropagation();
+      currentHolyCardIndex = (currentHolyCardIndex + 1) % SPECIAL_PRAYERS.length;
+      
+      const container = document.getElementById('holy-card-container');
+      container.classList.remove('flipped');
+      setTimeout(() => {
+        renderHolyCard(currentHolyCardIndex);
+      }, 150); 
+    }
+
+    function prevHolyCard(event) {
+      if (event) event.stopPropagation();
+      currentHolyCardIndex = (currentHolyCardIndex - 1 + SPECIAL_PRAYERS.length) % SPECIAL_PRAYERS.length;
+      
+      const container = document.getElementById('holy-card-container');
+      container.classList.remove('flipped');
+      setTimeout(() => {
+        renderHolyCard(currentHolyCardIndex);
+      }, 150);
+    }
+
+    function startNovenaFromCard(event) {
+       if(event) event.stopPropagation(); 
+       const st = getNovenaStatus(currentHolyCardIndex);
+       if (st.active) {
+           openPrayerDetail(currentHolyCardIndex); 
+       } else {
+           startNovena(currentHolyCardIndex);
+       }
+    }
+
+    let touchstartX = 0;
+    let touchendX = 0;
+    
+    function setupSwipeListeners() {
+      const swipeZone = document.getElementById('prayer-holycard-view');
+      if (!swipeZone) return;
+      
+      swipeZone.addEventListener('touchstart', function(event) {
+          touchstartX = event.changedTouches[0].screenX;
+      }, { passive: true });
+
+      swipeZone.addEventListener('touchend', function(event) {
+          touchendX = event.changedTouches[0].screenX;
+          handleSwipe();
+      }, { passive: true }); 
+    }
+
+    function handleSwipe() {
+        if (touchendX < touchstartX - 50) nextHolyCard(); 
+        if (touchendX > touchstartX + 50) prevHolyCard(); 
     }
 
     function markNovenaDoneToday(idx) {
@@ -2284,6 +2534,7 @@
       fetchLatestHomiliaVideo();
       renderPrayersList();
       updateNovenasBanner();
+      setupSwipeListeners();
       setTimeout(() => {
         openNovenasReminderModal(false);
       }, 600);
