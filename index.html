@@ -407,7 +407,7 @@
            <button onclick="nextHolyCard(event)" class="pointer-events-auto w-10 h-10 -mr-5 sm:-mr-8 rounded-full bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center active:scale-95 transition-transform"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
 
-        <div id="holy-card-container" class="flip-card perspective-1000 w-full max-w-[280px] sm:max-w-[320px] aspect-[2/3] cursor-pointer" onclick="toggleCardFlip()">
+        <div id="holy-card-container" class="flip-card perspective-1000 w-full max-w-[280px] sm:max-w-[320px] h-[460px] sm:h-[520px] cursor-pointer" onclick="toggleCardFlip()">
           <div class="flip-card-inner relative w-full h-full rounded-2xl shadow-2xl transition-transform duration-700 transform-style-3d">
             <div class="absolute inset-0 backface-hidden rounded-2xl overflow-hidden bg-slate-900 border-4 border-amber-500/30">
               <img id="hc-image" src="" class="w-full h-full object-cover opacity-90">
@@ -417,8 +417,8 @@
             </div>
             <div class="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl bg-[#fdfbf7] dark:bg-slate-900 border-4 border-amber-500/30 p-5 sm:p-6 flex flex-col shadow-inner overflow-hidden">
               <h3 id="hc-back-title" class="font-cinzel font-bold text-amber-800 dark:text-amber-400 text-center mb-3 text-sm sm:text-base border-b border-amber-500/20 pb-2 shrink-0"></h3>
-              <div class="flex-1 overflow-y-auto no-scrollbar text-center flex flex-col items-center justify-center text-content-selectable">
-                <p id="hc-back-text" class="text-[13px] sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium italic"></p>
+              <div class="flex-1 overflow-y-auto no-scrollbar text-center flex flex-col items-center justify-start text-content-selectable">
+                <p id="hc-back-text" class="text-[13px] sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium italic my-auto py-2"></p>
               </div>
               <div class="pt-4 mt-2 shrink-0 w-full" onclick="event.stopPropagation()">
                 <button id="hc-btn-novena" onclick="startNovenaFromCard(event)" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 transition-colors">
@@ -1496,6 +1496,21 @@
       closeEditHomiliaModal();
     }
 
+    function toggleCurrentHomiliaFavorite() {
+      if (!latestHomiliaVideo.id) return;
+      const index = favoriteHomilias.findIndex(f => f.id === latestHomiliaVideo.id);
+      if (index >= 0) {
+        favoriteHomilias.splice(index, 1);
+        showToast('Homilía eliminada de favoritas');
+      } else {
+        favoriteHomilias.push(JSON.parse(JSON.stringify(latestHomiliaVideo)));
+        showToast('Homilía guardada en favoritas');
+      }
+      localStorage.setItem('rosario_favorite_homilias', JSON.stringify(favoriteHomilias));
+      updateFavoriteButtonUI();
+      renderHomiliasListTab();
+    }
+
     function updateFavoriteButtonUI() {
       const favBtn = document.getElementById('btn-toggle-favorite-current');
       const favLabel = document.getElementById('fav-btn-label');
@@ -2242,6 +2257,73 @@
           });
           readingsHtml += '</div>';
           document.getElementById('gospel-full-text').innerHTML = readingsHtml;
+          
+          // Cargar el comentario y meditación oficial
+          let commentHtml = '';
+          if (data.data.commentaries && data.data.commentaries.length > 0) {
+             data.data.commentaries.forEach(c => {
+                 let author = c.author || c.source || 'Comentario Litúrgico';
+                 let cleanText = (c.text || '').replace(/\n/g, '<br>');
+                 commentHtml += `<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">${c.title || 'Meditación'}</p>`;
+                 commentHtml += `<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">${author}</p>`;
+                 commentHtml += `<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">${cleanText}</p><hr class="border-slate-200 dark:border-slate-700 my-3">`;
+             });
+             document.getElementById('gospel-comment-text').innerHTML = commentHtml;
+          } else {
+             
+             // Función de respaldo inteligente: Analiza el Evangelio y genera una explicación basada en su texto
+             const renderSmartFallback = () => {
+                let gospel = data.data.readings.find(r => r.type === 'gospel') || data.data.readings[data.data.readings.length - 1];
+                let gospelText = gospel && gospel.text ? gospel.text.toLowerCase() : '';
+                
+                let ref = '';
+                if (gospel) {
+                    if (gospel.book && gospel.book.reference && gospel.reference) ref = gospel.book.reference + ' ' + gospel.reference;
+                    else if (gospel.reference) ref = gospel.reference;
+                }
+                let refText = ref ? ` (${ref})` : '';
+
+                let commentText = "";
+                if (gospelText.includes('vírgenes') || gospelText.includes('lámparas') || gospelText.includes('esposo') || gospelText.includes('aceite')) {
+                    commentText = "El Evangelio de las diez vírgenes nos hace un llamado urgente a la vigilancia espiritual. El aceite de las lámparas representa el amor, la fe viva y las buenas obras que no se pueden improvisar en el último momento. Cristo, el Esposo, puede llegar en la hora que menos pensamos. Esta lectura nos pide no caer en la tibieza ni en la distracción del mundo, sino cultivar nuestra relación diaria con Dios en la oración y el servicio, para que cuando Él llame a nuestra puerta, nos encuentre preparados y con la luz de la gracia encendida.";
+                } else if (gospelText.includes('cruz') || gospelText.includes('renuncia') || gospelText.includes('discípulo')) {
+                    commentText = "En estas líneas, Jesús nos habla con total franqueza sobre las exigencias del verdadero discipulado. Cargar con la cruz y 'renunciar' a los bienes no significa despreciar la vida, sino ordenar nuestros amores: Dios debe ocupar el primer lugar absoluto. Si construimos nuestra vida sin contar con Él, nuestra obra quedará a medias. Es una invitación a confiar plenamente en su gracia, sabiendo que el aparente sacrificio de la cruz es, en realidad, el único camino hacia la verdadera libertad y resurrección.";
+                } else if (gospelText.includes('viuda') || gospelText.includes('monedas') || gospelText.includes('tesoro')) {
+                    commentText = "El hermoso gesto de la viuda pobre nos revela cómo mira Dios el corazón humano. Él no se fija en la cantidad de lo que damos, sino en la totalidad de nuestra entrega. La viuda dio 'todo lo que tenía para vivir', demostrando una confianza absoluta en la Providencia divina. Esta lectura nos cuestiona profundamente: ¿Doy a Dios y a los demás de mis sobras o me entrego por completo? Es una invitación a vivir la verdadera generosidad, aquella que duele pero llena el alma.";
+                } else {
+                    commentText = "Al meditar esta lectura que hemos proclamado, descubrimos cómo Jesús nos sigue hablando hoy directamente al corazón. La Palabra nos invita a no ser oyentes olvidadizos, sino a encarnar su mensaje en nuestras acciones. Cada pasaje del Evangelio es un espejo donde debemos mirar nuestra propia vida: ¿Cómo estoy respondiendo al llamado de Dios? Pidamos la gracia del Espíritu Santo para que este mensaje eche raíces en nosotros y nos mueva a la conversión diaria.";
+                }
+
+                let fallbackComment = `<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Explicación del Evangelio</p>`;
+                fallbackComment += `<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Reflexión Pastoral${refText}</p>`;
+                fallbackComment += `<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">${commentText}</p>`;
+                
+                document.getElementById('gospel-comment-text').innerHTML = fallbackComment;
+             };
+
+             // Si no viene en el mismo endpoint, intentar buscar en el endpoint de meditations
+             fetch(`https://publication.evangelizo.ws/SP/days/${dateStr}/meditations`)
+               .then(res => res.json())
+               .then(medData => {
+                  let meds = medData.data || [];
+                  if (meds.length > 0) {
+                      meds.forEach(m => {
+                         let author = m.source || 'Meditación Litúrgica';
+                         let cleanText = (m.text || '').replace(/\n/g, '<br>');
+                         commentHtml += `<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">${m.title || 'Reflexión'}</p>`;
+                         commentHtml += `<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">${author}</p>`;
+                         commentHtml += `<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">${cleanText}</p><hr class="border-slate-200 dark:border-slate-700 my-3">`;
+                      });
+                      document.getElementById('gospel-comment-text').innerHTML = commentHtml;
+                  } else {
+                      renderSmartFallback();
+                  }
+               })
+               .catch(err => {
+                  renderSmartFallback();
+               });
+          }
+
         } else {
           throw new Error("Formato de datos no válido");
         }
@@ -2268,14 +2350,31 @@
             '</div>',
           '</div>'
         ].join('');
+        
+        document.getElementById('gospel-comment-text').innerHTML = [
+          '<div class="space-y-3 text-slate-800 dark:text-slate-100 leading-relaxed text-sm">',
+            '<p>Tómate un momento para meditar en las lecturas de hoy. Deja que la Palabra de Dios ilumine tus circunstancias actuales, te fortalezca en la prueba y te guíe en tus decisiones.</p>',
+            '<p class="italic text-amber-700 dark:text-amber-300 pt-1">Pidamos al Señor la gracia de brillar como antorchas en medio del mundo mediante la sencillez, la alegría y una fe coherente hasta el final.</p>',
+          '</div>'
+        ].join('');
       }
-
-      document.getElementById('gospel-comment-text').innerHTML = [
-        '<div class="space-y-3 text-slate-800 dark:text-slate-100 leading-relaxed text-sm">',
-          '<p>Tómate un momento para meditar en las lecturas de hoy. Deja que la Palabra de Dios ilumine tus circunstancias actuales, te fortalezca en la prueba y te guíe en tus decisiones.</p>',
-          '<p class="italic text-amber-700 dark:text-amber-300 pt-1">Pidamos al Señor la gracia de brillar como antorchas en medio del mundo mediante la sencillez, la alegría y una fe coherente hasta el final.</p>',
-        '</div>'
-      ].join('');
+    }
+    function toggleCurrentHomiliaFavorite() {
+      if (!latestHomiliaVideo.id) {
+        showToast('Aún no se ha cargado el vídeo para guardar');
+        return;
+      }
+      const index = favoriteHomilias.findIndex(f => f.id === latestHomiliaVideo.id);
+      if (index >= 0) {
+        favoriteHomilias.splice(index, 1);
+        showToast('Homilía eliminada de favoritas');
+      } else {
+        favoriteHomilias.push(JSON.parse(JSON.stringify(latestHomiliaVideo)));
+        showToast('Homilía guardada en favoritas');
+      }
+      localStorage.setItem('rosario_favorite_homilias', JSON.stringify(favoriteHomilias));
+      updateFavoriteButtonUI();
+      renderHomiliasListTab();
     }
 
     function renderPrayersList() {
