@@ -1537,6 +1537,12 @@
       updateVideoPlayer();
       renderHomiliasListTab();
       updateFavoriteButtonUI();
+      
+      // Scroll suave hacia arriba para ver el reproductor
+      const mainContent = document.querySelector('main');
+      if (mainContent) {
+        mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
 
     function switchHomiliasTab(tab) {
