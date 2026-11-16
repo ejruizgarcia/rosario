@@ -50,6 +50,25 @@
     .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
     .rotate-y-180 { transform: rotateY(180deg); }
     .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+
+    /* Escalado Dinámico Exclusivo para Textos de Lectura (Ignorando interfaz general) */
+    :root {
+      --content-scale: 1;
+    }
+    .text-content-selectable .text-xs, .text-content-selectable.text-xs { font-size: calc(0.75rem * var(--content-scale)) !important; line-height: calc(1rem * var(--content-scale)) !important; }
+    .text-content-selectable .text-sm, .text-content-selectable.text-sm { font-size: calc(0.875rem * var(--content-scale)) !important; line-height: calc(1.25rem * var(--content-scale)) !important; }
+    .text-content-selectable .text-base, .text-content-selectable.text-base { font-size: calc(1rem * var(--content-scale)) !important; line-height: calc(1.5rem * var(--content-scale)) !important; }
+    .text-content-selectable .text-lg, .text-content-selectable.text-lg { font-size: calc(1.125rem * var(--content-scale)) !important; line-height: calc(1.75rem * var(--content-scale)) !important; }
+    .text-content-selectable .text-\[10px\], .text-content-selectable.text-\[10px\] { font-size: calc(10px * var(--content-scale)) !important; line-height: calc(14px * var(--content-scale)) !important; }
+    .text-content-selectable .text-\[11px\], .text-content-selectable.text-\[11px\] { font-size: calc(11px * var(--content-scale)) !important; line-height: calc(16px * var(--content-scale)) !important; }
+    .text-content-selectable .text-\[13px\], .text-content-selectable.text-\[13px\] { font-size: calc(13px * var(--content-scale)) !important; line-height: calc(18px * var(--content-scale)) !important; }
+
+    @media (min-width: 640px) {
+      .text-content-selectable .sm\:text-xs, .text-content-selectable.sm\:text-xs { font-size: calc(0.75rem * var(--content-scale)) !important; line-height: calc(1rem * var(--content-scale)) !important; }
+      .text-content-selectable .sm\:text-sm, .text-content-selectable.sm\:text-sm { font-size: calc(0.875rem * var(--content-scale)) !important; line-height: calc(1.25rem * var(--content-scale)) !important; }
+      .text-content-selectable .sm\:text-base, .text-content-selectable.sm\:text-base { font-size: calc(1rem * var(--content-scale)) !important; line-height: calc(1.5rem * var(--content-scale)) !important; }
+      .text-content-selectable .sm\:text-lg, .text-content-selectable.sm\:text-lg { font-size: calc(1.125rem * var(--content-scale)) !important; line-height: calc(1.75rem * var(--content-scale)) !important; }
+    }
   </style>
 </head>
 <body class="h-full bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300">
@@ -68,8 +87,6 @@
 
     <!-- Controles superiores -->
     <div class="flex items-center space-x-1.5">
-      <button onclick="changeFontSize(-1)" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-bold text-xs" title="Reducir texto">A-</button>
-      <button onclick="changeFontSize(1)" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-bold text-sm" title="Aumentar texto">A+</button>
       <button id="btn-theme" onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Modo Claro/Oscuro">
         <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
       </button>
@@ -86,8 +103,8 @@
       <span>Rosario</span>
     </button>
     <button onclick="openHomilias()" id="tab-view-homilia" class="flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-      <i id="icon-tab-homilia" class="fa-solid fa-church text-red-500 text-sm"></i>
-      <span>Homilías</span>
+      <i id="icon-tab-homilia" class="fa-solid fa-video text-red-500 text-sm"></i>
+      <span>Vídeos</span>
     </button>
     <button onclick="setViewMode('prayers')" id="tab-view-prayers" class="flex-1 py-1.5 px-1 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
       <i id="icon-tab-prayers" class="fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm"></i>
@@ -122,22 +139,6 @@
 
     <!-- ================= VISTA 1: VERSIONES EN VÍDEO ================= -->
     <section id="section-video" class="space-y-4">
-      
-      <!-- Selector de Versión Corta vs Larga vs Homilías -->
-      <div class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold gap-1">
-        <button onclick="switchRosaryLength('corta')" id="btn-len-corta" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm">
-          <i class="fa-solid fa-bolt text-amber-500"></i>
-          <span>Corto</span>
-        </button>
-        <button onclick="switchRosaryLength('larga')" id="btn-len-larga" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400">
-          <i class="fa-solid fa-book-open text-blue-500"></i>
-          <span>Largo</span>
-        </button>
-        <button onclick="switchRosaryLength('homilia')" id="btn-len-homilia" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400">
-          <i class="fa-solid fa-church text-red-500"></i>
-          <span>Homilías</span>
-        </button>
-      </div>
 
       <!-- Reproductor Integrado de YouTube -->
       <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-sm space-y-3">
@@ -184,7 +185,7 @@
             <i class="fa-solid fa-hands-praying"></i>
           </div>
           <div>
-            <h4 class="text-xs sm:text-sm font-bold font-cinzel text-slate-900 dark:text-white">Modo Interactivo (Decenario)</h4>
+            <h4 class="text-xs sm:text-sm font-bold font-cinzel text-slate-900 dark:text-white">Modo Interactivo</h4>
             <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Pasa las cuentas y lee las oraciones paso a paso</p>
           </div>
         </div>
@@ -206,8 +207,20 @@
 
       <!-- Banco de Homilías y Favoritizadas -->
       <div id="homilias-history-container" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+        <!-- Selector superior: Homilías vs Reflexiones -->
+        <div class="bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-2xl flex items-center text-xs font-semibold gap-1">
+          <button onclick="switchVideoChannelType('homilias')" id="btn-chan-homilias" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 shadow-sm">
+            <i class="fa-solid fa-church"></i>
+            <span>Homilías</span>
+          </button>
+          <button onclick="switchVideoChannelType('reflexiones')" id="btn-chan-reflexiones" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Reflexiones</span>
+          </button>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <h3 id="videos-section-title" class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <i class="fa-solid fa-church text-red-500"></i>
             <span>Banco de Homilías</span>
           </h3>
@@ -665,6 +678,14 @@
           </div>
           <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
         </button>
+
+        <button onclick="openMomentoDetail('espiritusanto')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Oración al Espíritu Santo</h4>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Cardenal Verdier</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
+        </button>
       </div>
 
       <button onclick="closeMomentosModal()" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors">
@@ -719,7 +740,7 @@
 
       <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shrink-0 text-xs">
         <button onclick="switchGospelTab('gospel')" id="tab-gospel-reading" class="flex-1 py-2 rounded-lg bg-white dark:bg-slate-900 text-amber-600 shadow-sm font-bold">Lecturas</button>
-        <button onclick="switchGospelTab('comment')" id="tab-gospel-comment" class="flex-1 py-2 rounded-lg text-slate-600 dark:text-slate-300 font-semibold">Comentario</button>
+        <button onclick="switchGospelTab('comment')" id="tab-gospel-comment" class="flex-1 py-2 rounded-lg text-slate-600 dark:text-slate-300 font-semibold">Meditación</button>
       </div>
 
       <div class="flex-1 overflow-y-auto no-scrollbar space-y-3 pr-0.5 text-content-selectable">
@@ -735,9 +756,9 @@
         </div>
         <div id="panel-gospel-comment" class="hidden space-y-3">
           <div class="p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-2">
-            <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Meditación Espiritual</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Meditación Espiritual</p>
             <div id="gospel-comment-text" class="text-slate-700 dark:text-slate-200 text-xs sm:text-sm leading-relaxed">
-              <p>Cargando comentario espiritual y meditación pastoral...</p>
+              <p>Cargando meditación espiritual...</p>
             </div>
           </div>
         </div>
@@ -1306,12 +1327,25 @@
        ======================================================================== */
     const HOMILIA_CHANNEL_ID = 'UCnL3Q3uW39R7kXIzEHALzBg';
     const HOMILIA_UPLOADS_PLAYLIST = 'UUnL3Q3uW39R7kXIzEHALzBg';
+
+    const REFLEXION_CHANNEL_ID = 'UCJytoHmJyDwO5KlVM4o7cIw';
+    let currentVideoType = 'homilias'; // 'homilias' o 'reflexiones'
+
     let homiliaVideosList = [];
+    let reflexionVideosList = [];
     let selectedHomiliaIndex = 0;
+    let selectedReflexionIndex = 0;
+
     let latestHomiliaVideo = {
       id: null,
       title: 'Última Homilía del Canal',
       url: 'https://www.youtube.com/channel/' + HOMILIA_CHANNEL_ID + '/videos'
+    };
+
+    let latestReflexionVideo = {
+      id: null,
+      title: 'Última Reflexión del Canal',
+      url: 'https://www.youtube.com/channel/' + REFLEXION_CHANNEL_ID + '/videos'
     };
 
     let favoriteHomilias = JSON.parse(localStorage.getItem('rosario_favorite_homilias') || '[]');
@@ -1407,6 +1441,17 @@
             '</div>',
           '</div>'
         ].join('')
+      },
+      espiritusanto: {
+        title: 'Oración al Espíritu Santo',
+        content: [
+          '<div class="space-y-4">',
+            '<p class="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Cardenal Verdier</p>',
+            '<p>Oh Espíritu Santo,<br>Amor del Padre, y del Hijo,<br>Inspírame siempre lo que debo pensar,<br>lo que debo decir,<br>cómo debo decirlo,<br>lo que debo callar,<br>cómo debo actuar,<br>lo que debo hacer,<br>para gloria de Dios,<br>bien de las almas<br>y mi propia Santificación.</p>',
+            '<p>Espíritu Santo,<br>Dame agudeza<br>para entender,<br>capacidad para retener,<br>método y facultad para aprender,<br>sutileza para interpretar,<br>gracia y eficacia para hablar.<br>Dame acierto al empezar<br>dirección al progresar<br>y perfección al acabar.</p>',
+            '<p class="font-bold text-amber-700 dark:text-amber-300">Amén.</p>',
+          '</div>'
+        ].join('')
       }
     };
 
@@ -1438,7 +1483,35 @@
       }
       switchRosaryLength('homilia');
       fetchLatestHomiliaVideo();
+      fetchLatestReflexionVideo();
       highlightNavTab('homilia');
+    }
+
+    function switchVideoChannelType(type) {
+      currentVideoType = type;
+      const btnH = document.getElementById('btn-chan-homilias');
+      const btnR = document.getElementById('btn-chan-reflexiones');
+      const titleEl = document.getElementById('videos-section-title');
+
+      if (type === 'homilias') {
+        if (btnH) btnH.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 shadow-sm font-bold';
+        if (btnR) btnR.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-church text-red-500"></i><span>Banco de Homilías</span>';
+      } else {
+        if (btnR) btnR.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm font-bold';
+        if (btnH) btnH.className = 'flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold';
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-lightbulb text-amber-500"></i><span>Banco de Reflexiones</span>';
+      }
+
+      if (type === 'homilias' && latestHomiliaVideo.id) {
+        latestHomiliaVideo = homiliaVideosList[selectedHomiliaIndex] || latestHomiliaVideo;
+      } else if (type === 'reflexiones' && reflexionVideosList.length > 0) {
+        latestReflexionVideo = reflexionVideosList[selectedReflexionIndex] || latestReflexionVideo;
+      }
+
+      updateVideoPlayer();
+      renderHomiliasListTab();
+      updateFavoriteButtonUI();
     }
 
     function renderHomiliasListTab() {
@@ -1447,17 +1520,25 @@
       if (!listEl) return;
       if (favCountEl) favCountEl.textContent = favoriteHomilias.length;
 
-      let sourceArray = currentHomiliasTab === 'recent' ? homiliaVideosList : favoriteHomilias;
+      let sourceArray = [];
+      if (currentHomiliasTab === 'recent') {
+        sourceArray = currentVideoType === 'homilias' ? homiliaVideosList : reflexionVideosList;
+      } else {
+        sourceArray = favoriteHomilias;
+      }
+
       if (sourceArray.length === 0) {
-        listEl.innerHTML = '<p class="text-xs text-slate-500 dark:text-slate-400 py-4 text-center">No se encontraron homilías.</p>';
+        listEl.innerHTML = '<p class="text-xs text-slate-500 dark:text-slate-400 py-4 text-center">No se encontraron vídeos en esta sección.</p>';
         return;
       }
 
+      const activeCurrentId = currentVideoType === 'homilias' ? latestHomiliaVideo.id : latestReflexionVideo.id;
+
       listEl.innerHTML = sourceArray.map(video => {
-        const isSelected = latestHomiliaVideo.id === video.id;
-        const displayTitle = video.customTitle || video.title || 'Homilía';
+        const isSelected = activeCurrentId === video.id;
+        const displayTitle = video.customTitle || video.title || 'Vídeo';
         const isFavTab = currentHomiliasTab === 'favorites';
-        return '<div class="flex items-center gap-2 p-2 rounded-xl border transition-all ' + (isSelected ? 'border-red-500 bg-red-500/10' : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50') + '"><button onclick="selectHomiliaById(\'' + video.id + '\')" class="flex-1 text-left flex items-center gap-3 min-w-0"><div class="w-24 aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700 shrink-0 relative"><img src="' + video.thumbnail + '" alt="' + displayTitle + '" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><p class="text-xs font-bold ' + (isSelected ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100') + ' line-clamp-2 leading-snug">' + displayTitle + '</p></div></button>' + (isFavTab ? '<button onclick="openEditHomiliaModal(\'' + video.id + '\', event)" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0" title="Editar título"><i class="fa-solid fa-pen text-xs"></i></button>' : '') + '</div>';
+        return '<div class="flex items-center gap-2 p-2 rounded-xl border transition-all ' + (isSelected ? 'border-red-500 bg-red-500/10' : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50') + '"><button onclick="selectVideoById(\'' + video.id + '\')" class="flex-1 text-left flex items-center gap-3 min-w-0"><div class="w-24 aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700 shrink-0 relative"><img src="' + video.thumbnail + '" alt="' + displayTitle + '" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><p class="text-xs font-bold ' + (isSelected ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100') + ' line-clamp-2 leading-snug">' + displayTitle + '</p></div></button>' + (isFavTab ? '<button onclick="openEditHomiliaModal(\'' + video.id + '\', event)" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0" title="Editar título"><i class="fa-solid fa-pen text-xs"></i></button>' : '') + '</div>';
       }).join('');
     }
 
@@ -1493,6 +1574,10 @@
           latestHomiliaVideo.customTitle = fav.customTitle;
           updateVideoPlayer();
         }
+        if (latestReflexionVideo.id === editingHomiliaId) {
+          latestReflexionVideo.customTitle = fav.customTitle;
+          updateVideoPlayer();
+        }
         renderHomiliasListTab();
         showToast('Título actualizado con éxito');
       }
@@ -1505,24 +1590,28 @@
       if (index >= 0) {
         favoriteHomilias.splice(index, 1);
         localStorage.setItem('rosario_favorite_homilias', JSON.stringify(favoriteHomilias));
-        if (latestHomiliaVideo.id === editingHomiliaId) {
+        if (latestHomiliaVideo.id === editingHomiliaId || latestReflexionVideo.id === editingHomiliaId) {
           updateFavoriteButtonUI();
         }
         renderHomiliasListTab();
-        showToast('Homilía eliminada de favoritas');
+        showToast('Vídeo eliminado de favoritas');
       }
       closeEditHomiliaModal();
     }
 
     function toggleCurrentHomiliaFavorite() {
-      if (!latestHomiliaVideo.id) return;
-      const index = favoriteHomilias.findIndex(f => f.id === latestHomiliaVideo.id);
+      const activeVideo = currentVideoType === 'homilias' ? latestHomiliaVideo : latestReflexionVideo;
+      if (!activeVideo.id) {
+        showToast('Aún no se ha cargado el vídeo para guardar');
+        return;
+      }
+      const index = favoriteHomilias.findIndex(f => f.id === activeVideo.id);
       if (index >= 0) {
         favoriteHomilias.splice(index, 1);
-        showToast('Homilía eliminada de favoritas');
+        showToast('Vídeo eliminado de favoritas');
       } else {
-        favoriteHomilias.push(JSON.parse(JSON.stringify(latestHomiliaVideo)));
-        showToast('Homilía guardada en favoritas');
+        favoriteHomilias.push(JSON.parse(JSON.stringify(activeVideo)));
+        showToast('Vídeo guardado en favoritas');
       }
       localStorage.setItem('rosario_favorite_homilias', JSON.stringify(favoriteHomilias));
       updateFavoriteButtonUI();
@@ -1532,12 +1621,14 @@
     function updateFavoriteButtonUI() {
       const favBtn = document.getElementById('btn-toggle-favorite-current');
       const favLabel = document.getElementById('fav-btn-label');
-      if (!favBtn || currentLength !== 'homilia' || !latestHomiliaVideo.id) {
+      const activeVideo = currentVideoType === 'homilias' ? latestHomiliaVideo : latestReflexionVideo;
+
+      if (!favBtn || currentLength !== 'homilia' || !activeVideo.id) {
         if (favBtn) favBtn.classList.add('hidden');
         return;
       }
       favBtn.classList.remove('hidden');
-      const isFav = favoriteHomilias.some(f => f.id === latestHomiliaVideo.id);
+      const isFav = favoriteHomilias.some(f => f.id === activeVideo.id);
       if (isFav) {
         favBtn.className = 'flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-sm shrink-0';
         if (favLabel) favLabel.textContent = 'En Favoritas';
@@ -1547,16 +1638,19 @@
       }
     }
 
-    function selectHomiliaById(vidId) {
-      const found = homiliaVideosList.find(v => v.id === vidId) || favoriteHomilias.find(f => f.id === vidId);
+    function selectVideoById(vidId) {
+      let found = homiliaVideosList.find(v => v.id === vidId) || reflexionVideosList.find(v => v.id === vidId) || favoriteHomilias.find(f => f.id === vidId);
       if (found) {
-        latestHomiliaVideo = found;
+        if (currentVideoType === 'homilias') {
+          latestHomiliaVideo = found;
+        } else {
+          latestReflexionVideo = found;
+        }
       }
       updateVideoPlayer();
       renderHomiliasListTab();
       updateFavoriteButtonUI();
       
-      // Scroll suave hacia arriba para ver el reproductor
       const mainContent = document.querySelector('main');
       if (mainContent) {
         mainContent.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1643,10 +1737,49 @@
               selectedHomiliaIndex = 0;
             }
             latestHomiliaVideo = homiliaVideosList[selectedHomiliaIndex];
-            renderHomiliasListTab();
-            updateFavoriteButtonUI();
-            if (currentLength === 'homilia') {
-              updateVideoPlayer();
+            if (currentVideoType === 'homilias') {
+              renderHomiliasListTab();
+              updateFavoriteButtonUI();
+              if (currentLength === 'homilia') updateVideoPlayer();
+            }
+          }
+        }
+      } catch (err) {}
+    }
+
+    async function fetchLatestReflexionVideo() {
+      try {
+        const rssUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + REFLEXION_CHANNEL_ID;
+        const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data && data.items && data.items.length > 0) {
+          reflexionVideosList = data.items.slice(0, 10).map((item, idx) => {
+            let vidId = null;
+            if (item.guid && item.guid.includes(':')) {
+              vidId = item.guid.split(':').pop();
+            } else {
+              vidId = extractYouTubeID(item.link);
+            }
+            return {
+              index: idx,
+              id: vidId,
+              title: item.title || 'Reflexión',
+              pubDate: item.pubDate || '',
+              thumbnail: item.thumbnail || (vidId ? 'https://i.ytimg.com/vi/' + vidId + '/mqdefault.jpg' : ''),
+              url: vidId ? 'https://youtu.be/' + vidId : item.link
+            };
+          }).filter(v => v.id).slice(0, 10);
+
+          if (reflexionVideosList.length > 0) {
+            if (selectedReflexionIndex >= reflexionVideosList.length) {
+              selectedReflexionIndex = 0;
+            }
+            latestReflexionVideo = reflexionVideosList[selectedReflexionIndex];
+            if (currentVideoType === 'reflexiones') {
+              renderHomiliasListTab();
+              updateFavoriteButtonUI();
+              if (currentLength === 'homilia') updateVideoPlayer();
             }
           }
         }
@@ -1731,14 +1864,18 @@
         if (favBtn) favBtn.classList.remove('hidden');
         if (guidedCardContainer) guidedCardContainer.classList.add('hidden');
         if (topDayBanner) topDayBanner.classList.add('hidden');
-        const displayTitle = latestHomiliaVideo.customTitle || latestHomiliaVideo.title || 'Homilía Diaria';
+
+        const activeVid = currentVideoType === 'homilias' ? latestHomiliaVideo : latestReflexionVideo;
+        const displayTitle = activeVid.customTitle || activeVid.title || (currentVideoType === 'homilias' ? 'Homilía Diaria' : 'Reflexión Diaria');
         if (versionTag) versionTag.textContent = displayTitle;
-        if (latestHomiliaVideo.id) {
-          iframe.src = 'https://www.youtube.com/embed/' + latestHomiliaVideo.id + '?rel=0';
-          if (externalBtn) externalBtn.href = latestHomiliaVideo.url;
+
+        if (activeVid.id) {
+          iframe.src = 'https://www.youtube.com/embed/' + activeVid.id + '?rel=0';
+          if (externalBtn) externalBtn.href = activeVid.url;
         } else {
-          iframe.src = 'https://www.youtube.com/embed/videoseries?list=' + HOMILIA_UPLOADS_PLAYLIST + '&rel=0';
-          if (externalBtn) externalBtn.href = latestHomiliaVideo.url;
+          const fallbackChannelId = currentVideoType === 'homilias' ? HOMILIA_CHANNEL_ID : REFLEXION_CHANNEL_ID;
+          iframe.src = 'https://www.youtube.com/embed/videoseries?list=UU' + fallbackChannelId.substring(2) + '&rel=0';
+          if (externalBtn) externalBtn.href = activeVid.url;
         }
         renderHomiliasListTab();
         updateFavoriteButtonUI();
@@ -1850,7 +1987,7 @@
       }
 
       if (icons.video) icons.video.className = 'fa-brands fa-youtube text-red-600 text-sm';
-      if (icons.homilia) icons.homilia.className = 'fa-solid fa-church text-red-500 text-sm';
+      if (icons.homilia) icons.homilia.className = 'fa-solid fa-video text-red-500 text-sm';
       if (icons.prayers) icons.prayers.className = 'fa-solid fa-book-open text-amber-600 dark:text-amber-400 text-sm';
       if (icons.gospel) icons.gospel.className = 'fa-solid fa-book-bible text-amber-500 text-sm';
       if (icons.momentos) icons.momentos.className = 'fa-solid fa-heart text-amber-500 text-sm';
@@ -1858,7 +1995,7 @@
       if (tabs[tabName]) {
         tabs[tabName].className = activeNavClass;
         if (tabName === 'video' && icons.video) icons.video.className = 'fa-brands fa-youtube text-white text-sm';
-        if (tabName === 'homilia' && icons.homilia) icons.homilia.className = 'fa-solid fa-church text-white text-sm';
+        if (tabName === 'homilia' && icons.homilia) icons.homilia.className = 'fa-solid fa-video text-white text-sm';
         if (tabName === 'prayers' && icons.prayers) icons.prayers.className = 'fa-solid fa-book-open text-white text-sm';
         if (tabName === 'gospel' && icons.gospel) icons.gospel.className = 'fa-solid fa-book-bible text-white text-sm';
         if (tabName === 'momentos' && icons.momentos) icons.momentos.className = 'fa-solid fa-heart text-white text-sm';
@@ -2230,7 +2367,7 @@
 
     async function loadDailyLiturgy() {
       const now = new Date();
-      // Formatear fecha para el título (ej: 8 de noviembre de 2026)
+      // Formatear fecha para el título (ej: 16 de noviembre de 2026)
       document.getElementById('gospel-date-badge').textContent = now.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
       document.getElementById('gospel-liturgical-name').textContent = getLiturgicalDayString(now.getDay());
       
@@ -2260,10 +2397,9 @@
             else if (r.type === 'gospel') badgeTitle = 'Santo Evangelio';
             else badgeTitle = 'Lectura';
             
-            // Eliminar referencias a versículos como [[Sg 6,12]] o [12] o [12a]
+            // Eliminar referencias a versículos
             let cleanText = r.text.replace(/\[\[.*?\]\]\s*/g, '').replace(/\[\d+[a-z]?\]\s*/g, '').replace(/\n/g, '<br>');
             
-            // Construir la cita bíblica exacta con la abreviatura (ej. "(Mt 2, 3-15)")
             let citation = '';
             if (r.book && r.book.reference && r.reference) {
               citation = ` (${r.book.reference} ${r.reference})`;
@@ -2279,77 +2415,82 @@
             </div>
             <hr class="border-slate-200 dark:border-slate-700">`;
           });
+          
           readingsHtml += '</div>';
           document.getElementById('gospel-full-text').innerHTML = readingsHtml;
-          
-          // Cargar el comentario y meditación oficial
-          let commentHtml = '';
-          if (data.data.commentaries && data.data.commentaries.length > 0) {
-             data.data.commentaries.forEach(c => {
-                 let author = c.author || c.source || 'Comentario Litúrgico';
-                 let cleanText = (c.text || '').replace(/\n/g, '<br>');
-                 commentHtml += `<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">${c.title || 'Meditación'}</p>`;
-                 commentHtml += `<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">${author}</p>`;
-                 commentHtml += `<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">${cleanText}</p><hr class="border-slate-200 dark:border-slate-700 my-3">`;
-             });
-             document.getElementById('gospel-comment-text').innerHTML = commentHtml;
-          } else {
+
+          document.getElementById('gospel-comment-text').innerHTML = '<div class="flex items-center justify-center py-6"><i class="fa-solid fa-spinner fa-spin text-amber-500 text-xl mr-2"></i><span class="text-xs text-slate-500">Cargando meditación litúrgica...</span></div>';
+
+          // Extracción exacta de la sección MEDITATIO buscando el guid de la fecha de hoy en el XML de Evangelizo
+          let commentarySuccess = false;
+          try {
+             const rssUrl = 'https://rss.evangelizo.org/rss/v2/evangelizo_rss-sp.xml';
+             const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
              
-             // Función de respaldo inteligente: Analiza el Evangelio y genera una explicación basada en su texto
-             const renderSmartFallback = () => {
-                let gospel = data.data.readings.find(r => r.type === 'gospel') || data.data.readings[data.data.readings.length - 1];
-                let gospelText = gospel && gospel.text ? gospel.text.toLowerCase() : '';
-                
-                let ref = '';
-                if (gospel) {
-                    if (gospel.book && gospel.book.reference && gospel.reference) ref = gospel.book.reference + ' ' + gospel.reference;
-                    else if (gospel.reference) ref = gospel.reference;
-                }
-                let refText = ref ? ` (${ref})` : '';
+             const res = await fetch(proxyUrl);
+             const feedData = await res.json();
+             
+             if (feedData && feedData.items && feedData.items.length > 0) {
+                 const targetGuid = `${dateStr} - meditatio`;
+                 
+                 let matchingItem = feedData.items.find(item => {
+                     const itemGuid = (item.guid || item.link || '').toLowerCase();
+                     const itemTitle = (item.title || '').toLowerCase();
+                     return itemGuid.includes(targetGuid) || (itemGuid.includes(dateStr) && itemGuid.includes('meditatio')) || (itemTitle.includes(dateStr) && itemTitle.includes('meditaci'));
+                 });
 
-                let commentText = "";
-                if (gospelText.includes('vírgenes') || gospelText.includes('lámparas') || gospelText.includes('esposo') || gospelText.includes('aceite')) {
-                    commentText = "El Evangelio de las diez vírgenes nos hace un llamado urgente a la vigilancia espiritual. El aceite de las lámparas representa el amor, la fe viva y las buenas obras que no se pueden improvisar en el último momento. Cristo, el Esposo, puede llegar en la hora que menos pensamos. Esta lectura nos pide no caer en la tibieza ni en la distracción del mundo, sino cultivar nuestra relación diaria con Dios en la oración y el servicio, para que cuando Él llame a nuestra puerta, nos encuentre preparados y con la luz de la gracia encendida.";
-                } else if (gospelText.includes('cruz') || gospelText.includes('renuncia') || gospelText.includes('discípulo')) {
-                    commentText = "En estas líneas, Jesús nos habla con total franqueza sobre las exigencias del verdadero discipulado. Cargar con la cruz y 'renunciar' a los bienes no significa despreciar la vida, sino ordenar nuestros amores: Dios debe ocupar el primer lugar absoluto. Si construimos nuestra vida sin contar con Él, nuestra obra quedará a medias. Es una invitación a confiar plenamente en su gracia, sabiendo que el aparente sacrificio de la cruz es, en realidad, el único camino hacia la verdadera libertad y resurrección.";
-                } else if (gospelText.includes('viuda') || gospelText.includes('monedas') || gospelText.includes('tesoro')) {
-                    commentText = "El hermoso gesto de la viuda pobre nos revela cómo mira Dios el corazón humano. Él no se fija en la cantidad de lo que damos, sino en la totalidad de nuestra entrega. La viuda dio 'todo lo que tenía para vivir', demostrando una confianza absoluta en la Providencia divina. Esta lectura nos cuestiona profundamente: ¿Doy a Dios y a los demás de mis sobras o me entrego por completo? Es una invitación a vivir la verdadera generosidad, aquella que duele pero llena el alma.";
-                } else {
-                    commentText = "Al meditar esta lectura que hemos proclamado, descubrimos cómo Jesús nos sigue hablando hoy directamente al corazón. La Palabra nos invita a no ser oyentes olvidadizos, sino a encarnar su mensaje en nuestras acciones. Cada pasaje del Evangelio es un espejo donde debemos mirar nuestra propia vida: ¿Cómo estoy respondiendo al llamado de Dios? Pidamos la gracia del Espíritu Santo para que este mensaje eche raíces en nosotros y nos mueva a la conversión diaria.";
-                }
+                 // Si no encuentra por GUID exacto, buscar cualquier ítem del día que contenga meditatio o reflexión
+                 if (!matchingItem) {
+                     matchingItem = feedData.items.find(item => {
+                         const content = (item.content || item.description || '').toLowerCase();
+                         const guid = (item.guid || '').toLowerCase();
+                         return guid.includes(dateStr) && (content.includes('meditacion') || content.includes('meditatio') || guid.includes('meditatio'));
+                     });
+                 }
 
-                let fallbackComment = `<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Explicación del Evangelio</p>`;
-                fallbackComment += `<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Reflexión Pastoral${refText}</p>`;
-                fallbackComment += `<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">${commentText}</p>`;
-                
-                document.getElementById('gospel-comment-text').innerHTML = fallbackComment;
-             };
+                 if (matchingItem && (matchingItem.content || matchingItem.description)) {
+                     let rawHtml = matchingItem.content || matchingItem.description;
+                     let tempDiv = document.createElement('div');
+                     tempDiv.innerHTML = rawHtml;
+                     
+                     let cleanContent = tempDiv.innerHTML || tempDiv.textContent || "";
 
-             // Si no viene en el mismo endpoint, intentar buscar en el endpoint de meditations
-             fetch(`https://publication.evangelizo.ws/SP/days/${dateStr}/meditations`)
-               .then(res => res.json())
-               .then(medData => {
-                  let meds = medData.data || [];
-                  if (meds.length > 0) {
-                      meds.forEach(m => {
-                         let author = m.source || 'Meditación Litúrgica';
-                         let cleanText = (m.text || '').replace(/\n/g, '<br>');
-                         commentHtml += `<p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">${m.title || 'Reflexión'}</p>`;
-                         commentHtml += `<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">${author}</p>`;
-                         commentHtml += `<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">${cleanText}</p><hr class="border-slate-200 dark:border-slate-700 my-3">`;
-                      });
-                      document.getElementById('gospel-comment-text').innerHTML = commentHtml;
-                  } else {
-                      renderSmartFallback();
-                  }
-               })
-               .catch(err => {
-                  renderSmartFallback();
-               });
+                     if (cleanContent.trim() !== '') {
+                        let wrapHtml = `<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3">${matchingItem.title || 'Evangelizo RSS'}</p>`;
+                        wrapHtml += `<div class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm space-y-3">${cleanContent}</div>`;
+                        document.getElementById('gospel-comment-text').innerHTML = wrapHtml;
+                        commentarySuccess = true;
+                     }
+                 }
+             }
+          } catch(e) {}
+
+          if (!commentarySuccess) {
+             try {
+                 const evRes = await fetch(`https://publication.evangelizo.ws/SP/days/${dateStr}/meditations`);
+                 const medData = await evRes.json();
+                 let meds = medData.data || [];
+                 if (meds.length > 0) {
+                     let commentHtml = '';
+                     meds.forEach(m => {
+                        let author = m.source || 'Meditación Litúrgica';
+                        let cleanText = (m.text || '').replace(/\n/g, '<br>');
+                        commentHtml += `<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">${author}</p>`;
+                        commentHtml += `<p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">${cleanText}</p><hr class="border-slate-200 dark:border-slate-700 my-3">`;
+                     });
+                     document.getElementById('gospel-comment-text').innerHTML = commentHtml;
+                 } else {
+                     throw new Error();
+                 }
+             } catch(err) {
+                 document.getElementById('gospel-comment-text').innerHTML = `
+                   <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Reflexión Pastoral</p>
+                   <p class="text-slate-800 dark:text-slate-100 leading-relaxed text-sm">Al meditar esta lectura que hemos proclamado, descubrimos cómo Jesús nos sigue hablando hoy directamente al corazón. La Palabra nos invita a no ser oyentes olvidadizos, sino a encarnar su mensaje en nuestras acciones cotidianas, permitiendo que la gracia transforme nuestra vida.</p>`;
+             }
           }
 
         } else {
-          throw new Error("Formato de datos no válido");
+          throw new Error("Formato no válido");
         }
       } catch (err) {
         // Fallback a las lecturas por defecto en caso de error o falta de internet
@@ -2566,7 +2707,11 @@
     let currentFontScale = parseInt(localStorage.getItem('rosario_font_scale')) || 100;
 
     function applyFontScale() {
-      document.documentElement.style.fontSize = currentFontScale + '%';
+      // Limpiamos el escalado de raíz para no afectar a la interfaz (botones, títulos, cabeceras)
+      document.documentElement.style.fontSize = '';
+      // Aplicamos el escalado solo a los contenedores de texto de lectura mediante la variable CSS
+      const scale = currentFontScale / 100;
+      document.documentElement.style.setProperty('--content-scale', scale);
     }
 
     function changeFontSize(step) {
@@ -2672,6 +2817,7 @@
       applyFontScale();
       renderCurrentDay();
       fetchLatestHomiliaVideo();
+      fetchLatestReflexionVideo();
       renderPrayersList();
       updateNovenasBanner();
       setupSwipeListeners();
