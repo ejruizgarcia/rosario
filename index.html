@@ -764,7 +764,12 @@
         </div>
       </div>
 
-      <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end shrink-0">
+      <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
+        <a href="https://www.dominicos.org/predicacion/evangelio-del-dia/hoy/" target="_blank" rel="noopener noreferrer" title="Lecturas del día. Dominicos" class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center shadow-sm hover:opacity-80 transition-opacity shrink-0">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 1l2.8 6.2L21 4.4l-2.8 6.2L23 12l-4.8 1.4L21 19.6l-6.2-2.8L12 23l-2.8-6.2L3 19.6l2.8-6.2L1 12l4.8-1.4L3 4.4l6.2 2.8L12 1z"/>
+          </svg>
+        </a>
         <button onclick="closeGospelModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-colors">
           Cerrar
         </button>
@@ -1223,6 +1228,20 @@
       updateNovenasBanner();
       openPrayerDetail(prayerIdx);
       showToast('¡Novena iniciada con éxito!');
+    }
+
+    function setNovenaDay(prayerIdx, targetDay) {
+      const p = SPECIAL_PRAYERS[prayerIdx];
+      if (!p) return;
+      const d = new Date();
+      d.setDate(d.getDate() - (targetDay - 1));
+      const newStartDate = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      novenasData[p.id] = { startDate: newStartDate };
+      localStorage.setItem('rosario_novenas_data', JSON.stringify(novenasData));
+      renderPrayersList();
+      updateNovenasBanner();
+      openPrayerDetail(prayerIdx);
+      showToast('Novena ajustada al Día ' + targetDay + ' como hoy');
     }
 
     function cancelNovena(prayerIdx, event) {
@@ -2605,6 +2624,19 @@
         if (textEl) textEl.innerHTML = novenaStepsHtml;
 
         if (controlsEl) {
+          let dayButtonsHtml = '<div class="pt-1">';
+          dayButtonsHtml += '<button type="button" onclick="document.getElementById(\'novena-day-picker-' + prayerIndex + '\').classList.toggle(\'hidden\')" class="w-full py-2 px-3 rounded-xl bg-slate-100/80 dark:bg-slate-800/60 hover:bg-slate-200/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors">';
+          dayButtonsHtml += '<i class="fa-solid fa-sliders text-[10px]"></i><span>Ajustar día actual</span>';
+          dayButtonsHtml += '</button>';
+          dayButtonsHtml += '<div id="novena-day-picker-' + prayerIndex + '" class="hidden mt-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">';
+          dayButtonsHtml += '<p class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-center">Selecciona el día de hoy:</p>';
+          dayButtonsHtml += '<div class="grid grid-cols-9 gap-1">';
+          for (let d = 1; d <= 9; d++) {
+            const isCurrent = st.day === d;
+            dayButtonsHtml += '<button onclick="setNovenaDay(' + prayerIndex + ', ' + d + ')" class="py-1.5 rounded-lg text-xs font-bold transition-all ' + (isCurrent ? 'bg-amber-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-amber-500') + '">' + d + '</button>';
+          }
+          dayButtonsHtml += '</div></div></div>';
+
           controlsEl.innerHTML = [
             '<div class="space-y-3">',
               (st.completedToday ? [
@@ -2617,6 +2649,7 @@
                   '<span>Marcar como Rezada Hoy</span>',
                 '</button>'
               ].join('')),
+              dayButtonsHtml,
               '<div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3">',
                 '<div class="text-xs sm:text-sm">',
                   '<span class="font-bold text-amber-700 dark:text-amber-300">' + (st.isLastDay ? '¡Último día de la Novena!' : 'Novena en curso: Día ' + st.day + ' de 9') + '</span>',
