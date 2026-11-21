@@ -59,6 +59,10 @@
       will-change: transform, opacity;
       touch-action: pan-y;
     }
+    .cromo-scroll-body {
+      touch-action: pan-y;
+      overscroll-behavior: contain;
+    }
     .cromo-card.dragging {
       transition: none !important;
     }
@@ -2477,7 +2481,10 @@
       let deltaX = 0;
       let deltaY = 0;
       let isHorizontalDrag = false;
+      let isVerticalScroll = false;
       let startedInsideScroll = false;
+      let initialScrollTop = 0;
+      let scrollContainer = null;
 
       zone.addEventListener('pointerdown', function (e) {
         if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
@@ -2489,7 +2496,10 @@
         deltaX = 0;
         deltaY = 0;
         isHorizontalDrag = false;
-        startedInsideScroll = !!e.target.closest('.cromo-scroll-body');
+        isVerticalScroll = false;
+        scrollContainer = e.target.closest('.cromo-scroll-body');
+        startedInsideScroll = !!scrollContainer;
+        initialScrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
       });
 
       zone.addEventListener('pointermove', function (e) {
@@ -2497,12 +2507,19 @@
         deltaX = e.clientX - startX;
         deltaY = e.clientY - startY;
 
+        if (isVerticalScroll) return;
+
         if (!isHorizontalDrag) {
-          if (Math.abs(deltaX) > 12 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1) {
+          if (startedInsideScroll && (Math.abs(deltaY) > 6 || (scrollContainer && scrollContainer.scrollTop !== initialScrollTop))) {
+            isVerticalScroll = true;
+            return;
+          }
+          const horizThreshold = startedInsideScroll ? 28 : 14;
+          if (Math.abs(deltaX) > horizThreshold && Math.abs(deltaX) > Math.abs(deltaY) * 1.6) {
             isHorizontalDrag = true;
             try { zone.setPointerCapture(e.pointerId); } catch (err) {}
-          } else if (Math.abs(deltaY) > 14 && startedInsideScroll) {
-            activePointerId = null;
+          } else if (Math.abs(deltaY) > 10) {
+            isVerticalScroll = true;
             return;
           }
         }
@@ -2521,6 +2538,8 @@
         activePointerId = null;
         try { zone.releasePointerCapture(e.pointerId); } catch (err) {}
 
+        const scrolledDuringTouch = scrollContainer && Math.abs(scrollContainer.scrollTop - initialScrollTop) > 2;
+
         if (isHorizontalDrag) {
           if (deltaX < -45 && currentImageGalleryIndex < 4) {
             resetAllCromoFlips();
@@ -2530,8 +2549,9 @@
             currentImageGalleryIndex--;
           }
           updateCromoPositions(0, 0, false);
-        } else if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
-          if (e.target.closest('.cromo-card[data-cromo-idx="' + currentImageGalleryIndex + '"]')) {
+        } else if (!isVerticalScroll && !scrolledDuringTouch && Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) {
+          const activeCard = e.target.closest('.cromo-card[data-cromo-idx="' + currentImageGalleryIndex + '"]');
+          if (activeCard && !activeCard.classList.contains('flipped')) {
             toggleImageGalleryFlip();
           }
         }
