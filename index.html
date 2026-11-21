@@ -610,10 +610,10 @@
   <!-- MODAL: Detalle de cada Misterio -->
   <div id="modal-mystery-detail" onclick="if(event.target === this) closeMysteryDetailModal()" class="fixed inset-x-0 top-0 bottom-16 z-40 bg-black/50 backdrop-blur-[2px] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all duration-300">
     <div id="mystery-flip-card" class="flip-card perspective-1000 w-full sm:max-w-md h-[86vh] sm:h-[82vh] transition-all duration-300">
-      <div class="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-3d">
+      <div id="mystery-flip-inner" class="flip-card-inner relative w-full h-full transition-transform duration-700">
         
         <!-- ANVERSO: Texto y Reflexión del Misterio -->
-        <div id="mystery-card-front" class="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl p-4 sm:p-5 flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transition-opacity duration-300">
+        <div id="mystery-card-front" class="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl p-4 sm:p-5 flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 transition-opacity duration-300">
           <div class="flex items-start justify-between gap-3 pb-2.5 border-b border-slate-100 dark:border-slate-800 shrink-0">
             <div>
               <div class="flex items-center gap-2 flex-wrap mb-1">
@@ -634,7 +634,7 @@
             </div>
           </div>
 
-          <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar space-y-3 py-3 text-xs sm:text-sm text-content-selectable" style="touch-action: pan-y; -webkit-overflow-scrolling: touch;">
+          <div id="mystery-detail-scroll-body" class="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-3 py-3 pr-1 text-xs sm:text-sm text-content-selectable" style="touch-action: pan-y; -webkit-overflow-scrolling: touch;">
             <div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
               <i class="fa-solid fa-book-bible text-amber-500"></i>
               <span>Cita Bíblica: <strong id="modal-mystery-ref"></strong></span>
@@ -676,7 +676,7 @@
         </div>
 
         <!-- REVERSO: Solo Imagen a Pantalla Completa -->
-        <div id="mystery-card-back" onclick="toggleMysteryCardFlip()" class="absolute inset-0 backface-hidden rotate-y-180 bg-black flex items-center justify-center cursor-pointer overflow-hidden">
+        <div id="mystery-card-back" onclick="toggleMysteryCardFlip()" class="absolute inset-0 backface-hidden rotate-y-180 bg-black hidden items-center justify-center cursor-pointer overflow-hidden">
           <img id="modal-mystery-image" src="" alt="Imagen del misterio" class="w-full h-full object-contain">
         </div>
 
@@ -2075,19 +2075,28 @@
 
       const modal = document.getElementById('modal-mystery-detail');
       const flipCard = document.getElementById('mystery-flip-card');
+      const flipInner = document.getElementById('mystery-flip-inner');
       const frontFace = document.getElementById('mystery-card-front');
+      const backFace = document.getElementById('mystery-card-back');
       if (flipCard) {
         flipCard.classList.remove('flipped', 'w-screen', 'h-screen', 'max-w-none', 'sm:max-w-none');
         flipCard.classList.add('w-full', 'sm:max-w-md', 'h-[86vh]', 'sm:h-[82vh]');
       }
+      if (flipInner) {
+        flipInner.classList.remove('transform-style-3d');
+      }
       if (frontFace) {
-        frontFace.classList.remove('opacity-0', 'pointer-events-none');
+        frontFace.classList.remove('opacity-0', 'pointer-events-none', 'hidden');
+      }
+      if (backFace) {
+        backFace.classList.add('hidden');
+        backFace.classList.remove('flex');
       }
       if (modal) {
         modal.classList.remove('inset-0', 'z-[120]', 'p-0', 'bg-black');
         modal.classList.add('inset-x-0', 'top-0', 'bottom-16', 'z-40', 'p-0', 'sm:p-4', 'bg-black/50');
       }
-      const scrollContainer = modal ? modal.querySelector('.overflow-y-auto') : null;
+      const scrollContainer = document.getElementById('mystery-detail-scroll-body');
       if (scrollContainer) scrollContainer.scrollTop = 0;
 
       const badgeEl = document.getElementById('modal-mystery-badge');
@@ -2116,10 +2125,17 @@
     function toggleMysteryCardFlip() {
       const modal = document.getElementById('modal-mystery-detail');
       const flipCard = document.getElementById('mystery-flip-card');
+      const flipInner = document.getElementById('mystery-flip-inner');
       const frontFace = document.getElementById('mystery-card-front');
+      const backFace = document.getElementById('mystery-card-back');
       if (!flipCard || !modal) return;
 
       const willFlip = !flipCard.classList.contains('flipped');
+      if (flipInner) flipInner.classList.add('transform-style-3d');
+      if (backFace) {
+        backFace.classList.remove('hidden');
+        backFace.classList.add('flex');
+      }
       flipCard.classList.toggle('flipped');
 
       if (willFlip) {
@@ -2130,27 +2146,43 @@
         if (frontFace) {
           setTimeout(() => {
             if (flipCard.classList.contains('flipped')) {
-              frontFace.classList.add('opacity-0', 'pointer-events-none');
+              frontFace.classList.add('opacity-0', 'pointer-events-none', 'hidden');
             }
-          }, 220);
+          }, 260);
         }
       } else {
         if (frontFace) {
-          frontFace.classList.remove('opacity-0', 'pointer-events-none');
+          frontFace.classList.remove('opacity-0', 'pointer-events-none', 'hidden');
         }
         modal.classList.remove('inset-0', 'z-[120]', 'bg-black');
         modal.classList.add('inset-x-0', 'top-0', 'bottom-16', 'z-40', 'sm:p-4', 'bg-black/50');
         flipCard.classList.remove('w-screen', 'h-screen', 'max-w-none', 'sm:max-w-none');
         flipCard.classList.add('w-full', 'sm:max-w-md', 'h-[86vh]', 'sm:h-[82vh]');
+        setTimeout(() => {
+          if (!flipCard.classList.contains('flipped')) {
+            if (flipInner) flipInner.classList.remove('transform-style-3d');
+            if (backFace) {
+              backFace.classList.add('hidden');
+              backFace.classList.remove('flex');
+            }
+          }
+        }, 700);
       }
     }
 
     function closeMysteryDetailModal() {
       const modal = document.getElementById('modal-mystery-detail');
       const flipCard = document.getElementById('mystery-flip-card');
+      const flipInner = document.getElementById('mystery-flip-inner');
       const frontFace = document.getElementById('mystery-card-front');
+      const backFace = document.getElementById('mystery-card-back');
       if (flipCard) flipCard.classList.remove('flipped');
-      if (frontFace) frontFace.classList.remove('opacity-0', 'pointer-events-none');
+      if (flipInner) flipInner.classList.remove('transform-style-3d');
+      if (frontFace) frontFace.classList.remove('opacity-0', 'pointer-events-none', 'hidden');
+      if (backFace) {
+        backFace.classList.add('hidden');
+        backFace.classList.remove('flex');
+      }
       if (modal) modal.classList.add('hidden');
     }
 
