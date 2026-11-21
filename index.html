@@ -634,7 +634,7 @@
             </div>
           </div>
 
-          <div class="flex-1 overflow-y-auto no-scrollbar space-y-3 py-3 text-xs sm:text-sm text-content-selectable">
+          <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar space-y-3 py-3 text-xs sm:text-sm text-content-selectable" style="touch-action: pan-y; -webkit-overflow-scrolling: touch;">
             <div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
               <i class="fa-solid fa-book-bible text-amber-500"></i>
               <span>Cita Bíblica: <strong id="modal-mystery-ref"></strong></span>
@@ -2087,6 +2087,8 @@
         modal.classList.remove('inset-0', 'z-[120]', 'p-0', 'bg-black');
         modal.classList.add('inset-x-0', 'top-0', 'bottom-16', 'z-40', 'p-0', 'sm:p-4', 'bg-black/50');
       }
+      const scrollContainer = modal ? modal.querySelector('.overflow-y-auto') : null;
+      if (scrollContainer) scrollContainer.scrollTop = 0;
 
       const badgeEl = document.getElementById('modal-mystery-badge');
       if (badgeEl) badgeEl.textContent = mInfo.name + ' • ' + item.num;
