@@ -148,9 +148,15 @@
         <span id="active-day-label" class="text-xs uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
           Hoy
         </span>
-        <button onclick="resetToToday()" id="btn-return-today" class="hidden text-xs text-amber-600 dark:text-amber-400 font-semibold underline underline-offset-2">
-          Volver a Hoy
-        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="openSpotifyRosaryModal()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold shadow-sm transition-all active:scale-95" title="Escuchar Rosario en Spotify">
+            <i class="fa-brands fa-spotify text-xs"></i>
+            <span>Audio</span>
+          </button>
+          <button onclick="resetToToday()" id="btn-return-today" class="hidden text-xs text-amber-600 dark:text-amber-400 font-semibold underline underline-offset-2">
+            Volver a Hoy
+          </button>
+        </div>
       </div>
       <h2 id="mystery-title" class="text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-tight"></h2>
       <p id="mystery-days-hint" class="text-xs text-slate-600 dark:text-slate-400 mt-1"></p>
@@ -760,38 +766,8 @@
         </button>
       </div>
 
-      <div class="space-y-2.5">
-        <button onclick="openImageModeGallery('gozosos')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
-          <div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Misterios Gozosos (Lunes y Sábados)</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">5 tarjetas con imagen y meditación</p>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
-        </button>
-
-        <button onclick="openImageModeGallery('dolorosos')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
-          <div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Misterios Dolorosos (Martes y Viernes)</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">5 tarjetas con imagen y meditación</p>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
-        </button>
-
-        <button onclick="openImageModeGallery('gloriosos')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
-          <div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Misterios Gloriosos (Miércoles y Domingos)</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">5 tarjetas con imagen y meditación</p>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
-        </button>
-
-        <button onclick="openImageModeGallery('luminosos')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
-          <div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Misterios Luminosos (Jueves)</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">5 tarjetas con imagen y meditación</p>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
-        </button>
+      <div id="image-mode-selector-list" class="space-y-2.5">
+        <!-- Inyectado dinámicamente destacando el misterio de hoy -->
       </div>
 
       <button onclick="closeImageModeSelector()" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors">
@@ -800,124 +776,45 @@
     </div>
   </div>
 
-  <!-- MODAL: Galería 3D Modo Imagen (Anverso Imagen / Reverso Meditación) -->
-  <div id="modal-image-mode-gallery" class="fixed inset-0 z-[125] bg-slate-950/95 backdrop-blur-md hidden flex flex-col select-none">
-    <!-- Barra superior con regreso al índice de misterios -->
-    <div class="flex items-center justify-between px-4 py-3 bg-black/70 text-white shrink-0 border-b border-white/10">
-      <button onclick="backToImageModeSelector()" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-amber-300 transition-colors shrink-0">
-        <i class="fa-solid fa-arrow-left text-xs"></i>
-        <span>Misterios</span>
-      </button>
-      <div class="text-center min-w-0 px-2">
-        <p id="img-gallery-group" class="text-[10px] font-bold uppercase tracking-wider text-amber-400 truncate"></p>
-        <h3 id="img-gallery-counter" class="text-xs font-semibold text-white/90">1º Misterio (1 / 5)</h3>
-      </div>
-      <button onclick="closeImageModeGallery()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors shrink-0" title="Cerrar">
-        <i class="fa-solid fa-xmark text-base"></i>
-      </button>
-    </div>
-
-    <!-- Indicadores de posición (5 cromos) -->
-    <div id="img-gallery-dots" class="flex items-center justify-center gap-2 pt-3 pb-1 shrink-0"></div>
-
-    <!-- Escenario de Cromos Deslizables con inclinación diagonal y Flip 3D -->
-    <div id="img-gallery-swipe-area" class="flex-1 flex items-center justify-center px-5 py-3 overflow-hidden relative">
-      <div id="cromo-deck-stage" class="relative w-full max-w-[330px] sm:max-w-[360px] h-full max-h-[560px]">
-        <!-- Cromos inyectados dinámicamente por JS -->
-      </div>
-    </div>
-
-    <!-- Barra inferior de navegación -->
-    <div class="flex items-center justify-between gap-2.5 px-4 py-3 bg-black/80 border-t border-white/10 shrink-0 max-w-md mx-auto w-full">
-      <button onclick="prevImageGalleryMystery()" class="w-12 h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center active:scale-95 transition-all" title="Anterior">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-      <button onclick="toggleImageGalleryFlip()" class="flex-1 h-11 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-amber-600/25">
-        <i class="fa-solid fa-rotate"></i>
-        <span>Girar cromo</span>
-      </button>
-      <button onclick="nextImageGalleryMystery()" class="w-12 h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center active:scale-95 transition-all" title="Siguiente">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- Toast de notificación -->
-  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 rounded-full text-xs font-semibold shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-[80]">
-    Enlace copiado al portapapeles
-  </div>
-
-  <!-- MODAL: Selector de Momentos de Oración -->
-  <div id="modal-momentos-selector" onclick="if(event.target === this) closeMomentosModal()" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[85vh] overflow-y-auto no-scrollbar">
+  <!-- MODAL: Rosarios en Audio / Spotify (4 Misterios con reproducción directa al tocar la imagen) -->
+  <div id="modal-spotify-rosary" onclick="if(event.target === this) closeSpotifyRosaryModal()" class="fixed inset-0 z-[105] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto no-scrollbar">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm">
-            <i class="fa-solid fa-heart"></i>
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base">
+            <i class="fa-brands fa-spotify"></i>
           </div>
-          <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white">Favoritos y Oraciones</h3>
+          <div>
+            <h3 class="text-base font-bold font-cinzel text-slate-900 dark:text-white leading-tight">Rosario en Audio</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Toca la imagen del misterio para reproducirlo</p>
+          </div>
         </div>
-        <button onclick="closeMomentosModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <button onclick="closeSpotifyRosaryModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
           <i class="fa-solid fa-xmark text-sm"></i>
         </button>
       </div>
 
-      <div class="space-y-2.5">
-        <button onclick="closeMomentosModal(); setViewMode('prayers');" class="w-full text-left p-3.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all flex items-center justify-between group">
-          <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xs shrink-0 shadow-sm">
-              <i class="fa-solid fa-book-open"></i>
-            </span>
-            <div>
-              <h4 class="text-xs sm:text-sm font-bold text-amber-900 dark:text-amber-200">Oraciones Especiales y Novenas</h4>
-              <p class="text-[11px] text-amber-700/80 dark:text-amber-300/80 mt-0.5">Estampas y novenas guiadas de 9 días</p>
-            </div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-amber-600 dark:text-amber-400"></i>
-        </button>
-
-        <button onclick="openMomentoDetail('escrutinio')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
-          <div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Oración para el Escrutinio</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Invocación al Espíritu Santo y oración final</p>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
-        </button>
-
-        <button onclick="openMomentoDetail('restauracion')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
-          <div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Oración por la Restauración del Matrimonio</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Dios de toda misericordia y amor paciente...</p>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
-        </button>
-
-        <button onclick="openMomentoDetail('esposos')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
-          <div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Oración por los Esposos y la Unidad</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Dios, Padre eterno y de toda bondad...</p>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
-        </button>
-
-        <button onclick="openMomentoDetail('5peticiones')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
-          <div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">5 Peticiones para la Restauración</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Reconexión, perdón y nuevo comienzo</p>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
-        </button>
-
-        <button onclick="openMomentoDetail('espiritu_santo')" class="w-full text-left p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between group">
-          <div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-600">Oración al Espíritu Santo</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Cardenal Verdier • Oh Espíritu Santo, Amor del Padre...</p>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-600"></i>
-        </button>
+      <!-- Cuadrícula de los 4 Rosarios con imagen y preselección del día -->
+      <div id="spotify-rosary-tiles" class="grid grid-cols-2 gap-2.5">
+        <!-- Inyectado dinámicamente por JS -->
       </div>
 
-      <button onclick="closeMomentosModal()" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors">
+      <!-- Reproductor directo de audio + enlace a Spotify -->
+      <div class="p-3.5 rounded-2xl bg-slate-950 border border-emerald-500/30 space-y-2.5 shadow-inner">
+        <div class="flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <span id="spotify-rosary-now-badge" class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Reproduciendo</span>
+            <h4 id="spotify-rosary-now-title" class="text-xs font-bold text-white truncate">Misterios Gozosos</h4>
+          </div>
+          <a id="spotify-rosary-external-link" href="https://open.spotify.com/playlist/65GXkNX5Wg362rkfux9Pg2" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold inline-flex items-center gap-1 shrink-0 transition-colors">
+            <i class="fa-brands fa-spotify"></i>
+            <span>Spotify</span>
+          </a>
+        </div>
+        <audio id="spotify-rosary-audio-player" controls preload="metadata" class="w-full h-9 rounded-lg"></audio>
+      </div>
+
+      <button onclick="closeSpotifyRosaryModal()" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors">
         Cerrar
       </button>
     </div>
@@ -2348,196 +2245,122 @@
     let currentImageGalleryIndex = 0;
 
     function openImageModeSelector() {
-      const modal = document.getElementById('modal-image-mode-selector');
-      if (modal) modal.classList.remove('hidden');
-    }
-
-    function closeImageModeSelector() {
-      const modal = document.getElementById('modal-image-mode-selector');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function backToImageModeSelector() {
-      closeImageModeGallery();
-      openImageModeSelector();
-    }
-
-    function openImageModeGallery(groupKey) {
-      closeImageModeSelector();
-      currentImageGalleryGroup = groupKey;
-      currentImageGalleryIndex = 0;
-      buildCromoDeck();
-      updateCromoPositions(0, 0, false);
-      const modal = document.getElementById('modal-image-mode-gallery');
-      if (modal) modal.classList.remove('hidden');
-    }
-
-    function closeImageModeGallery() {
-      const modal = document.getElementById('modal-image-mode-gallery');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function buildCromoDeck() {
-      const mInfo = MYSTERY_INFO[currentImageGalleryGroup];
-      const stage = document.getElementById('cromo-deck-stage');
-      if (!mInfo || !stage) return;
-
-      document.getElementById('img-gallery-group').textContent = mInfo.name + ' (' + mInfo.daysDesc + ')';
-
-      stage.innerHTML = mInfo.items.map((item, idx) => {
-        const imgUrl = getMysteryImageUrl(currentImageGalleryGroup, idx);
-        return [
-          '<div class="cromo-card flip-card perspective-1000 cursor-pointer" data-cromo-idx="' + idx + '">',
-            '<div class="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-3d rounded-3xl cromo-card-shadow">',
-              
-              '<!-- ANVERSO DEL CROMO: Imagen limpia sin texto superpuesto y pie exterior -->',
-              '<div class="cromo-front absolute inset-0 backface-hidden bg-slate-950 rounded-3xl overflow-hidden border-2 border-amber-400/40 flex flex-col">',
-                '<div class="flex-1 min-h-0 w-full bg-black flex items-center justify-center overflow-hidden">',
-                  '<img src="' + imgUrl + '" alt="' + item.title + '" draggable="false" class="w-full h-full object-contain select-none pointer-events-none">',
-                '</div>',
-                '<div class="shrink-0 px-4 py-3 bg-slate-900/95 border-t border-amber-500/25 flex items-center justify-between gap-2">',
-                  '<div class="min-w-0">',
-                    '<p class="text-[10px] font-bold uppercase tracking-wider text-amber-400">' + item.num + ' • ' + item.ref + '</p>',
-                    '<h4 class="text-xs sm:text-sm font-bold font-cinzel text-white truncate mt-0.5">' + item.title + '</h4>',
-                  '</div>',
-                  '<span class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-bold shrink-0 flex items-center gap-1"><i class="fa-solid fa-rotate"></i> Girar</span>',
-                '</div>',
-              '</div>',
-
-              '<!-- REVERSO DEL CROMO: Información completa del Misterio -->',
-              '<div class="cromo-back absolute inset-0 backface-hidden rotate-y-180 bg-white dark:bg-slate-900 rounded-3xl p-5 flex flex-col border-2 border-amber-500/40 overflow-hidden">',
-                '<div class="pb-2.5 border-b border-slate-100 dark:border-slate-800 shrink-0">',
-                  '<span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1">' + mInfo.name + ' • ' + item.num + '</span>',
-                  '<h3 class="text-sm sm:text-base font-bold font-cinzel text-slate-900 dark:text-white leading-snug">' + item.title + '</h3>',
-                '</div>',
-                '<div class="cromo-scroll-body flex-1 overflow-y-auto no-scrollbar space-y-2.5 py-3 text-xs text-content-selectable">',
-                  '<div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">',
-                    '<i class="fa-solid fa-book-bible text-amber-500"></i>',
-                    '<span>Cita Bíblica: <strong>' + item.ref + '</strong></span>',
-                  '</div>',
-                  '<div class="bg-slate-50 dark:bg-slate-800/70 border-l-4 border-amber-500 p-3 rounded-r-xl space-y-1">',
-                    '<p class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Versículo clave</p>',
-                    '<p class="italic text-slate-800 dark:text-slate-100 leading-relaxed font-medium">' + item.verse + '</p>',
-                  '</div>',
-                  '<div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 space-y-1">',
-                    '<p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Explicación</p>',
-                    '<p class="text-slate-700 dark:text-slate-200 leading-relaxed">' + item.desc + '</p>',
-                  '</div>',
-                  '<div class="p-3 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-1">',
-                    '<p class="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Aplicación a la vida</p>',
-                    '<p class="text-slate-700 dark:text-slate-200 leading-relaxed">' + item.application + '</p>',
-                  '</div>',
-                  '<div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1">',
-                    '<p class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Preguntas para reflexionar</p>',
-                    '<p class="text-slate-700 dark:text-slate-200 leading-relaxed italic">' + item.reflection + '</p>',
-                  '</div>',
-                '</div>',
-                '<button type="button" onclick="event.stopPropagation(); toggleImageGalleryFlip();" class="w-full py-2.5 mt-1 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 text-[11px] font-bold uppercase tracking-wider transition-colors shrink-0"><i class="fa-solid fa-rotate mr-1.5"></i>Volver a la imagen</button>',
-              '</div>',
-
-            '</div>',
-          '</div>'
-        ].join('');
-      }).join('');
-    }
-
-    function updateCromoPositions(dragX, dragY, isDragging) {
-      const mInfo = MYSTERY_INFO[currentImageGalleryGroup];
-      const stage = document.getElementById('cromo-deck-stage');
-      if (!mInfo || !stage) return;
-
-      const currentItem = mInfo.items[currentImageGalleryIndex];
-      document.getElementById('img-gallery-counter').textContent = currentItem.num + ' (' + (currentImageGalleryIndex + 1) + ' / 5)';
-
-      const dotsEl = document.getElementById('img-gallery-dots');
-      if (dotsEl) {
-        dotsEl.innerHTML = [0, 1, 2, 3, 4].map(i => {
-          const active = i === currentImageGalleryIndex;
-          return '<button onclick="goToCromoIndex(' + i + ')" class="h-2 rounded-full transition-all ' + (active ? 'w-6 bg-amber-400' : 'w-2 bg-white/30 hover:bg-white/50') + '" aria-label="Misterio ' + (i + 1) + '"></button>';
+      const listEl = document.getElementById('image-mode-selector-list');
+      const todayKey = getMysteryKeyByDay(currentDayIndex);
+      if (listEl) {
+        const groups = [
+          { key: 'gozosos', title: 'Misterios Gozosos', days: 'Lunes y Sábados' },
+          { key: 'dolorosos', title: 'Misterios Dolorosos', days: 'Martes y Viernes' },
+          { key: 'gloriosos', title: 'Misterios Gloriosos', days: 'Miércoles y Domingos' },
+          { key: 'luminosos', title: 'Misterios Luminosos', days: 'Jueves' }
+        ];
+        listEl.innerHTML = groups.map(g => {
+          const isToday = g.key === todayKey;
+          return '<button onclick="openImageModeGallery(\'' + g.key + '\')" class="w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between group ' + (isToday ? 'bg-amber-500/10 border-amber-500 ring-2 ring-amber-500/25 shadow-sm' : 'bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-500/10 border-slate-200 dark:border-slate-700') + '"><div><div class="flex items-center gap-2"><h4 class="text-xs sm:text-sm font-bold ' + (isToday ? 'text-amber-700 dark:text-amber-300' : 'text-slate-900 dark:text-white group-hover:text-amber-600') + '">' + g.title + ' (' + g.days + ')</h4>' + (isToday ? '<span class="px-2 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider">Hoy</span>' : '') + '</div><p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">5 tarjetas con imagen y meditación</p></div><i class="fa-solid fa-chevron-right text-xs ' + (isToday ? 'text-amber-600' : 'text-slate-400 group-hover:text-amber-600') + '"></i></button>';
         }).join('');
       }
-
-      const cards = stage.querySelectorAll('.cromo-card');
-      cards.forEach((card, idx) => {
-        const diff = idx - currentImageGalleryIndex;
-        if (isDragging) {
-          card.classList.add('dragging');
-        } else {
-          card.classList.remove('dragging');
-        }
-
-        if (diff === 0) {
-          const tiltAngle = dragX * 0.045;
-          const diagY = dragY !== 0 ? dragY * 0.35 : -Math.abs(dragX) * 0.12;
-          card.style.zIndex = 30;
-          card.style.opacity = '1';
-          card.style.pointerEvents = 'auto';
-          card.style.transform = 'translate3d(' + dragX + 'px, ' + diagY + 'px, 0) rotate(' + tiltAngle + 'deg) scale(1)';
-        } else if (diff === 1) {
-          const pull = Math.max(0, Math.min(1, -dragX / 220));
-          const tx = 28 * (1 - pull);
-          const ty = 14 * (1 - pull);
-          const rot = 4.5 * (1 - pull);
-          const sc = 0.94 + 0.06 * pull;
-          card.style.zIndex = 20;
-          card.style.opacity = String(0.72 + 0.28 * pull);
-          card.style.pointerEvents = 'none';
-          card.style.transform = 'translate3d(' + tx + 'px, ' + ty + 'px, 0) rotate(' + rot + 'deg) scale(' + sc + ')';
-        } else if (diff === -1) {
-          const pull = Math.max(0, Math.min(1, dragX / 220));
-          const tx = -28 * (1 - pull);
-          const ty = 14 * (1 - pull);
-          const rot = -4.5 * (1 - pull);
-          const sc = 0.94 + 0.06 * pull;
-          card.style.zIndex = 20;
-          card.style.opacity = String(0.72 + 0.28 * pull);
-          card.style.pointerEvents = 'none';
-          card.style.transform = 'translate3d(' + tx + 'px, ' + ty + 'px, 0) rotate(' + rot + 'deg) scale(' + sc + ')';
-        } else if (diff > 1) {
-          card.style.zIndex = 10 - diff;
-          card.style.opacity = '0';
-          card.style.pointerEvents = 'none';
-          card.style.transform = 'translate3d(48px, 24px, 0) rotate(7deg) scale(0.88)';
-        } else {
-          card.style.zIndex = 10 + diff;
-          card.style.opacity = '0';
-          card.style.pointerEvents = 'none';
-          card.style.transform = 'translate3d(-48px, 24px, 0) rotate(-7deg) scale(0.88)';
-        }
-      });
+      const modal = document.getElementById('modal-image-mode-selector');
+      if (modal) modal.classList.remove('hidden');
     }
 
-    function goToCromoIndex(newIdx) {
-      if (newIdx < 0 || newIdx > 4) return;
-      resetAllCromoFlips();
-      currentImageGalleryIndex = newIdx;
-      updateCromoPositions(0, 0, false);
-    }
-
-    function toggleImageGalleryFlip() {
-      const stage = document.getElementById('cromo-deck-stage');
-      if (!stage) return;
-      const activeCard = stage.querySelector('.cromo-card[data-cromo-idx="' + currentImageGalleryIndex + '"]');
-      if (!activeCard) return;
-
-      const inner = activeCard.querySelector('.flip-card-inner');
-      const frontFace = activeCard.querySelector('.cromo-front');
-      const willFlip = !activeCard.classList.contains('flipped');
-      activeCard.classList.toggle('flipped');
-
-      if (inner) {
-        inner.style.transform = willFlip ? 'rotateY(180deg)' : 'rotateY(0deg)';
+    /* ========================================================================
+       MODAL ROSARIOS EN AUDIO / SPOTIFY (REPRODUCCIÓN DIRECTA AL CLICAR IMAGEN)
+       ======================================================================== */
+    const SPOTIFY_ROSARY_EPISODES = {
+      gozosos: {
+        key: 'gozosos',
+        title: 'Misterios Gozosos',
+        days: 'Lunes y Sábados',
+        cover: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/6cd3d73565330c2111b70946cce564ce167f5df9/anunciacion.jpg',
+        audioUrl: 'https://www.arguments.es/wp-content/uploads/2023/06/Misterios-Gozosos.m4a',
+        spotifyUrl: 'https://open.spotify.com/playlist/65GXkNX5Wg362rkfux9Pg2'
+      },
+      dolorosos: {
+        key: 'dolorosos',
+        title: 'Misterios Dolorosos',
+        days: 'Martes y Viernes',
+        cover: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/crucifuxion.jpg',
+        audioUrl: 'https://www.arguments.es/wp-content/uploads/2023/06/Misterios-Dolorosos.m4a',
+        spotifyUrl: 'https://open.spotify.com/playlist/65GXkNX5Wg362rkfux9Pg2'
+      },
+      gloriosos: {
+        key: 'gloriosos',
+        title: 'Misterios Gloriosos',
+        days: 'Miércoles y Domingos',
+        cover: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/resurreccion.jpg',
+        audioUrl: 'https://www.arguments.es/wp-content/uploads/2023/06/Misterios-Gloriosos.m4a',
+        spotifyUrl: 'https://open.spotify.com/playlist/65GXkNX5Wg362rkfux9Pg2'
+      },
+      luminosos: {
+        key: 'luminosos',
+        title: 'Misterios Luminosos',
+        days: 'Jueves',
+        cover: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/bautizo.jpg',
+        audioUrl: 'https://www.arguments.es/wp-content/uploads/2023/06/Misterios-Luminosos.m4a',
+        spotifyUrl: 'https://open.spotify.com/playlist/65GXkNX5Wg362rkfux9Pg2'
       }
+    };
 
-      if (frontFace) {
-        if (willFlip) {
-          setTimeout(() => {
-            if (activeCard.classList.contains('flipped')) {
-              frontFace.classList.add('opacity-0', 'pointer-events-none');
-            }
-          }, 260);
-        } else {
-          frontFace.classList.remove('opacity-0', 'pointer-events-none');
+    let selectedSpotifyRosaryKey = null;
+
+    function openSpotifyRosaryModal() {
+      const todayKey = getMysteryKeyByDay(currentDayIndex);
+      selectedSpotifyRosaryKey = todayKey;
+      renderSpotifyRosaryTiles(false);
+      const modal = document.getElementById('modal-spotify-rosary');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeSpotifyRosaryModal() {
+      const modal = document.getElementById('modal-spotify-rosary');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function playSpotifyRosaryEpisode(key) {
+      selectedSpotifyRosaryKey = key;
+      renderSpotifyRosaryTiles(true);
+    }
+
+    function renderSpotifyRosaryTiles(autoPlay) {
+      const container = document.getElementById('spotify-rosary-tiles');
+      if (!container) return;
+      const todayKey = getMysteryKeyByDay(currentDayIndex);
+      if (!selectedSpotifyRosaryKey) selectedSpotifyRosaryKey = todayKey;
+
+      const order = ['gozosos', 'dolorosos', 'gloriosos', 'luminosos'];
+      container.innerHTML = order.map(k => {
+        const item = SPOTIFY_ROSARY_EPISODES[k];
+        const isSelected = selectedSpotifyRosaryKey === k;
+        const isToday = todayKey === k;
+        return '<button type="button" onclick="playSpotifyRosaryEpisode(\'' + k + '\')" class="text-left rounded-2xl border overflow-hidden transition-all flex flex-col relative group active:scale-[0.98] ' + (isSelected ? 'border-emerald-500 ring-2 ring-emerald-500/35 bg-emerald-500/10 shadow-md' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:border-emerald-500/50') + '">' +
+          '<div class="w-full h-40 sm:h-48 bg-slate-900 relative overflow-hidden">' +
+            '<img src="' + item.cover + '" alt="' + item.title + '" class="w-full h-full object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-300">' +
+            '<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent"></div>' +
+            (isToday ? '<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white text-[9px] font-bold uppercase tracking-wider shadow">Hoy</span>' : '') +
+            '<span class="absolute bottom-2 right-2 w-7 h-7 rounded-full ' + (isSelected ? 'bg-emerald-500 text-white scale-110' : 'bg-black/70 text-white group-hover:bg-emerald-600') + ' flex items-center justify-center text-[11px] shadow transition-all"><i class="fa-solid ' + (isSelected && autoPlay ? 'fa-volume-high' : 'fa-play') + '"></i></span>' +
+          '</div>' +
+          '<div class="p-2.5">' +
+            '<p class="text-xs font-bold ' + (isSelected ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-900 dark:text-white') + ' leading-tight">' + item.title + '</p>' +
+            '<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">' + item.days + '</p>' +
+          '</div>' +
+        '</button>';
+      }).join('');
+
+      const activeItem = SPOTIFY_ROSARY_EPISODES[selectedSpotifyRosaryKey];
+      const titleEl = document.getElementById('spotify-rosary-now-title');
+      const badgeEl = document.getElementById('spotify-rosary-now-badge');
+      const extLink = document.getElementById('spotify-rosary-external-link');
+      const player = document.getElementById('spotify-rosary-audio-player');
+
+      if (titleEl) titleEl.textContent = activeItem.title + ' (' + activeItem.days + ')';
+      if (badgeEl) badgeEl.textContent = activeItem.key === todayKey ? 'Preseleccionado para Hoy' : 'Rosario en Audio';
+      if (extLink) extLink.href = activeItem.spotifyUrl;
+      if (player) {
+        if (player.src !== activeItem.audioUrl) {
+          player.src = activeItem.audioUrl;
+        }
+        if (autoPlay) {
+          player.play().catch(() => {});
         }
       }
     }
