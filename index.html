@@ -309,10 +309,6 @@
       <div id="guided-mystery-card" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3 transition-colors">
         <div class="flex items-start justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
           <h3 id="step-title" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-snug"></h3>
-          <button id="btn-step-mystery-info" class="hidden items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-[11px] font-bold shrink-0 hover:bg-amber-500/25 transition-colors">
-            <i class="fa-solid fa-circle-info"></i>
-            <span>Detalle</span>
-          </button>
         </div>
 
         <div id="step-scripture-box" class="hidden p-3 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border-l-4 border-amber-500 space-y-1 text-content-selectable">
@@ -2739,7 +2735,7 @@
             title: item.title,
             ref: 'Cita bíblica: ' + item.ref,
             quoteText: item.verse,
-            text: '<div class="space-y-2.5"><div class="p-3 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-2"><span class="text-xs font-bold text-amber-800 dark:text-amber-300 truncate">' + item.num + ': ' + item.title + '</span><button onclick="openMysteryDetailModal(\'' + mysteryKey + '\', ' + idx + ')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-800 dark:text-amber-200 text-[11px] font-bold shrink-0 transition-colors">Ver detalle</button></div><div class="flex items-center justify-between"><span class="font-bold text-amber-600 dark:text-amber-400">' + b + 'ª Avemaría</span><span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold">' + b + ' / 10</span></div><div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5"><p class="leading-relaxed">' + DEFAULT_PRAYERS.avemaria + '</p></div></div>',
+            text: '<div class="space-y-2.5"><button onclick="openMysteryDetailModal(\'' + mysteryKey + '\', ' + idx + ')" class="w-full py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-800 dark:text-amber-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"><i class="fa-solid fa-circle-info"></i><span>Ver detalle</span></button><div class="flex items-center justify-between"><span class="font-bold text-amber-600 dark:text-amber-400">' + b + 'ª Avemaría</span><span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold">' + b + ' / 10</span></div><div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5"><p class="leading-relaxed">' + DEFAULT_PRAYERS.avemaria + '</p></div></div>',
             decade: decNum,
             bead: b
           });
@@ -2919,18 +2915,9 @@
 
       const mKey = getMysteryKeyByDay(currentDayIndex);
       const guidedCard = document.getElementById('guided-mystery-card');
-      const infoBtn = document.getElementById('btn-step-mystery-info');
       
       if (step.decade >= 1 && step.decade <= 5 && MYSTERY_INFO[mKey] && MYSTERY_INFO[mKey].items[step.decade - 1]) {
         const mIdx = step.decade - 1;
-        if (infoBtn) {
-          infoBtn.classList.remove('hidden');
-          infoBtn.classList.add('inline-flex');
-          infoBtn.onclick = function (e) {
-            e.stopPropagation();
-            openMysteryDetailModal(mKey, mIdx);
-          };
-        }
         if (guidedCard) {
           guidedCard.classList.add('cursor-pointer', 'hover:border-amber-500/40');
           guidedCard.onclick = function () {
@@ -2938,11 +2925,6 @@
           };
         }
       } else {
-        if (infoBtn) {
-          infoBtn.classList.add('hidden');
-          infoBtn.classList.remove('inline-flex');
-          infoBtn.onclick = null;
-        }
         if (guidedCard) {
           guidedCard.classList.remove('cursor-pointer', 'hover:border-amber-500/40');
           guidedCard.onclick = null;
