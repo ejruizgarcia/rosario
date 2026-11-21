@@ -27,7 +27,7 @@
   </script>
 
   <style>
-    * {
+- {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -50,6 +50,24 @@
     .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
     .rotate-y-180 { transform: rotateY(180deg); }
     .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+
+    /* Estilos dinámicos tipo cromo para Modo Imagen */
+    .cromo-card {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+      will-change: transform, opacity;
+      touch-action: pan-y;
+    }
+    .cromo-card.dragging {
+      transition: none !important;
+    }
+    .cromo-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .cromo-card-shadow {
+      box-shadow: 0 22px 45px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(245, 158, 11, 0.28);
+    }
 
     /* Escalado Dinámico Exclusivo para Textos de Lectura (Ignorando interfaz general) */
     :root {
@@ -721,10 +739,14 @@
   </div>
 
   <!-- MODAL: Galería 3D Modo Imagen (Anverso Imagen / Reverso Meditación) -->
-  <div id="modal-image-mode-gallery" class="fixed inset-0 z-[125] bg-black hidden flex flex-col">
-    <!-- Barra superior discreta -->
-    <div class="flex items-center justify-between px-4 py-3 bg-black/80 text-white shrink-0 border-b border-white/10">
-      <div class="min-w-0">
+  <div id="modal-image-mode-gallery" class="fixed inset-0 z-[125] bg-slate-950/95 backdrop-blur-md hidden flex flex-col select-none">
+    <!-- Barra superior con regreso al índice de misterios -->
+    <div class="flex items-center justify-between px-4 py-3 bg-black/70 text-white shrink-0 border-b border-white/10">
+      <button onclick="backToImageModeSelector()" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-amber-300 transition-colors shrink-0">
+        <i class="fa-solid fa-arrow-left text-xs"></i>
+        <span>Misterios</span>
+      </button>
+      <div class="text-center min-w-0 px-2">
         <p id="img-gallery-group" class="text-[10px] font-bold uppercase tracking-wider text-amber-400 truncate"></p>
         <h3 id="img-gallery-counter" class="text-xs font-semibold text-white/90">1º Misterio (1 / 5)</h3>
       </div>
@@ -733,61 +755,26 @@
       </button>
     </div>
 
-    <!-- Tarjeta 3D -->
-    <div id="img-gallery-swipe-area" class="flex-1 flex items-center justify-center p-2 sm:p-4 overflow-hidden">
-      <div id="img-gallery-flip-card" class="flip-card perspective-1000 w-full max-w-md h-full cursor-pointer" onclick="toggleImageGalleryFlip()">
-        <div class="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-3d">
-          
-          <!-- ANVERSO: Imagen limpia 9:16 -->
-          <div id="img-gallery-front" class="absolute inset-0 backface-hidden bg-black rounded-2xl overflow-hidden flex items-center justify-center transition-opacity duration-300">
-            <img id="img-gallery-img" src="" alt="Misterio" class="w-full h-full object-contain">
-          </div>
+    <!-- Indicadores de posición (5 cromos) -->
+    <div id="img-gallery-dots" class="flex items-center justify-center gap-2 pt-3 pb-1 shrink-0"></div>
 
-          <!-- REVERSO: Meditación del Misterio -->
-          <div id="img-gallery-back" class="absolute inset-0 backface-hidden rotate-y-180 bg-white dark:bg-slate-900 rounded-2xl p-5 flex flex-col border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
-            <div class="pb-2.5 border-b border-slate-100 dark:border-slate-800 shrink-0">
-              <span id="img-gallery-back-badge" class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1"></span>
-              <h3 id="img-gallery-back-title" class="text-base sm:text-lg font-bold font-cinzel text-slate-900 dark:text-white leading-snug"></h3>
-            </div>
-            <div class="flex-1 overflow-y-auto no-scrollbar space-y-3 py-3 text-xs sm:text-sm text-content-selectable cursor-pointer">
-              <div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
-                <i class="fa-solid fa-book-bible text-amber-500"></i>
-                <span>Cita Bíblica: <strong id="img-gallery-back-ref"></strong></span>
-              </div>
-              <div class="bg-slate-50 dark:bg-slate-800/70 border-l-4 border-amber-500 p-3.5 rounded-r-xl space-y-1">
-                <p class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Versículo clave</p>
-                <p id="img-gallery-back-verse" class="italic text-slate-800 dark:text-slate-100 leading-relaxed font-medium"></p>
-              </div>
-              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 space-y-1">
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Explicación</p>
-                <p id="img-gallery-back-desc" class="text-slate-700 dark:text-slate-200 leading-relaxed"></p>
-              </div>
-              <div class="p-3.5 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-1">
-                <p class="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Aplicación a la vida</p>
-                <p id="img-gallery-back-app" class="text-slate-700 dark:text-slate-200 leading-relaxed"></p>
-              </div>
-              <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1">
-                <p class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Preguntas para reflexionar</p>
-                <p id="img-gallery-back-refl" class="text-slate-700 dark:text-slate-200 leading-relaxed italic"></p>
-              </div>
-            </div>
-            <p class="text-center text-[10px] font-bold uppercase tracking-wider text-slate-400 pt-2 shrink-0">Toca en cualquier parte de la tarjeta para volver a la imagen</p>
-          </div>
-
-        </div>
+    <!-- Escenario de Cromos Deslizables con inclinación diagonal y Flip 3D -->
+    <div id="img-gallery-swipe-area" class="flex-1 flex items-center justify-center px-5 py-3 overflow-hidden relative">
+      <div id="cromo-deck-stage" class="relative w-full max-w-[330px] sm:max-w-[360px] h-full max-h-[560px]">
+        <!-- Cromos inyectados dinámicamente por JS -->
       </div>
     </div>
 
     <!-- Barra inferior de navegación -->
-    <div class="flex items-center justify-between gap-2 px-4 py-3 bg-black/90 border-t border-white/10 shrink-0 max-w-md mx-auto w-full">
-      <button onclick="prevImageGalleryMystery()" class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center active:scale-95 transition-all">
+    <div class="flex items-center justify-between gap-2.5 px-4 py-3 bg-black/80 border-t border-white/10 shrink-0 max-w-md mx-auto w-full">
+      <button onclick="prevImageGalleryMystery()" class="w-12 h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center active:scale-95 transition-all" title="Anterior">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
-      <button onclick="toggleImageGalleryFlip()" class="flex-1 h-11 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md">
+      <button onclick="toggleImageGalleryFlip()" class="flex-1 h-11 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-amber-600/25">
         <i class="fa-solid fa-rotate"></i>
-        <span>Girar tarjeta</span>
+        <span>Girar cromo</span>
       </button>
-      <button onclick="nextImageGalleryMystery()" class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center active:scale-95 transition-all">
+      <button onclick="nextImageGalleryMystery()" class="w-12 h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center active:scale-95 transition-all" title="Siguiente">
         <i class="fa-solid fa-chevron-right"></i>
       </button>
     </div>
@@ -1822,7 +1809,6 @@
       renderHomiliasListTab();
       updateFavoriteButtonUI();
       
-      // Scroll suave hacia arriba para ver el reproductor
       const mainContent = document.querySelector('main');
       if (mainContent) {
         mainContent.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2083,7 +2069,6 @@
       if (!mInfo || !mInfo.items[itemIndex]) return;
       const item = mInfo.items[itemIndex];
 
-      // Resetear estado del flip al abrir
       const modal = document.getElementById('modal-mystery-detail');
       const flipCard = document.getElementById('mystery-flip-card');
       const frontFace = document.getElementById('mystery-card-front');
@@ -2172,14 +2157,14 @@
         { keywords: ['visitacion', 'isabel', 'gozoso2', 'gozosos2', 'g2'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/visitacion.jpg' },
         { keywords: ['nacimiento', 'belen', 'navidad', 'gozoso3', 'gozosos3', 'g3'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/nacimiento.jpg' },
         { keywords: ['presentacion', 'templo', 'gozoso4', 'gozosos4', 'g4'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/presentacion.jpg' },
-        { keywords: ['perdido', 'hallado', 'doctores', 'nino', 'gozoso5', 'gozosos5', 'g5'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/perdido.jpg' }
+        { keywords: ['hallazgo', 'perdido', 'hallado', 'doctores', 'nino', 'gozoso5', 'gozosos5', 'g5'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/hallazgo.jpg' }
       ],
       dolorosos: [
         { keywords: ['huerto', 'getsemani', 'oracion', 'doloroso1', 'dolorosos1', 'd1'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/huerto.jpg' },
         { keywords: ['flagelacion', 'azotes', 'columna', 'doloroso2', 'dolorosos2', 'd2'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/flagelacion.jpg' },
         { keywords: ['espinas', 'burlas', 'doloroso3', 'dolorosos3', 'd3'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/espinas.jpg' },
         { keywords: ['cruz', 'cuestas', 'calvario', 'camino', 'nazareno', 'doloroso4', 'dolorosos4', 'd4'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/calvario.jpg' },
-        { keywords: ['crucifixion', 'muerte', 'crucificado', 'doloroso5', 'dolorosos5', 'd5'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/crucifixion.jpg' }
+        { keywords: ['crucifuxion', 'crucifixion', 'muerte', 'crucificado', 'doloroso5', 'dolorosos5', 'd5'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/crucifuxion.jpg' }
       ],
       gloriosos: [
         { keywords: ['resurreccion', 'resucitado', 'glorioso1', 'gloriosos1', 'gl1'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/resurreccion.jpg' },
@@ -2189,7 +2174,7 @@
         { keywords: ['reina', 'coronacion_maria', 'coronacion_virgen', 'coronacion', 'glorioso5', 'gloriosos5', 'gl5'], exclude: ['espinas'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/coronacion.jpg' }
       ],
       luminosos: [
-        { keywords: ['bautismo', 'jordan', 'luminoso1', 'luminosos1', 'l1'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/bautismo.jpg' },
+        { keywords: ['bautizo', 'bautismo', 'jordan', 'luminoso1', 'luminosos1', 'l1'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/bautizo.jpg' },
         { keywords: ['cana', 'bodas', 'luminoso2', 'luminosos2', 'l2'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/cana.jpg' },
         { keywords: ['reino', 'conversion', 'anuncio', 'predicacion', 'luminoso3', 'luminosos3', 'l3'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/reino.jpg' },
         { keywords: ['transfiguracion', 'tabor', 'luminoso4', 'luminosos4', 'l4'], fallback: 'https://raw.githubusercontent.com/ejruizgarcia/rosario/main/transfiguracion.jpg' },
@@ -2248,7 +2233,7 @@
     }
 
     /* ========================================================================
-       MODO IMAGEN (GALERÍA 3D SIN CUENTAS)
+       MODO IMAGEN (CROMOS DESLIZABLES EN DIAGONAL CON FLIP 3D)
        ======================================================================== */
     let currentImageGalleryGroup = 'gozosos';
     let currentImageGalleryIndex = 0;
@@ -2263,89 +2248,308 @@
       if (modal) modal.classList.add('hidden');
     }
 
+    function backToImageModeSelector() {
+      closeImageModeGallery();
+      openImageModeSelector();
+    }
+
     function openImageModeGallery(groupKey) {
       closeImageModeSelector();
       currentImageGalleryGroup = groupKey;
       currentImageGalleryIndex = 0;
-      renderImageGalleryCard();
+      buildCromoDeck();
+      updateCromoPositions(0, 0, false);
       const modal = document.getElementById('modal-image-mode-gallery');
       if (modal) modal.classList.remove('hidden');
     }
 
     function closeImageModeGallery() {
       const modal = document.getElementById('modal-image-mode-gallery');
-      const flipCard = document.getElementById('img-gallery-flip-card');
-      const frontFace = document.getElementById('img-gallery-front');
-      if (flipCard) flipCard.classList.remove('flipped');
-      if (frontFace) frontFace.classList.remove('opacity-0', 'pointer-events-none');
       if (modal) modal.classList.add('hidden');
     }
 
-    function renderImageGalleryCard() {
+    function buildCromoDeck() {
       const mInfo = MYSTERY_INFO[currentImageGalleryGroup];
-      if (!mInfo) return;
-      const item = mInfo.items[currentImageGalleryIndex];
-      if (!item) return;
-
-      const flipCard = document.getElementById('img-gallery-flip-card');
-      const frontFace = document.getElementById('img-gallery-front');
-      if (flipCard) flipCard.classList.remove('flipped');
-      if (frontFace) frontFace.classList.remove('opacity-0', 'pointer-events-none');
+      const stage = document.getElementById('cromo-deck-stage');
+      if (!mInfo || !stage) return;
 
       document.getElementById('img-gallery-group').textContent = mInfo.name + ' (' + mInfo.daysDesc + ')';
-      document.getElementById('img-gallery-counter').textContent = item.num + ' (' + (currentImageGalleryIndex + 1) + ' / 5)';
-      document.getElementById('img-gallery-img').src = getMysteryImageUrl(currentImageGalleryGroup, currentImageGalleryIndex);
 
-      document.getElementById('img-gallery-back-badge').textContent = mInfo.name + ' • ' + item.num;
-      document.getElementById('img-gallery-back-title').textContent = item.title;
-      document.getElementById('img-gallery-back-ref').textContent = item.ref;
-      document.getElementById('img-gallery-back-verse').textContent = item.verse;
-      document.getElementById('img-gallery-back-desc').textContent = item.desc;
-      document.getElementById('img-gallery-back-app').textContent = item.application;
-      document.getElementById('img-gallery-back-refl').textContent = item.reflection;
+      stage.innerHTML = mInfo.items.map((item, idx) => {
+        const imgUrl = getMysteryImageUrl(currentImageGalleryGroup, idx);
+        return [
+          '<div class="cromo-card flip-card perspective-1000 cursor-pointer" data-cromo-idx="' + idx + '">',
+            '<div class="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-3d rounded-3xl cromo-card-shadow">',
+              
+              '<!-- ANVERSO DEL CROMO: Imagen limpia sin texto superpuesto y pie exterior -->',
+              '<div class="cromo-front absolute inset-0 backface-hidden bg-slate-950 rounded-3xl overflow-hidden border-2 border-amber-400/40 flex flex-col">',
+                '<div class="flex-1 min-h-0 w-full bg-black flex items-center justify-center overflow-hidden">',
+                  '<img src="' + imgUrl + '" alt="' + item.title + '" draggable="false" class="w-full h-full object-contain select-none pointer-events-none">',
+                '</div>',
+                '<div class="shrink-0 px-4 py-3 bg-slate-900/95 border-t border-amber-500/25 flex items-center justify-between gap-2">',
+                  '<div class="min-w-0">',
+                    '<p class="text-[10px] font-bold uppercase tracking-wider text-amber-400">' + item.num + ' • ' + item.ref + '</p>',
+                    '<h4 class="text-xs sm:text-sm font-bold font-cinzel text-white truncate mt-0.5">' + item.title + '</h4>',
+                  '</div>',
+                  '<span class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-bold shrink-0 flex items-center gap-1"><i class="fa-solid fa-rotate"></i> Girar</span>',
+                '</div>',
+              '</div>',
+
+              '<!-- REVERSO DEL CROMO: Información completa del Misterio -->',
+              '<div class="cromo-back absolute inset-0 backface-hidden rotate-y-180 bg-white dark:bg-slate-900 rounded-3xl p-5 flex flex-col border-2 border-amber-500/40 overflow-hidden">',
+                '<div class="pb-2.5 border-b border-slate-100 dark:border-slate-800 shrink-0">',
+                  '<span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 mb-1">' + mInfo.name + ' • ' + item.num + '</span>',
+                  '<h3 class="text-sm sm:text-base font-bold font-cinzel text-slate-900 dark:text-white leading-snug">' + item.title + '</h3>',
+                '</div>',
+                '<div class="cromo-scroll-body flex-1 overflow-y-auto no-scrollbar space-y-2.5 py-3 text-xs text-content-selectable">',
+                  '<div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">',
+                    '<i class="fa-solid fa-book-bible text-amber-500"></i>',
+                    '<span>Cita Bíblica: <strong>' + item.ref + '</strong></span>',
+                  '</div>',
+                  '<div class="bg-slate-50 dark:bg-slate-800/70 border-l-4 border-amber-500 p-3 rounded-r-xl space-y-1">',
+                    '<p class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Versículo clave</p>',
+                    '<p class="italic text-slate-800 dark:text-slate-100 leading-relaxed font-medium">' + item.verse + '</p>',
+                  '</div>',
+                  '<div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 space-y-1">',
+                    '<p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Explicación</p>',
+                    '<p class="text-slate-700 dark:text-slate-200 leading-relaxed">' + item.desc + '</p>',
+                  '</div>',
+                  '<div class="p-3 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-1">',
+                    '<p class="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Aplicación a la vida</p>',
+                    '<p class="text-slate-700 dark:text-slate-200 leading-relaxed">' + item.application + '</p>',
+                  '</div>',
+                  '<div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1">',
+                    '<p class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Preguntas para reflexionar</p>',
+                    '<p class="text-slate-700 dark:text-slate-200 leading-relaxed italic">' + item.reflection + '</p>',
+                  '</div>',
+                '</div>',
+                '<button type="button" onclick="event.stopPropagation(); toggleImageGalleryFlip();" class="w-full py-2.5 mt-1 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 text-[11px] font-bold uppercase tracking-wider transition-colors shrink-0"><i class="fa-solid fa-rotate mr-1.5"></i>Volver a la imagen</button>',
+              '</div>',
+
+            '</div>',
+          '</div>'
+        ].join('');
+      }).join('');
+    }
+
+    function updateCromoPositions(dragX, dragY, isDragging) {
+      const mInfo = MYSTERY_INFO[currentImageGalleryGroup];
+      const stage = document.getElementById('cromo-deck-stage');
+      if (!mInfo || !stage) return;
+
+      const currentItem = mInfo.items[currentImageGalleryIndex];
+      document.getElementById('img-gallery-counter').textContent = currentItem.num + ' (' + (currentImageGalleryIndex + 1) + ' / 5)';
+
+      const dotsEl = document.getElementById('img-gallery-dots');
+      if (dotsEl) {
+        dotsEl.innerHTML = [0, 1, 2, 3, 4].map(i => {
+          const active = i === currentImageGalleryIndex;
+          return '<button onclick="goToCromoIndex(' + i + ')" class="h-2 rounded-full transition-all ' + (active ? 'w-6 bg-amber-400' : 'w-2 bg-white/30 hover:bg-white/50') + '" aria-label="Misterio ' + (i + 1) + '"></button>';
+        }).join('');
+      }
+
+      const cards = stage.querySelectorAll('.cromo-card');
+      cards.forEach((card, idx) => {
+        const diff = idx - currentImageGalleryIndex;
+        if (isDragging) {
+          card.classList.add('dragging');
+        } else {
+          card.classList.remove('dragging');
+        }
+
+        if (diff === 0) {
+          const tiltAngle = dragX * 0.045;
+          const diagY = dragY !== 0 ? dragY * 0.35 : -Math.abs(dragX) * 0.12;
+          card.style.zIndex = 30;
+          card.style.opacity = '1';
+          card.style.pointerEvents = 'auto';
+          card.style.transform = 'translate3d(' + dragX + 'px, ' + diagY + 'px, 0) rotate(' + tiltAngle + 'deg) scale(1)';
+        } else if (diff === 1) {
+          const pull = Math.max(0, Math.min(1, -dragX / 220));
+          const tx = 28 * (1 - pull);
+          const ty = 14 * (1 - pull);
+          const rot = 4.5 * (1 - pull);
+          const sc = 0.94 + 0.06 * pull;
+          card.style.zIndex = 20;
+          card.style.opacity = String(0.72 + 0.28 * pull);
+          card.style.pointerEvents = 'none';
+          card.style.transform = 'translate3d(' + tx + 'px, ' + ty + 'px, 0) rotate(' + rot + 'deg) scale(' + sc + ')';
+        } else if (diff === -1) {
+          const pull = Math.max(0, Math.min(1, dragX / 220));
+          const tx = -28 * (1 - pull);
+          const ty = 14 * (1 - pull);
+          const rot = -4.5 * (1 - pull);
+          const sc = 0.94 + 0.06 * pull;
+          card.style.zIndex = 20;
+          card.style.opacity = String(0.72 + 0.28 * pull);
+          card.style.pointerEvents = 'none';
+          card.style.transform = 'translate3d(' + tx + 'px, ' + ty + 'px, 0) rotate(' + rot + 'deg) scale(' + sc + ')';
+        } else if (diff > 1) {
+          card.style.zIndex = 10 - diff;
+          card.style.opacity = '0';
+          card.style.pointerEvents = 'none';
+          card.style.transform = 'translate3d(48px, 24px, 0) rotate(7deg) scale(0.88)';
+        } else {
+          card.style.zIndex = 10 + diff;
+          card.style.opacity = '0';
+          card.style.pointerEvents = 'none';
+          card.style.transform = 'translate3d(-48px, 24px, 0) rotate(-7deg) scale(0.88)';
+        }
+      });
+    }
+
+    function goToCromoIndex(newIdx) {
+      if (newIdx < 0 || newIdx > 4) return;
+      resetAllCromoFlips();
+      currentImageGalleryIndex = newIdx;
+      updateCromoPositions(0, 0, false);
     }
 
     function toggleImageGalleryFlip() {
-      const flipCard = document.getElementById('img-gallery-flip-card');
-      const frontFace = document.getElementById('img-gallery-front');
-      if (!flipCard) return;
-      const willFlip = !flipCard.classList.contains('flipped');
-      flipCard.classList.toggle('flipped');
+      const stage = document.getElementById('cromo-deck-stage');
+      if (!stage) return;
+      const activeCard = stage.querySelector('.cromo-card[data-cromo-idx="' + currentImageGalleryIndex + '"]');
+      if (!activeCard) return;
+
+      const inner = activeCard.querySelector('.flip-card-inner');
+      const frontFace = activeCard.querySelector('.cromo-front');
+      const willFlip = !activeCard.classList.contains('flipped');
+      activeCard.classList.toggle('flipped');
+
+      if (inner) {
+        inner.style.transform = willFlip ? 'rotateY(180deg)' : 'rotateY(0deg)';
+      }
+
       if (frontFace) {
         if (willFlip) {
           setTimeout(() => {
-            if (flipCard.classList.contains('flipped')) {
+            if (activeCard.classList.contains('flipped')) {
               frontFace.classList.add('opacity-0', 'pointer-events-none');
             }
-          }, 220);
+          }, 260);
         } else {
           frontFace.classList.remove('opacity-0', 'pointer-events-none');
         }
       }
     }
 
+    function resetAllCromoFlips() {
+      const stage = document.getElementById('cromo-deck-stage');
+      if (!stage) return;
+      stage.querySelectorAll('.cromo-card').forEach(c => {
+        c.classList.remove('flipped');
+        const inner = c.querySelector('.flip-card-inner');
+        if (inner) inner.style.transform = 'rotateY(0deg)';
+        const front = c.querySelector('.cromo-front');
+        if (front) front.classList.remove('opacity-0', 'pointer-events-none');
+      });
+    }
+
     function nextImageGalleryMystery() {
-      currentImageGalleryIndex = (currentImageGalleryIndex + 1) % 5;
-      renderImageGalleryCard();
+      if (currentImageGalleryIndex < 4) {
+        resetAllCromoFlips();
+        currentImageGalleryIndex++;
+        updateCromoPositions(0, 0, false);
+      } else {
+        updateCromoPositions(-36, -10, false);
+        setTimeout(() => updateCromoPositions(0, 0, false), 180);
+      }
     }
 
     function prevImageGalleryMystery() {
-      currentImageGalleryIndex = (currentImageGalleryIndex - 1 + 5) % 5;
-      renderImageGalleryCard();
+      if (currentImageGalleryIndex > 0) {
+        resetAllCromoFlips();
+        currentImageGalleryIndex--;
+        updateCromoPositions(0, 0, false);
+      } else {
+        updateCromoPositions(36, -10, false);
+        setTimeout(() => updateCromoPositions(0, 0, false), 180);
+      }
     }
 
     function setupImageGallerySwipe() {
       const zone = document.getElementById('img-gallery-swipe-area');
       if (!zone) return;
+
+      let activePointerId = null;
       let startX = 0;
-      zone.addEventListener('touchstart', function (e) {
-        startX = e.changedTouches[0].screenX;
-      }, { passive: true });
-      zone.addEventListener('touchend', function (e) {
-        const endX = e.changedTouches[0].screenX;
-        if (endX < startX - 60) nextImageGalleryMystery();
-        if (endX > startX + 60) prevImageGalleryMystery();
-      }, { passive: true });
+      let startY = 0;
+      let deltaX = 0;
+      let deltaY = 0;
+      let isHorizontalDrag = false;
+      let startedInsideScroll = false;
+
+      zone.addEventListener('pointerdown', function (e) {
+        if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
+        if (e.target.closest('button')) return;
+
+        activePointerId = e.pointerId;
+        startX = e.clientX;
+        startY = e.clientY;
+        deltaX = 0;
+        deltaY = 0;
+        isHorizontalDrag = false;
+        startedInsideScroll = !!e.target.closest('.cromo-scroll-body');
+      });
+
+      zone.addEventListener('pointermove', function (e) {
+        if (activePointerId !== e.pointerId) return;
+        deltaX = e.clientX - startX;
+        deltaY = e.clientY - startY;
+
+        if (!isHorizontalDrag) {
+          if (Math.abs(deltaX) > 12 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1) {
+            isHorizontalDrag = true;
+            try { zone.setPointerCapture(e.pointerId); } catch (err) {}
+          } else if (Math.abs(deltaY) > 14 && startedInsideScroll) {
+            activePointerId = null;
+            return;
+          }
+        }
+
+        if (isHorizontalDrag) {
+          let effectiveX = deltaX;
+          if ((currentImageGalleryIndex === 0 && deltaX > 0) || (currentImageGalleryIndex === 4 && deltaX < 0)) {
+            effectiveX = deltaX * 0.35;
+          }
+          updateCromoPositions(effectiveX, deltaY * 0.35, true);
+        }
+      });
+
+      function finishPointer(e) {
+        if (activePointerId !== e.pointerId) return;
+        activePointerId = null;
+        try { zone.releasePointerCapture(e.pointerId); } catch (err) {}
+
+        if (isHorizontalDrag) {
+          if (deltaX < -45 && currentImageGalleryIndex < 4) {
+            resetAllCromoFlips();
+            currentImageGalleryIndex++;
+          } else if (deltaX > 45 && currentImageGalleryIndex > 0) {
+            resetAllCromoFlips();
+            currentImageGalleryIndex--;
+          }
+          updateCromoPositions(0, 0, false);
+        } else if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+          if (e.target.closest('.cromo-card[data-cromo-idx="' + currentImageGalleryIndex + '"]')) {
+            toggleImageGalleryFlip();
+          }
+        }
+      }
+
+      zone.addEventListener('pointerup', finishPointer);
+      zone.addEventListener('pointercancel', finishPointer);
+
+      window.addEventListener('keydown', function (e) {
+        const modal = document.getElementById('modal-image-mode-gallery');
+        if (!modal || modal.classList.contains('hidden')) return;
+        if (e.key === 'ArrowRight') nextImageGalleryMystery();
+        else if (e.key === 'ArrowLeft') prevImageGalleryMystery();
+        else if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          toggleImageGalleryFlip();
+        }
+      });
     }
 
     function highlightNavTab(tabName) {
